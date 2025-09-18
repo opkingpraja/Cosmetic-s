@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmetic Store UI</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    :root {
+      --bg: #1e1e2f;
+      --text: #f0f0f0;
+      --accent: #ff6f91;
+      --accent2: #ff9671;
+      --box-bg: #2e2e3e;
+      --card: #3d3d55;
+    }
+
+    .light-theme {
+      --bg: #fafafa;
+      --text: #222;
+      --accent: #ff4e88;
+      --accent2: #ffb26b;
+      --box-bg: #ffffff;
+      --card: #f4f4f8;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* 🔹 Navbar */
+    .navbar {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 15px;
+      margin: 15px;
+      z-index: 10;
+      position: relative;
+    }
+
+    .menu-btn {
+      font-size: 26px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .menu-btn:hover { transform: rotate(90deg); }
+
+    .theme-toggle {
+      background: white;
+      color: var(--accent);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* 🔹 Side Menu */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 250px;
+      height: 100%;
+      background: var(--box-bg);
+      box-shadow: 3px 0 10px rgba(0,0,0,0.5);
+      border-radius: 0 10px 10px 0;
+      padding: 20px;
+      transition: left 0.4s ease;
+      z-index: 1001;
+    }
+    .side-menu.active { left: 0; }
+
+    .side-menu h2 { color: var(--accent); margin-bottom: 20px; }
+    .side-menu a {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      padding: 12px 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    .side-menu a:hover {
+      background: var(--accent);
+      color: white;
+    }
+    .close-btn {
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--accent);
+      float: right;
+      margin-top: -10px;
+    }
+
+    /* 🔹 Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* 🔹 Slider Section */
+    .slider {
+      width: 100%;
+      margin: 15px;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+    .slides {
+      display: flex;
+      width: 90%;
+      animation: slide 12s infinite;
+    }
+    .slides img {
+      min-width: 100%;
+      height: auto;
+      object-fit: cover;
+      display: block;
+    }
+    @keyframes slide {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-100%); }
+      50% { transform: translateX(-200%); }
+      75% { transform: translateX(-300%); }
+      100% { transform: translateX(0); }
+    }
+
+    /* 🔹 Product Section */
+    .product-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      margin: 20px;
+      background: var(--box-bg);
+      border-radius: 20px;
+    }
+    .product-box {
+      background: var(--card);
+      border-radius: 15px;
+      padding: 15px;
+      display: grid;
+      gap: 10px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .product-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+    .big-box, .small-box {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .big-box img, .small-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .big-box { height: 160px; }
+    .small-box { height: 100px; }
+
+    /* 🔹 Responsive */
+    @media (max-width: 768px) {
+      .slides img { height: 200px; }
+      .big-box { height: 130px; }
+      .small-box { height: 80px; }
+    }
+    @media (max-width: 480px) {
+      .slides img { height: 160px; }
+      .big-box { height: 110px; }
+      .small-box { height: 70px; }
+    }
+    
+/*it is css for add product cards*/
+
+    #productContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      margin: 20px;
+    }
+    
+    .card {
+      background: var(--card);
+      border-radius: 15px;
+      overflow: hidden;
+      text-align: center;
+      padding: 15px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .card h3 {
+      font-size: 18px;
+      color: var(--accent);
+      margin-bottom: 5px;
+    }
+    
+    .card p {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    
+    .btn {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    
+    .btn:hover {
+      opacity: 0.85;
+    }
+    
+    
+  </style>
+</head>
+<body class="light-theme"> <!-- ✅ अब initially light theme होगी -->
+
+  <!-- 🔹 Overlay -->
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+  <!-- 🔹 Side Menu -->
+  <div class="side-menu" id="sideMenu">
+    <span class="close-btn" onclick="toggleMenu()">✖</span>
+    <h2>Menu</h2>
+    <a href="#">Home</a>
+    <a href="#">Products</a>
+    <a href="#">Offers</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact</a>
+  </div>
+
+  <!-- 🔹 Navbar -->
+  <div class="navbar">
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    <button class="theme-toggle" onclick="toggleTheme()">🌗 Theme</button>
+  </div>
+
+  <!-- 🔹 Slider -->
+  <div class="slider">
+    <div class="slides">
+      <img src="/my website /photo/realistic-beauty-sale-banner-design_52683-92665.jpg" alt="Cosmetics 1">
+      <img src="/my website /photo/hand-drawn-beauty-sale-banner-design_23-2149663570.jpg" alt="Cosmetics 2">
+      <img src="/my website /photo/hand-drawn-beauty-sale-banner-design_23-2149667222.jpg" alt="Cosmetics 3">
+      <img src="/my website /photo/beauty-skin-care-product-banner_33099-2057.jpg" alt="Cosmetics 3">
+    </div>
+  </div>
+
+  <!-- 🔹 Products -->
+  <div class="product-section">
+    <div class="product-box">
+      <div class="big-box">
+        <img src="/my website /photo/cosmetics.jpg" alt="Lipstick">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="small-box"><img src="/my website /photo/IMG_20250918_121718.jpg" alt="Nail Polish"></div>
+        <div class="small-box"><img src="/my website /photo/il_fullxfull.2019112368_o3pd.jpg" alt="Perfume"></div>
+      </div>
+    </div>
+    <div class="product-box">
+      <div class="big-box">
+        <img src="/my website /photo/bottle-red-perfume-with-red-top-red-top_808092-1411.jpg" alt="Face Cream">
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div class="small-box"><img src="/my website /photo/makeup-logo-design-template-6d1bb2503084b513c60fd7fd43f15adb_screen.jpg" alt="Brush"></div>
+        <div class="small-box"><img src="/my website /photo/il_fullxfull.1999705084_lwio.jpg" alt="Foundation"></div>
+        <div class="small-box"><img src="/my website /photo/sale-this-weekend-special-offer-label-up-70-off_132477-34.jpg" alt="Perfume" alt="Mascara"></div>
+      </div>
+    </div>
+  </div>
+
+
+<!--product add place-->
+
+<div class="container" id="productContainer"></div>
+
+
+
+
+<!--js logic-->
+
+<script src="addProduct.js"></script>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle("light-theme");
+    }
+    function toggleMenu() {
+      document.getElementById("sideMenu").classList.toggle("active");
+      document.getElementById("overlay").classList.toggle("active");
+    }
+    
+    
+// Product add logic 
+    
+    const productContainer = document.getElementById("productContainer");
+    
+    function renderProducts() {
+  productContainer.innerHTML = "";
+  products.forEach(p => {
+    productContainer.innerHTML += `
+      <div class="card">
+        <img src="${p.image}" alt="${p.title}">
+        <h3>${p.title}</h3>
+        <p>${p.desc}</p>
+        <button class="btn">₹${p.price}</button>
+      </div>
+    `;
+  });
+}
+
+renderProducts(); // call करना ज़रूरी है
+
+  </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
