@@ -1,27 +1,33 @@
 // Example product data
 const products = [
   {
-    image: "https://via.placeholder.com/300x200.png?text=Lipstick",
-    title: "Lipstick",
-    desc: "High-quality matte lipstick shades.",
-    price: 499
+    image: "https://ik.imagekit.io/Cosmetic/IMG_20250918_153003.jpg?updatedAt=1758189812358",
+    title: "Premium Perfume",
+    desc: "High-quality premium perfume.",
+    price: 1200
   },
   {
-    image: "https://via.placeholder.com/300x200.png?text=Foundation",
-    title: "Foundation",
-    desc: "Full coverage foundation for all skin tones.",
-    price: 799
+    image: "https://ik.imagekit.io/Cosmetic/IMG_20250918_153049.jpg?updatedAt=1758189812725",
+    title: "Luxury Bangles",
+    desc: "Fasion is top this Bangles look like hop.",
+    price: 299
   },
   {
-    image: "https://via.placeholder.com/300x200.png?text=Perfume",
+    image: "https://ik.imagekit.io/Cosmetic/IMG_20250918_153204.jpg?updatedAt=1758189812803",
     title: "Perfume",
     desc: "Luxury fragrance that lasts all day.",
-    price: 1299
+    price: 1489
   },
   {
-    image: "https://via.placeholder.com/300x200.png?text=Makeup+Kit",
-    title: "Makeup Kit",
-    desc: "All-in-one beauty essentials kit.",
-    price: 1999
+    image: "https://ik.imagekit.io/Cosmetic/IMG_20250918_153132.jpg?updatedAt=1758189811868",
+    title: "Long lasting Nail paint",
+    desc: "All-in-one premium nail paint.",
+    price: 199
+  },
+ {
+    image: "https://ik.imagekit.io/Cosmetic/IMG_20250918_153111.jpg?updatedAt=1758189813554",
+    title: "LUXURY Nail paint",
+    desc: "All-in-one Luxury nail paint.",
+    price: 399
   }
 ];
