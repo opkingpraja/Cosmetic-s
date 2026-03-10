@@ -314,6 +314,94 @@
     
     .btn:hover { opacity: 0.85; }
     
+    
+    /* Search Bar Styling */
+.search-container {
+  position: relative;
+  flex: 1;
+  margin-right: 10px;
+  max-width: 250px; /* Aap ise adjust kar sakte hain */
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 5px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+  width: 100%;
+  padding: 5px 0;
+  font-size: 14px;
+}
+
+.search-box input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-icon {
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+/* Recommendations Dropdown */
+.suggestions-box {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 2000;
+  display: none; /* Default hidden */
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  color: #333;
+  transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+  background: #f9f9f9;
+}
+
+.suggestion-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.suggestion-item span {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Navbar adjust for search */
+.navbar {
+  gap: 10px;
+}
+
+    
   </style>
 </head>
 <body class="light-theme">
@@ -323,16 +411,23 @@
   <div class="side-menu" id="sideMenu">
     <span class="close-btn" onclick="toggleMenu()">✖</span>
     <h2>Menu</h2>
-    <a href="#">Cart</a>
+   <a href="cart.html">Cart</a>
     <a href="#">Contact Us</a>
   </div>
 
   <div class="navbar">
     <div class="menu-btn" onclick="toggleMenu()">☰</div>
     <div class="nav-right">
-      <span>Anntya</span>
-      <img src="https://ik.imagekit.io/Prajapati/Screenshot_20260308-085550~3.png" alt="Anntya Logo">
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search Anntya products..." oninput="handleSearch(this.value)">
+      <span class="search-icon">🔍</span>
     </div>
+    <div id="searchSuggestions" class="suggestions-box"></div>
+  </div>
+  <img src="https://ik.imagekit.io/Prajapati/Screenshot_20260308-085550~3.png" alt="Anntya Logo">
+</div>
+
   </div>
 
   <div class="slider">
@@ -375,7 +470,56 @@
       document.getElementById("sideMenu").classList.toggle("active");
       document.getElementById("overlay").classList.toggle("active");
     };
-    
+
+
+
+
+//srching logics
+function handleSearch(query) {
+  const suggestionsBox = document.getElementById("searchSuggestions");
+  query = query.toLowerCase().trim();
+
+  if (query.length === 0) {
+    suggestionsBox.style.display = "none";
+    return;
+  }
+
+  // Products filter karna title ke basis pe
+  const filtered = products.filter(p => p.title.toLowerCase().includes(query));
+
+  if (filtered.length > 0) {
+    suggestionsBox.innerHTML = "";
+    filtered.forEach(p => {
+      // Original products array mein iska index dhoondna click logic ke liye
+      const originalIndex = products.indexOf(p);
+      
+      const div = document.createElement("div");
+      div.className = "suggestion-item";
+      div.innerHTML = `
+        <img src="${p.image}">
+        <span>${p.title}</span>
+      `;
+      
+      div.onclick = () => {
+        window.location.href = `productPage.html?id=${originalIndex}`;
+      };
+      
+      suggestionsBox.appendChild(div);
+    });
+    suggestionsBox.style.display = "block";
+  } else {
+    suggestionsBox.innerHTML = `<div style="padding:10px; color:#999; font-size:14px;">No products found</div>`;
+    suggestionsBox.style.display = "block";
+  }
+}
+
+// Click outside se dropdown band karna
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".search-container")) {
+    document.getElementById("searchSuggestions").style.display = "none";
+  }
+});
+
   </script>
 
 </body>
