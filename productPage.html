@@ -93,7 +93,7 @@ padding-right: env(safe-area-inset-right);
   padding:12px 25px;
   border:none;
   border-radius:25px;
-  background:linear-gradient(90deg,#ff4e88,#ffb26b);
+  background:linear-gradient(90deg,#f77ca4,#feddbf);
   color:white;
   font-size:16px;
   cursor:pointer;
@@ -162,7 +162,7 @@ padding-right: env(safe-area-inset-right);
   padding:12px 25px;
   border:none;
   border-radius:25px;
-  background:linear-gradient(90deg,#00c6ff,#0072ff);
+  background:linear-gradient(90deg,#7c68eaef,#b2f0ffd4);
   color:white;
   font-size:16px;
   cursor:pointer;
@@ -188,8 +188,8 @@ padding-right: env(safe-area-inset-right);
 <div class="price" id="price"></div>
 <p class="desc" id="desc"></p>
 
-<button class="buy-btn">Add to Cart</button>
-<button class="share-btn" onclick="shareProduct()">Share</button>
+<button class="buy-btn" onclick="addToCart()">Add to Cart 🛒</button>
+<button class="share-btn" onclick="shareProduct()">Share 📤</button>
 
 </div>
 
@@ -233,6 +233,33 @@ function shareProduct(){
   }
 
 }
+
+
+
+// Logic of cart button
+function addToCart(){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // Check karna ki kya ye product pehle se cart mein hai
+  let existingProduct = cart.find(item => item.title === product.title);
+
+  if (existingProduct) {
+    // Agar hai, to sirf quantity badhao
+    existingProduct.qty = (existingProduct.qty || 1) + 1;
+  } else {
+    // Agar nahi hai, to naya item add karo aur qty: 1 set karo
+    let productToAdd = { ...product, qty: 1 };
+    cart.push(productToAdd);
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  window.location.href = "cart.html";
+}
+
+
+
+
+
 </script>
 
 </body>
