@@ -156,6 +156,22 @@ padding-right: env(safe-area-inset-right);
       opacity: 0.85;
     }
     
+    
+    .share-btn{
+  margin-top:10px;
+  padding:12px 25px;
+  border:none;
+  border-radius:25px;
+  background:linear-gradient(90deg,#00c6ff,#0072ff);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.share-btn:hover{
+  opacity:0.85;
+}
+    
 </style>
 </head>
 
@@ -173,6 +189,7 @@ padding-right: env(safe-area-inset-right);
 <p class="desc" id="desc"></p>
 
 <button class="buy-btn">Add to Cart</button>
+<button class="share-btn" onclick="shareProduct()">Share</button>
 
 </div>
 
@@ -182,8 +199,7 @@ padding-right: env(safe-area-inset-right);
 
 <script src="addProduct.js"></script>
 <script>
-
-const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
 const product = products[id];
@@ -194,7 +210,29 @@ document.getElementById("price").innerText = "₹" + product.price;
 document.getElementById("desc").innerText = product.desc;
 
 
+// SHARE FUNCTION
+function shareProduct(){
 
+  const shareData = {
+    url: window.location.href
+  };
+
+  if(navigator.share){
+    navigator.share(shareData)
+    .then(()=> console.log("Shared"))
+    .catch(err => console.log(err));
+  }
+  else{
+
+    // fallback (WhatsApp share)
+    const url = "https://api.whatsapp.com/send?text="
+      + encodeURIComponent(product.title + " - ₹" + product.price + " " + window.location.href);
+
+    window.open(url,"_blank");
+
+  }
+
+}
 </script>
 
 </body>
