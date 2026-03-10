@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
+
+<title>Your Cart</title>
+
+<style>
+
+body{
+font-family:Poppins,sans-serif;
+background:#f4f4f8;
+margin:0;
+padding:20px;
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+}
+
+.cart-container{
+max-width:900px;
+margin:auto;
+}
+
+.cart-item{
+display:flex;
+gap:15px;
+background:white;
+padding:15px;
+border-radius:15px;
+margin-bottom:15px;
+align-items:center;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.cart-item img{
+width:90px;
+height:90px;
+object-fit:cover;
+border-radius:10px;
+}
+
+.cart-details{
+flex:1;
+}
+
+.cart-title{
+font-size:18px;
+font-weight:600;
+}
+
+.cart-price{
+color:#ff4e88;
+font-weight:bold;
+margin-top:5px;
+}
+
+.quantity{
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:10px;
+}
+
+.quantity button{
+width:30px;
+height:30px;
+border:none;
+background:#ff4e88;
+color:white;
+font-size:18px;
+border-radius:50%;
+cursor:pointer;
+}
+
+.remove-btn{
+margin-top:8px;
+background:red;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.total-box{
+margin-top:30px;
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.total{
+font-size:22px;
+font-weight:bold;
+}
+
+.checkout{
+margin-top:15px;
+width:100%;
+padding:12px;
+border:none;
+background:linear-gradient(90deg,#ff4e88,#ffb26b);
+color:white;
+font-size:18px;
+border-radius:25px;
+cursor:pointer;
+}
+
+.empty{
+text-align:center;
+font-size:20px;
+color:#777;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Your Cart</h1>
+
+<div class="cart-container" id="cartContainer"></div>
+
+<div class="total-box">
+
+<div class="total" id="totalPrice">
+Total: ₹0
+</div>
+
+<button class="checkout">
+Proceed to Checkout
+</button>
+
+</div>
+<script>
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const container = document.getElementById("cartContainer");
+
+  function renderCart() {
+    container.innerHTML = "";
+    let total = 0;
+
+    if (cart.length === 0) {
+      container.innerHTML = `<div class="empty">Cart is Empty</div>`;
+      document.getElementById("totalPrice").innerText = "Total: ₹0";
+      return;
+    }
+
+    cart.forEach((p, index) => {
+      // Har item ka total calculate karna (Price * Quantity)
+      let itemQty = p.qty || 1;
+      total += p.price * itemQty;
+
+      const item = document.createElement("div");
+      item.className = "cart-item";
+      item.innerHTML = `
+        <img src="${p.image}">
+        <div class="cart-details">
+          <div class="cart-title">${p.title}</div>
+          <div class="cart-price">₹${p.price}</div>
+          <div class="quantity">
+            <button onclick="decrease(${index})">-</button>
+            <span>${itemQty}</span>
+            <button onclick="increase(${index})">+</button>
+          </div>
+          <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+        </div>
+      `;
+      container.appendChild(item);
+    });
+
+    document.getElementById("totalPrice").innerText = "Total: ₹" + total;
+  }
+
+  function increase(i) {
+    cart[i].qty = (cart[i].qty || 1) + 1;
+    saveAndRefresh();
+  }
+
+  function decrease(i) {
+    if ((cart[i].qty || 1) > 1) {
+      cart[i].qty--;
+      saveAndRefresh();
+    }
+  }
+
+  function removeItem(i) {
+    cart.splice(i, 1);
+    saveAndRefresh();
+  }
+
+  // Common function to save data and update UI
+  function saveAndRefresh() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    renderCart();
+  }
+
+  // Initial call
+  renderCart();
+</script>
+
+
+
+</body>
+</html>
