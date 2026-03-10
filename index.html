@@ -1,17 +1,39 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cosmetic Store UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<title>Cosmetic Store UI</title>
+
+<link rel="manifest" href="manifest.json">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-      transition: background 0.3s, color 0.3s;
-    }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  html, body {
+    touch-action: manipulation;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  input, textarea {
+    font-size: 16px;
+  }
+
+  body{
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    background: var(--bg);
+    color: var(--text);
+  }
 
     :root {
       --bg: #1e1e2f;
@@ -31,16 +53,10 @@
       --card: #f4f4f8;
     }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    /* 🔹 Navbar */
     .navbar {
       background: linear-gradient(90deg, var(--accent), var(--accent2));
       color: white;
-      padding: 15px 20px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -50,6 +66,23 @@
       position: relative;
     }
 
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-right span {
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .nav-right img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+
     .menu-btn {
       font-size: 26px;
       cursor: pointer;
@@ -57,17 +90,6 @@
     }
     .menu-btn:hover { transform: rotate(90deg); }
 
-    .theme-toggle {
-      background: white;
-      color: var(--accent);
-      border: none;
-      padding: 8px 15px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    /* 🔹 Side Menu */
     .side-menu {
       position: fixed;
       top: 0;
@@ -105,7 +127,6 @@
       margin-top: -10px;
     }
 
-    /* 🔹 Overlay */
     .overlay {
       position: fixed;
       top: 0; left: 0;
@@ -122,10 +143,10 @@
       visibility: visible;
     }
 
-    /* 🔹 Slider Section */
     .slider {
       width: 100%;
-      margin: 15px;
+      height: auto;
+      margin: 15px 0;
       border-radius: 20px;
       overflow: hidden;
       position: relative;
@@ -133,7 +154,7 @@
     }
     .slides {
       display: flex;
-      width: 90%;
+      width: 100%;
       animation: slide 12s infinite;
       background-color: transparent;
     }
@@ -154,7 +175,6 @@
       100% { transform: translateX(0); }
     }
 
-    /* 🔹 Product Section */
     .product-section {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -186,14 +206,29 @@
     }
     .big-box img, .small-box img {
       width: 100%;
-      height: 100%;
+      height: auto;
       object-fit: cover;
       display: block;
     }
     .big-box { height: 160px; }
     .small-box { height: 100px; }
+    
+    .big-box, .small-box {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
 
-    /* 🔹 Responsive */
+.big-box:hover, .small-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
     @media (max-width: 768px) {
       .slides img { height: 200px; }
       .big-box { height: 130px; }
@@ -204,9 +239,26 @@
       .big-box { height: 110px; }
       .small-box { height: 70px; }
     }
-    
-/*it is css for add product cards*/
 
+    @media (min-width:1024px){
+      .slider{
+        max-width:1200px;
+        margin:30px auto;
+      }
+      .slides img{
+        height:420px;
+      }
+    }
+
+    @media (min-width:1400px){
+      .slider{
+        max-width:1400px;
+      }
+      .slides img{
+        height:500px;
+      }
+    }
+    
     #productContainer {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -231,7 +283,7 @@
     
     .card img {
       width: 100%;
-      height: 180px;
+      height: auto;
       object-fit: cover;
       border-radius: 10px;
       margin-bottom: 10px;
@@ -260,46 +312,38 @@
       transition: 0.3s;
     }
     
-    .btn:hover {
-      opacity: 0.85;
-    }
-    
+    .btn:hover { opacity: 0.85; }
     
   </style>
 </head>
-<body class="light-theme"> <!-- ✅ अब initially light theme होगी -->
+<body class="light-theme">
 
-  <!-- 🔹 Overlay -->
   <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-  <!-- 🔹 Side Menu -->
   <div class="side-menu" id="sideMenu">
     <span class="close-btn" onclick="toggleMenu()">✖</span>
     <h2>Menu</h2>
-    <a href="#">Home</a>
-    <a href="#">Products</a>
-    <a href="#">Offers</a>
-    <a href="#">About Us</a>
-    <a href="#">Contact</a>
+    <a href="#">Cart</a>
+    <a href="#">Contact Us</a>
   </div>
 
-  <!-- 🔹 Navbar -->
   <div class="navbar">
     <div class="menu-btn" onclick="toggleMenu()">☰</div>
-    <button class="theme-toggle" onclick="toggleTheme()">🌗 Theme</button>
+    <div class="nav-right">
+      <span>Anntya</span>
+      <img src="https://ik.imagekit.io/Prajapati/Screenshot_20260308-085550~3.png" alt="Anntya Logo">
+    </div>
   </div>
 
-  <!-- 🔹 Slider -->
   <div class="slider">
     <div class="slides">
       <img src="https://ik.imagekit.io/Cosmetic/realistic-beauty-sale-banner-design_52683-92665.jpg?updatedAt=1758188018085" alt="Cosmetics 1">
       <img src="https://ik.imagekit.io/Cosmetic/hand-drawn-beauty-sale-banner-design_23-2149663570.jpg?updatedAt=1758188019214" alt="Cosmetics 2">
       <img src="https://ik.imagekit.io/Cosmetic/hand-drawn-beauty-sale-banner-design_23-2149667222.jpg?updatedAt=1758188019827" alt="Cosmetics 3">
-      <img src="https://ik.imagekit.io/Cosmetic/beauty-skin-care-product-banner_33099-2057.jpg?updatedAt=1758188019826" alt="Cosmetics 3">
+      <img src="https://ik.imagekit.io/Cosmetic/beauty-skin-care-product-banner_33099-2057.jpg?updatedAt=1758188019826" alt="Cosmetics 4">
     </div>
   </div>
 
-  <!-- 🔹 Products -->
   <div class="product-section">
     <div class="product-box">
       <div class="big-box">
@@ -322,58 +366,17 @@
     </div>
   </div>
 
+  <div id="productContainer"></div>
 
-<!--product add place-->
-
-<div class="container" id="productContainer"></div>
-
-
-
-
-<!--js logic-->
-
-<script src="addProduct.js"></script>
+  <script src="addProduct.js"></script>
 
   <script>
-    function toggleTheme() {
-      document.body.classList.toggle("light-theme");
-    }
     function toggleMenu() {
       document.getElementById("sideMenu").classList.toggle("active");
       document.getElementById("overlay").classList.toggle("active");
-    }
+    };
     
-    
-// Product add logic 
-    
-    const productContainer = document.getElementById("productContainer");
-    
-    function renderProducts() {
-  productContainer.innerHTML = "";
-  products.forEach(p => {
-    productContainer.innerHTML += `
-      <div class="card">
-        <img src="${p.image}" alt="${p.title}">
-        <h3>${p.title}</h3>
-        <p>${p.desc}</p>
-        <button class="btn">₹${p.price}</button>
-      </div>
-    `;
-  });
-}
-
-renderProducts(); // call करना ज़रूरी है
-
   </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
