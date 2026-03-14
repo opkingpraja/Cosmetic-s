@@ -1,4 +1,4 @@
-// Example product data
+// product data
 const products = [
   {
     image: "https://ik.imagekit.io/Prajapati/IMG_20260308_135809.jpg?updatedAt=1773122245924",
@@ -143,7 +143,151 @@ const products = [
     title: "GLOW LOVELY FACE WASH",
     desc: "FACE WASH",
     price: 89
-  }
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_102037.jpg",
+    title:"WATCH",
+    desc:" ",
+    price:250
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_102453.jpg?updatedAt=1773495634519",
+    title:"WATCH",
+    desc:" ",
+    price:130
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_101617.jpg?updatedAt=1773495634832",
+    title:"Patanjli-Jel",
+    desc:"Jel for sckin",
+    price:55
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_102256.jpg?updatedAt=1773495634965",
+    title:"WATCH",
+    desc:" ",
+    price:190
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_105106.jpg?updatedAt=1773495636373",
+    title:"Lipstick",
+    desc:"Lekme",
+    price:299
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_104451.jpg?updatedAt=1773495636340",
+    title:"Lipstick",
+    desc:" ",
+    price:50
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_101514.jpg?updatedAt=1773495636412",
+    title:"Garnier-Face-Wash",
+    desc:"Face-Wash",
+    price:99
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_101822.jpg?updatedAt=1773495636548",
+    title:"Kaveri-Pen-Balm",
+    desc:"Pen balm",
+    price:40
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_102225.jpg?updatedAt=1773495636566",
+    title:"WATCH",
+    desc:" ",
+    price:190
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_101715.jpg?updatedAt=1773495636587",
+    title:"Patanjli-Face-Wash",
+    desc:"Face-Wash",
+    price:70
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_104355.jpg?updatedAt=1773495636816",
+    title:"Fair-Lovly-Creme",
+    desc:"Golw & Lovly",
+    price:135
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_104355.jpg?updatedAt=1773495636816",
+    title:"Fair-Lovly-Creme",
+    desc:"Golw & Lovly",
+    price:72
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_102118.jpg?updatedAt=1773495636830",
+    title:"WATCH",
+    desc:" ",
+    price:299
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_102540.jpg?updatedAt=1773495636902",
+    title:"WATCH",
+    desc:" ",
+    price:99
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_101745.jpg?updatedAt=1773495637107",
+    title:"Color-Mate",
+    desc:"Hair-Color",
+    price:60
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_102004.jpg?updatedAt=1773495637231",
+    title:"WATCH",
+    desc:" ",
+    price:249
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_105152.jpg?updatedAt=1773495637243",
+    title:"Lipstick",
+    desc:"Red-4",
+    price:80
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_101446.jpg?updatedAt=1773495637264",
+    title:"Himalya-Face-Wash",
+    desc:"Fash-whash",
+    price:189
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_101446.jpg?updatedAt=1773495637264",
+    title:"Himalya-Face-Wash",
+    desc:"Fash-whash",
+    price:90
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_104255.jpg?updatedAt=1773495637481",
+    title:"Velvet-Choodi",
+    desc:"Choodi",
+    price:60
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_104617.jpg?updatedAt=1773495637512",
+    title:"Lipstick",
+    desc:" ",
+    price:49
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_103239.jpg?updatedAt=1773495637803",
+    title:"Velvet-Choodi",
+    desc:"Choodi",
+    price:59
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_103903.jpg?updatedAt=1773495637988",
+    title:"Khukumani",
+    desc:"Sendoor",
+    price:49
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_102341.jpg?updatedAt=1773495638067",
+    title:"WATCH",
+    desc:" ",
+    price:299
+  },
 ];
 
 
