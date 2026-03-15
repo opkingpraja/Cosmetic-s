@@ -288,6 +288,42 @@ const products = [
     desc:" ",
     price:299
   },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260315_103804.jpg?updatedAt=1773555484762",
+    title:"MAKEUP-Box",
+    desc:" ",
+    price:199
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260315_114451.jpg?updatedAt=1773555484762",
+    title:"Lakme-msckara",
+    desc:" ",
+    price:299
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260315_114533.jpg?updatedAt=1773555484811",
+    title:"Lekme-Eayliner",
+    desc:" ",
+    price:299
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260315_114231.jpg?updatedAt=1773555485087",
+    title:"Makeup-Compact-Powder",
+    desc:" ",
+    price:1773122266597
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260315_104017.jpg?updatedAt=1773555517293",
+    title:"MAKEUP-Box",
+    desc:" ",
+    price:179
+  },
+  {
+    image:"https://ik.imagekit.io/Prajapati/IMG_20260311_102341.jpg?updatedAt=1773495638067",
+    title:"Makeup-Remover",
+    desc:" ",
+    price:149
+  },
 ];
 
 
