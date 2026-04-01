@@ -426,7 +426,7 @@
     </div>
     <div id="searchSuggestions" class="suggestions-box"></div>
   </div>
-  <img src="https://ik.imagekit.io/Prajapati/Screenshot_20260308-085550~3.png" alt="Anntya Logo">
+  <img src="https://ik.imagekit.io/Prajapati/1774872935411~3.png" alt="Anntya Logo">
 </div>
 
   </div>
@@ -491,9 +491,6 @@ function handleSearch(query) {
   if (filtered.length > 0) {
     suggestionsBox.innerHTML = "";
     filtered.forEach(p => {
-      // Original products array mein iska index dhoondna click logic ke liye
-      const originalIndex = products.indexOf(p);
-      
       const div = document.createElement("div");
       div.className = "suggestion-item";
       div.innerHTML = `
@@ -502,7 +499,7 @@ function handleSearch(query) {
       `;
       
       div.onclick = () => {
-        window.location.href = `productPage.html?id=${originalIndex}`;
+        window.location.href = `productPage.html?id=${p._id}`;
       };
       
       suggestionsBox.appendChild(div);
