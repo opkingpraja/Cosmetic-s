@@ -438,13 +438,11 @@
 <button class="logout-btn" onclick="doLogout()" title="Logout">🚪 Logout</button>
 <div class="wrapper">
 
-  <!-- Header -->
   <header>
     <div class="badge">⚡ Admin Panel</div>
   
   </header>
 
-  <!-- Add Product Form -->
   <div class="divider">
     <span class="divider-label">Add New Product</span>
     <div class="divider-line"></div>
@@ -479,7 +477,6 @@
     </button>
   </div>
 
-  <!-- Products -->
   <div id="products-section">
     <div class="divider" style="margin-bottom:18px">
       <span class="divider-label">Saved Products</span>
@@ -494,7 +491,6 @@
   </div>
 </div>
 
-<!-- ── Edit Modal ── -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <div class="modal-header">
@@ -538,7 +534,6 @@
   </div>
 </div>
 
-<!-- ── Delete Confirm Modal ── -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal">
     <span class="del-icon">🗑️</span>
@@ -557,7 +552,8 @@
 <div id="toast"></div>
 
 <script>
-  const API = 'http://localhost:3000';
+  // ✅ FIXED: Yahan se http://localhost:3000 hata diya hai
+  const API = '';
   let deleteTargetId = null;
 
   // ── Token check — agar token nahi to login page ───────────────────────────
