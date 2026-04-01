@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel – Anntya Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#08080f;
+      --surface:#111118;
+      --card:#17171f;
+      --card2:#1e1e28;
+      --border:#252530;
+      --border2:#2e2e3d;
+      --accent:#7c5cfc;
+      --accent2:#c084fc;
+      --accent-glow:rgba(124,92,252,0.25);
+      --text:#eeeef5;
+      --text2:#b0b0c8;
+      --muted:#666680;
+      --success:#10d9a0;
+      --error:#ff5f5f;
+      --warn:#f5a623;
+    }
+
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;
+      padding:48px 20px 100px;
+    }
+    body.modal-open{overflow:hidden}
+
+    /* Ambient background */
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 55% 45% at 15% 5%,rgba(124,92,252,0.13) 0%,transparent 65%),
+        radial-gradient(ellipse 45% 40% at 85% 85%,rgba(192,132,252,0.09) 0%,transparent 65%),
+        radial-gradient(ellipse 30% 30% at 50% 50%,rgba(124,92,252,0.04) 0%,transparent 70%);
+      pointer-events:none;z-index:0;
+    }
+
+    .wrapper{position:relative;z-index:1;width:100%;max-width:840px}
+
+    /* ── Header ── */
+    header{text-align:center;margin-bottom:44px}
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;
+      color:var(--accent2);
+      border:1px solid rgba(192,132,252,0.25);
+      background:rgba(192,132,252,0.06);
+      padding:5px 16px;border-radius:100px;margin-bottom:18px;
+    }
+    .badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:blink 2s ease infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+    h1{
+      font-family:'Syne',sans-serif;
+      font-size:clamp(28px,6vw,50px);
+      font-weight:800;
+      background:linear-gradient(140deg,#fff 0%,var(--accent2) 60%,var(--accent) 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      line-height:1.08;letter-spacing:-1px;
+    }
+    .subtitle{
+      color:var(--muted);margin-top:10px;font-size:13px;
+      font-weight:400;letter-spacing:0.3px;
+    }
+    .subtitle span{color:var(--accent2);font-weight:500}
+
+    /* ── Divider ── */
+    .divider{
+      display:flex;align-items:center;gap:12px;
+      margin-bottom:20px;
+    }
+    .divider-label{
+      font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+      color:var(--text2);letter-spacing:0.5px;white-space:nowrap;
+    }
+    .divider-line{flex:1;height:1px;background:var(--border)}
+
+    /* ── Form Card ── */
+    .form-card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:34px;
+      box-shadow:0 20px 70px rgba(0,0,0,0.45),0 0 0 1px rgba(255,255,255,0.03) inset;
+      margin-bottom:14px;
+    }
+
+    .field{margin-bottom:18px}
+    .field:last-of-type{margin-bottom:0}
+
+    label{
+      display:flex;align-items:center;gap(5px);
+      font-size:11px;font-weight:600;letter-spacing:1px;
+      color:var(--muted);margin-bottom:8px;text-transform:uppercase;
+    }
+    label .req{color:var(--accent2);margin-left:3px;font-size:13px;line-height:1}
+
+    input[type="text"],input[type="number"],textarea{
+      width:100%;
+      background:var(--card2);
+      border:1px solid var(--border2);
+      border-radius:11px;
+      padding:13px 16px;
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:14px;font-weight:400;
+      color:var(--text);
+      outline:none;
+      transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;
+      line-height:1.5;
+    }
+    input[type="text"]::placeholder,input[type="number"]::placeholder,textarea::placeholder{
+      color:var(--muted);font-weight:400;
+    }
+    input[type="text"]:focus,input[type="number"]:focus,textarea:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px var(--accent-glow);
+      background:var(--card);
+    }
+    textarea{resize:vertical;min-height:88px;line-height:1.6}
+
+    /* ── File Drop ── */
+    .file-drop{
+      border:1.5px dashed var(--border2);
+      border-radius:13px;padding:22px 20px;
+      text-align:center;cursor:pointer;
+      transition:border-color 0.2s,background 0.2s;
+      position:relative;
+    }
+    .file-drop:hover,.file-drop.dragover{
+      border-color:var(--accent);background:rgba(124,92,252,0.06);
+    }
+    .file-drop input[type="file"]{
+      position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;
+    }
+    .drop-icon{font-size:26px;margin-bottom:6px}
+    .drop-text{font-size:13px;color:var(--muted);font-weight:400;line-height:1.5}
+    .drop-text strong{color:var(--accent2);font-weight:600}
+
+    .file-preview{
+      margin-top:10px;display:none;align-items:center;gap:12px;
+      background:var(--card2);border:1px solid var(--border);
+      border-radius:11px;padding:10px 14px;
+    }
+    .file-preview img{width:42px;height:42px;object-fit:cover;border-radius:8px}
+    .file-preview .fname{font-size:12px;color:var(--text2);font-weight:500;word-break:break-all}
+
+    /* ── Buttons ── */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:6px;
+      padding:12px 20px;border:none;border-radius:11px;
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:13px;font-weight:600;
+      cursor:pointer;transition:all 0.2s;
+      letter-spacing:0.2px;
+    }
+    .btn:disabled{opacity:0.4;cursor:not-allowed;transform:none !important}
+
+    .btn-primary{
+      background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
+      color:#fff;width:100%;padding:15px;
+      font-size:14px;font-weight:700;
+      letter-spacing:0.3px;border-radius:13px;margin-top:8px;
+      box-shadow:0 8px 24px rgba(124,92,252,0.35);
+    }
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,92,252,0.45)}
+    .btn-primary:active{transform:translateY(0)}
+
+    .btn-edit{
+      background:rgba(124,92,252,0.12);color:var(--accent2);
+      border:1px solid rgba(124,92,252,0.2);
+      font-size:11px;font-weight:600;padding:7px 13px;border-radius:8px;
+      letter-spacing:0.3px;
+    }
+    .btn-edit:hover{background:rgba(124,92,252,0.22);transform:translateY(-1px)}
+
+    .btn-delete{
+      background:rgba(255,95,95,0.1);color:var(--error);
+      border:1px solid rgba(255,95,95,0.2);
+      font-size:11px;font-weight:600;padding:7px 13px;border-radius:8px;
+      letter-spacing:0.3px;
+    }
+    .btn-delete:hover{background:rgba(255,95,95,0.2);transform:translateY(-1px)}
+
+    .btn-cancel{
+      background:var(--card2);color:var(--text2);
+      border:1px solid var(--border2);
+      font-size:13px;padding:11px 22px;border-radius:10px;
+    }
+    .btn-cancel:hover{background:var(--card);color:var(--text)}
+
+    .btn-update{
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff;font-size:13px;font-weight:700;
+      padding:11px 24px;border-radius:10px;
+      box-shadow:0 6px 18px rgba(124,92,252,0.3);
+    }
+    .btn-update:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(124,92,252,0.4)}
+
+    .btn-confirm-del{
+      background:linear-gradient(135deg,#ff5f5f,#ff3d3d);
+      color:#fff;font-size:13px;font-weight:700;
+      padding:11px 24px;border-radius:10px;
+      box-shadow:0 6px 18px rgba(255,60,60,0.3);
+    }
+    .btn-confirm-del:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(255,60,60,0.4)}
+
+    /* ── Spinner ── */
+    .spinner{
+      width:15px;height:15px;
+      border:2px solid rgba(255,255,255,0.25);
+      border-top-color:#fff;border-radius:50%;
+      animation:spin 0.65s linear infinite;
+      flex-shrink:0;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ── Toast ── */
+    #toast{
+      position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(14px);
+      padding:12px 22px;border-radius:12px;
+      font-size:13px;font-weight:600;color:#fff;
+      opacity:0;transition:all 0.3s cubic-bezier(.34,1.56,.64,1);
+      z-index:9999;pointer-events:none;
+      white-space:nowrap;
+      box-shadow:0 8px 30px rgba(0,0,0,0.4);
+    }
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    #toast.success{background:linear-gradient(135deg,#10d9a0,#06b588)}
+    #toast.error{background:linear-gradient(135deg,#ff5f5f,#e03030)}
+    #toast.warn{background:linear-gradient(135deg,#f5a623,#e08e10)}
+
+    /* ── Products Grid ── */
+    #products-section{margin-top:52px}
+    #products-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(216px,1fr));
+      gap:16px;
+    }
+
+    /* ── Product Card ── */
+    .product-card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:18px;overflow:hidden;
+      animation:fadeUp 0.4s ease both;
+      transition:transform 0.22s,box-shadow 0.22s,border-color 0.22s;
+      position:relative;
+    }
+    .product-card:hover{
+      transform:translateY(-4px);
+      box-shadow:0 18px 48px rgba(0,0,0,0.5);
+      border-color:var(--border2);
+    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+    .card-img{width:100%;height:168px;object-fit:cover;display:block}
+    .img-placeholder{
+      width:100%;height:168px;background:var(--card2);
+      display:flex;align-items:center;justify-content:center;font-size:36px;
+    }
+    .product-info{padding:14px 16px 4px}
+
+    .p-name{
+      font-family:'Syne',sans-serif;
+      font-weight:700;font-size:15px;
+      color:var(--text);
+      margin-bottom:5px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      letter-spacing:-0.2px;
+    }
+    .p-desc{
+      font-size:12px;color:var(--muted);
+      font-weight:400;line-height:1.55;
+      margin-bottom:10px;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    }
+    .p-price{
+      font-family:'Syne',sans-serif;
+      font-size:18px;font-weight:800;
+      color:var(--accent2);letter-spacing:-0.3px;
+      margin-bottom:14px;
+    }
+    .p-price::before{content:'₹';font-size:12px;font-weight:600;margin-right:1px;opacity:0.8}
+
+    .card-actions{
+      display:flex;gap:8px;
+      padding:0 14px 14px;
+    }
+
+    /* Uploading card */
+    .card-uploading{pointer-events:none}
+    .card-uploading .upload-overlay{
+      position:absolute;inset:0;
+      background:rgba(8,8,15,0.78);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:10px;border-radius:18px;
+    }
+    .upload-overlay .up-spinner{
+      width:28px;height:28px;
+      border:3px solid rgba(124,92,252,0.2);
+      border-top-color:var(--accent2);
+      border-radius:50%;animation:spin 0.8s linear infinite;
+    }
+    .upload-overlay .up-text{
+      font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+      color:var(--accent2);letter-spacing:0.5px;
+    }
+
+    #no-products{
+      color:var(--muted);font-size:13px;font-weight:500;
+      text-align:center;padding:48px 20px;
+      border:1px dashed var(--border2);border-radius:18px;
+      line-height:1.7;grid-column:1/-1;
+    }
+    #no-products .no-icon{font-size:32px;display:block;margin-bottom:10px}
+
+    /* ── Modals base ── */
+    .modal-overlay{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,0.72);
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+      z-index:1000;
+      display:flex;align-items:center;justify-content:center;
+      padding:20px;
+      opacity:0;pointer-events:none;
+      transition:opacity 0.25s;
+    }
+    .modal-overlay.open{opacity:1;pointer-events:all}
+
+    .modal{
+      background:var(--surface);
+      border:1px solid var(--border2);
+      border-radius:22px;
+      padding:30px;
+      width:100%;max-width:490px;
+      max-height:92vh;overflow-y:auto;
+      transform:scale(0.93) translateY(10px);
+      transition:transform 0.28s cubic-bezier(.34,1.4,.64,1);
+      box-shadow:0 32px 80px rgba(0,0,0,0.65),0 0 0 1px rgba(255,255,255,0.04) inset;
+    }
+    .modal-overlay.open .modal{transform:scale(1) translateY(0)}
+
+    .modal-header{
+      display:flex;align-items:flex-start;justify-content:space-between;
+      margin-bottom:24px;gap:10px;
+    }
+    .modal-header h3{
+      font-family:'Syne',sans-serif;
+      font-size:20px;font-weight:800;
+      color:var(--text);letter-spacing:-0.3px;line-height:1.2;
+    }
+    .modal-header p{font-size:12px;color:var(--muted);margin-top:4px;font-weight:400}
+    .modal-close{
+      background:var(--card2);border:1px solid var(--border2);
+      color:var(--muted);font-size:16px;cursor:pointer;
+      width:32px;height:32px;border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;transition:all 0.15s;
+    }
+    .modal-close:hover{background:var(--card);color:var(--text)}
+    .modal-footer{display:flex;gap:10px;margin-top:22px;justify-content:flex-end}
+
+    /* Edit modal extras */
+    .img-section-label{
+      font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+      color:var(--muted);margin-bottom:8px;display:block;
+    }
+    .current-img-wrap{
+      border-radius:12px;overflow:hidden;
+      border:1px solid var(--border2);margin-bottom:14px;
+    }
+    .current-img{width:100%;height:130px;object-fit:cover;display:block}
+    .edit-preview-img{
+      width:100%;max-height:120px;object-fit:cover;
+      border-radius:10px;margin-top:9px;
+      border:1px solid var(--border2);display:none;
+    }
+    .edit-preview-img.show{display:block}
+
+    /* ── Delete Confirm Modal ── */
+    #deleteModal .modal{max-width:380px;text-align:center}
+    .del-icon{
+      font-size:44px;margin-bottom:14px;display:block;
+      animation:shake 0.5s ease 0.2s both;
+    }
+    @keyframes shake{
+      0%,100%{transform:rotate(0)}
+      20%{transform:rotate(-8deg)}
+      40%{transform:rotate(8deg)}
+      60%{transform:rotate(-5deg)}
+      80%{transform:rotate(5deg)}
+    }
+    #deleteModal h3{
+      font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+      color:var(--text);margin-bottom:8px;letter-spacing:-0.3px;
+    }
+    #deleteModal .del-desc{
+      font-size:13px;color:var(--muted);font-weight:400;line-height:1.6;
+    }
+    #deleteModal .del-name{
+      color:var(--error);font-weight:600;
+    }
+    #deleteModal .modal-footer{justify-content:center;gap:12px}
+
+    /* Logout btn */
+    .logout-btn{
+      position:fixed;top:18px;right:18px;z-index:500;
+      display:flex;align-items:center;gap:7px;
+      background:rgba(255,95,95,0.1);color:var(--error);
+      border:1px solid rgba(255,95,95,0.2);
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:12px;font-weight:600;
+      padding:8px 16px;border-radius:10px;
+      cursor:pointer;transition:all 0.2s;
+      backdrop-filter:blur(10px);
+    }
+    .logout-btn:hover{background:rgba(255,95,95,0.2);transform:translateY(-1px)}
+
+    /* Scrollbar */
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+  </style>
+</head>
+<body>
+<button class="logout-btn" onclick="doLogout()" title="Logout">🚪 Logout</button>
+<div class="wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">⚡ Admin Panel</div>
+  
+  </header>
+
+  <!-- Add Product Form -->
+  <div class="divider">
+    <span class="divider-label">Add New Product</span>
+    <div class="divider-line"></div>
+  </div>
+  <div class="form-card">
+    <div class="field">
+      <label>Product Name <span class="req">*</span></label>
+      <input type="text" id="productName" placeholder="e.g. Matte Lipstick"/>
+    </div>
+    <div class="field">
+      <label>Description <span class="req">*</span></label>
+      <textarea id="description" placeholder="Product ke baare mein likho..."></textarea>
+    </div>
+    <div class="field">
+      <label>Price (₹) <span class="req">*</span></label>
+      <input type="number" id="price" placeholder="e.g. 299" min="0"/>
+    </div>
+    <div class="field">
+      <label>Product Image <span class="req">*</span></label>
+      <div class="file-drop" id="fileDrop">
+        <input type="file" id="productImage" accept="image/*"/>
+        <div class="drop-icon">🖼️</div>
+        <div class="drop-text">Drop karo ya <strong>click karke browse</strong> karo</div>
+      </div>
+      <div class="file-preview" id="filePreview">
+        <img id="previewImg" src="" alt="preview"/>
+        <span class="fname" id="previewName"></span>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitProduct()">
+      Upload &amp; Save Product
+    </button>
+  </div>
+
+  <!-- Products -->
+  <div id="products-section">
+    <div class="divider" style="margin-bottom:18px">
+      <span class="divider-label">Saved Products</span>
+      <div class="divider-line"></div>
+    </div>
+    <div id="products-grid">
+      <div id="no-products">
+        <span class="no-icon">📦</span>
+        Koi product nahi hai abhi.<br/>Upar form se pehla product add karo!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Edit Modal ── -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Product Edit Karo</h3>
+        <p>Changes sirf selected product par honge</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+    </div>
+    <input type="hidden" id="editId"/>
+    <input type="hidden" id="editOldFileId"/>
+    <div class="field">
+      <label>Product Name</label>
+      <input type="text" id="editName" placeholder="Product Name"/>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="editDesc" placeholder="Description"></textarea>
+    </div>
+    <div class="field">
+      <label>Price (₹)</label>
+      <input type="number" id="editPrice" placeholder="Price" min="0"/>
+    </div>
+    <div class="field">
+      <span class="img-section-label">Current Image</span>
+      <div class="current-img-wrap">
+        <img id="editCurrentImg" class="current-img" src="" alt="current image"/>
+      </div>
+      <span class="img-section-label">Change Image (optional)</span>
+      <div class="file-drop" id="editFileDrop" style="padding:18px">
+        <input type="file" id="editImage" accept="image/*"/>
+        <div class="drop-icon" style="font-size:22px">🔄</div>
+        <div class="drop-text" style="font-size:12px">Nai image select karo <strong>(optional)</strong></div>
+      </div>
+      <img id="editPreviewImg" class="edit-preview-img" src="" alt="new preview"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+      <button class="btn btn-update" id="updateBtn" onclick="updateProduct()">Update Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Delete Confirm Modal ── -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <span class="del-icon">🗑️</span>
+    <h3>Delete Karna Chahte Ho?</h3>
+    <p class="del-desc">
+      "<span id="delProductName" class="del-name"></span>" ko delete karne se<br/>
+      <strong>ImageKit + MongoDB</strong> dono se hamesha ke liye hata diya jayega.
+    </p>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal('deleteModal')">Nahi, Rakhna Hai</button>
+      <button class="btn btn-confirm-del" id="confirmDelBtn" onclick="confirmDelete()">Haan, Delete Karo</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const API = 'http://localhost:3000';
+  let deleteTargetId = null;
+
+  // ── Token check — agar token nahi to login page ───────────────────────────
+  const TOKEN = sessionStorage.getItem('admin_token');
+  if (!TOKEN) { window.location.href = '/'; }
+
+  // ── Authenticated fetch helper ─────────────────────────────────────────────
+  async function authFetch(url, options = {}) {
+    options.headers = options.headers || {};
+    options.headers['x-admin-token'] = TOKEN;
+    const res = await fetch(url, options);
+    if (res.status === 401) { sessionStorage.removeItem('admin_token'); window.location.href = '/'; }
+    return res;
+  }
+
+  // ── Scroll lock ────────────────────────────────────────────────────────────
+  function lockScroll()   { document.body.classList.add('modal-open') }
+  function unlockScroll() { document.body.classList.remove('modal-open') }
+
+  function openModal(id)  { document.getElementById(id).classList.add('open'); lockScroll() }
+  function closeModal(id) { document.getElementById(id).classList.remove('open');
+    // Unlock only if no other modal open
+    const anyOpen = document.querySelector('.modal-overlay.open');
+    if (!anyOpen) unlockScroll();
+  }
+
+  // Close on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', function(e) {
+      if (e.target === this) closeModal(this.id);
+    });
+  });
+
+  // ── File preview (add form) ────────────────────────────────────────────────
+  document.getElementById('productImage').addEventListener('change', function() {
+    const file = this.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('previewName').textContent = file.name;
+      document.getElementById('filePreview').style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Drag-drop (add form)
+  const drop = document.getElementById('fileDrop');
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover') });
+  drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault(); drop.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) { document.getElementById('productImage').files = e.dataTransfer.files;
+      document.getElementById('productImage').dispatchEvent(new Event('change')) }
+  });
+
+  // Edit image preview
+  document.getElementById('editImage').addEventListener('change', function() {
+    const file = this.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const p = document.getElementById('editPreviewImg');
+      p.src = e.target.result; p.classList.add('show');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = `show ${type}`;
+    setTimeout(() => t.className = '', 3400);
+  }
+
+  // ── Reset add form ─────────────────────────────────────────────────────────
+  function resetForm() {
+    document.getElementById('productName').value = '';
+    document.getElementById('description').value  = '';
+    document.getElementById('price').value         = '';
+    document.getElementById('productImage').value  = '';
+    document.getElementById('filePreview').style.display = 'none';
+    document.getElementById('previewImg').src = '';
+  }
+
+  // ── Submit new product ─────────────────────────────────────────────────────
+  async function submitProduct() {
+    const name  = document.getElementById('productName').value.trim();
+    const desc  = document.getElementById('description').value.trim();
+    const price = document.getElementById('price').value.trim();
+    const file  = document.getElementById('productImage').files[0];
+    if (!name || !desc || !price || !file) { showToast('Sab fields fill karo!', 'error'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Uploading...';
+
+    const tempId = 'temp_' + Date.now();
+    addTempCard(tempId, name, desc, price);
+    resetForm();
+    btn.disabled = false;
+    btn.innerHTML = 'Upload &amp; Save Product';
+
+    const fd = new FormData();
+    fd.append('name', name); fd.append('description', desc);
+    fd.append('price', price); fd.append('image', file);
+
+    try {
+      const res  = await authFetch(`${API}/upload`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.success) {
+        replaceTempCard(tempId, data.product);
+        showToast('✅ Product save ho gaya!');
+      } else {
+        removeTempCard(tempId);
+        showToast(data.message || 'Upload failed', 'error');
+      }
+    } catch (e) {
+      removeTempCard(tempId);
+      showToast('Server error: ' + e.message, 'error');
+    }
+  }
+
+  // ── Temp uploading card ────────────────────────────────────────────────────
+  function addTempCard(tempId, name, desc, price) {
+    document.getElementById('no-products')?.remove();
+    const grid = document.getElementById('products-grid');
+    const div  = document.createElement('div');
+    div.className = 'product-card card-uploading';
+    div.id = tempId;
+    div.innerHTML = `
+      <div class="img-placeholder">📷</div>
+      <div class="product-info">
+        <div class="p-name">${name}</div>
+        <div class="p-desc">${desc}</div>
+        <div class="p-price">${Number(price).toLocaleString('en-IN')}</div>
+      </div>
+      <div class="upload-overlay">
+        <div class="up-spinner"></div>
+        <div class="up-text">Uploading...</div>
+      </div>`;
+    grid.insertBefore(div, grid.firstChild);
+  }
+
+  function replaceTempCard(tempId, product) {
+    const temp = document.getElementById(tempId);
+    if (temp) temp.replaceWith(createCard(product));
+  }
+
+  function removeTempCard(tempId) {
+    document.getElementById(tempId)?.remove(); checkEmpty();
+  }
+
+  // ── Load products ──────────────────────────────────────────────────────────
+  async function loadProducts() {
+    try {
+      const res  = await authFetch(`${API}/products`);
+      const data = await res.json();
+      renderProducts(data.products || []);
+    } catch (e) { console.error('Load error', e) }
+  }
+
+  function renderProducts(products) {
+    const grid = document.getElementById('products-grid');
+    if (!products.length) {
+      grid.innerHTML = `<div id="no-products"><span class="no-icon">📦</span>Koi product nahi hai abhi.<br/>Upar form se pehla product add karo!</div>`;
+      return;
+    }
+    grid.innerHTML = '';
+    products.forEach(p => grid.appendChild(createCard(p)));
+  }
+
+  function createCard(p) {
+    const div = document.createElement('div');
+    div.className = 'product-card';
+    div.id = 'card_' + p._id;
+    div.innerHTML = `
+      ${p.imageUrl
+        ? `<img class="card-img" src="${p.imageUrl}" alt="${p.name}"/>`
+        : `<div class="img-placeholder">📦</div>`}
+      <div class="product-info">
+        <div class="p-name" title="${p.name}">${p.name}</div>
+        <div class="p-desc">${p.description}</div>
+        <div class="p-price">${Number(p.price).toLocaleString('en-IN')}</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-edit"
+          onclick="openEdit('${p._id}','${encodeURIComponent(p.name)}','${encodeURIComponent(p.description)}','${p.price}','${p.imageUrl}','${p.imageFileId||''}')">
+          ✏️ Edit
+        </button>
+        <button class="btn btn-delete" onclick="openDeleteConfirm('${p._id}','${encodeURIComponent(p.name)}')">
+          🗑️ Delete
+        </button>
+      </div>`;
+    return div;
+  }
+
+  function checkEmpty() {
+    const grid = document.getElementById('products-grid');
+    if (!grid.querySelector('.product-card'))
+      grid.innerHTML = `<div id="no-products"><span class="no-icon">📦</span>Koi product nahi hai abhi.<br/>Upar form se pehla product add karo!</div>`;
+  }
+
+  // ── Delete flow ────────────────────────────────────────────────────────────
+  function openDeleteConfirm(id, name) {
+    deleteTargetId = id;
+    document.getElementById('delProductName').textContent = decodeURIComponent(name);
+    openModal('deleteModal');
+  }
+
+  async function confirmDelete() {
+    if (!deleteTargetId) return;
+    const id  = deleteTargetId;
+    const btn = document.getElementById('confirmDelBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Deleting...';
+
+    const card = document.getElementById('card_' + id);
+    try {
+      const res  = await authFetch(`${API}/products/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        closeModal('deleteModal');
+        card?.remove(); checkEmpty();
+        showToast('🗑️ Product delete ho gaya!');
+      } else {
+        showToast(data.message || 'Delete failed', 'error');
+      }
+    } catch (e) {
+      showToast('Server error: ' + e.message, 'error');
+    }
+    btn.disabled = false;
+    btn.innerHTML = 'Haan, Delete Karo';
+    deleteTargetId = null;
+  }
+
+  // ── Edit modal ─────────────────────────────────────────────────────────────
+  function openEdit(id, name, desc, price, imageUrl, fileId) {
+    document.getElementById('editId').value        = id;
+    document.getElementById('editOldFileId').value = fileId;
+    document.getElementById('editName').value      = decodeURIComponent(name);
+    document.getElementById('editDesc').value      = decodeURIComponent(desc);
+    document.getElementById('editPrice').value     = price;
+    document.getElementById('editCurrentImg').src  = imageUrl;
+    document.getElementById('editImage').value     = '';
+    const p = document.getElementById('editPreviewImg');
+    p.src = ''; p.classList.remove('show');
+    openModal('editModal');
+  }
+
+  // ── Update product ─────────────────────────────────────────────────────────
+  async function updateProduct() {
+    const id    = document.getElementById('editId').value;
+    const name  = document.getElementById('editName').value.trim();
+    const desc  = document.getElementById('editDesc').value.trim();
+    const price = document.getElementById('editPrice').value.trim();
+    const file  = document.getElementById('editImage').files[0];
+    if (!name || !desc || !price) { showToast('Sab fields fill karo!', 'error'); return; }
+
+    const btn = document.getElementById('updateBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Updating...';
+
+    const fd = new FormData();
+    fd.append('name', name); fd.append('description', desc); fd.append('price', price);
+    if (file) fd.append('image', file);
+
+    try {
+      const res  = await authFetch(`${API}/products/${id}`, { method: 'PUT', body: fd });
+      const data = await res.json();
+      if (data.success) {
+        closeModal('editModal');
+        const old = document.getElementById('card_' + id);
+        if (old) old.replaceWith(createCard(data.product));
+        showToast('✅ Product update ho gaya!');
+      } else {
+        showToast(data.message || 'Update failed', 'error');
+      }
+    } catch (e) {
+      showToast('Server error: ' + e.message, 'error');
+    }
+    btn.disabled = false;
+    btn.innerHTML = 'Update Karo';
+  }
+
+  async function doLogout() {
+    await authFetch('/auth/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN },
+      body: JSON.stringify({ token: TOKEN }),
+    }).catch(() => {});
+    sessionStorage.removeItem('admin_token');
+    window.location.href = '/';
+  }
+
+  loadProducts();
+</script>
+</body>
+</html>
