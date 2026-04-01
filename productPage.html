@@ -200,14 +200,25 @@ padding-right: env(safe-area-inset-right);
 <script src="addProduct.js"></script>
 <script>
   const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+  const id = params.get("id");
 
-const product = products[id];
+  // productsReady ka wait karo — MongoDB se data aane ke baad product dhoondho
+  let product = null;
 
-document.getElementById("image").src = product.image;
-document.getElementById("title").innerText = product.title;
-document.getElementById("price").innerText = "₹" + product.price;
-document.getElementById("desc").innerText = product.desc;
+  window.productsReady.then(function() {
+    // _id se match karo (MongoDB ka ObjectId string)
+    product = products.find(p => p._id === id);
+
+    if (!product) {
+      document.getElementById("title").innerText = "Product not found";
+      return;
+    }
+
+    document.getElementById("image").src = product.image;
+    document.getElementById("title").innerText = product.title;
+    document.getElementById("price").innerText = "₹" + Number(product.price).toLocaleString('en-IN');
+    document.getElementById("desc").innerText = product.desc;
+  });
 
 
 // SHARE FUNCTION
@@ -226,7 +237,7 @@ function shareProduct(){
 
     // fallback (WhatsApp share)
     const url = "https://api.whatsapp.com/send?text="
-      + encodeURIComponent(product.title + " - ₹" + product.price + " " + window.location.href);
+      + encodeURIComponent((product ? product.title : '') + " - ₹" + (product ? product.price : '') + " " + window.location.href);
 
     window.open(url,"_blank");
 
@@ -238,6 +249,7 @@ function shareProduct(){
 
 // Logic of cart button
 function addToCart(){
+  if (!product) return;
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   // Check karna ki kya ye product pehle se cart mein hai
