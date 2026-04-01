@@ -3,7 +3,8 @@
 // UI mein koi change nahi — sirf data source badla hai.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const API_BASE = 'http://localhost:3000';
+// ✅ FIXED: localhost hata kar relative path (empty string) kar diya hai
+const API_BASE = '';
 
 // Global products array — index.html search + productPage.html dono use karte hain
 let products = [];
