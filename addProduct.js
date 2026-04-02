@@ -1,19 +1,10 @@
 // ─── addProduct.js ────────────────────────────────────────────────────────────
-// MongoDB + ImageKit se real products fetch karta hai.
-// UI mein koi change nahi — sirf data source badla hai.
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ✅ FIXED: localhost hata kar relative path (empty string) kar diya hai
 const API_BASE = '';
 
-// Global products array — index.html search + productPage.html dono use karte hain
 let products = [];
-
-// Promise jo productPage.html wait karega
 let _resolveReady;
 window.productsReady = new Promise(res => { _resolveReady = res; });
 
-// MongoDB field names → purane addProduct.js ke field names map
 function mapProduct(p) {
   return {
     _id:   p._id,
@@ -24,8 +15,28 @@ function mapProduct(p) {
   };
 }
 
+// 🪄 NAYA FUNCTION: Loading Skeleton Dikhane Ke Liye
+function renderSkeletons(container, count = 4) {
+  container.innerHTML = '';
+  for(let i=0; i<count; i++) {
+    container.innerHTML += `
+      <div class="card">
+        <div class="skeleton skeleton-img"></div>
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-price"></div>
+        <div class="skeleton skeleton-btn"></div>
+      </div>
+    `;
+  }
+}
+
 // ── Products fetch karo ───────────────────────────────────────────────────────
 async function fetchAndRender() {
+  const container = document.getElementById('productContainer');
+  
+  // ⏳ Data aane se pehle Skeleton dikhao (Suspense!)
+  if (container) renderSkeletons(container, 4);
+
   try {
     const res  = await fetch(`${API_BASE}/public/products`);
     const data = await res.json();
@@ -34,16 +45,15 @@ async function fetchAndRender() {
 
     products = data.products.map(mapProduct);
 
-    // index.html ka #productContainer render karo
-    const container = document.getElementById('productContainer');
+    // 🌟 Data aate hi asli products dikhao
     if (container) renderCards(container);
 
-    // productPage.html ka ready signal
     _resolveReady(products);
 
   } catch (err) {
     console.error('Products load error:', err);
-    _resolveReady([]); // fail hone pe bhi resolve karo
+    if (container) container.innerHTML = `<p style="text-align:center;color:#aaa;padding:20px;">Products load nahi ho paye.</p>`;
+    _resolveReady([]); 
   }
 }
 
@@ -71,7 +81,7 @@ function renderCards(container) {
   });
 }
 
-// ── Real-time polling — 30 sec mein auto-refresh ──────────────────────────────
+// ── Real-time polling ──────────────────────────────
 async function pollProducts() {
   try {
     const res  = await fetch(`${API_BASE}/public/products`);
@@ -79,20 +89,15 @@ async function pollProducts() {
     if (!data.success) return;
 
     const newProducts = data.products.map(mapProduct);
-
-    // Sirf tab re-render karo jab kuch change hua ho
     const changed = JSON.stringify(newProducts) !== JSON.stringify(products);
+    
     if (changed) {
       products = newProducts;
       const container = document.getElementById('productContainer');
       if (container) renderCards(container);
-      console.log('🔄 Products updated (realtime)');
     }
-  } catch (e) {
-    // Silently ignore poll errors
-  }
+  } catch (e) {}
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 fetchAndRender();
-setInterval(pollProducts, 30000); // Har 30 sec mein check
+setInterval(pollProducts, 30000);
