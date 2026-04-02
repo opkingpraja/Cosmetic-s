@@ -8,95 +8,53 @@
   <link rel="manifest" href="manifest.json">
 
   <style>
-  /* ✅ FIX 1: * pe transition nahi — load pe sab elements animate hote the → jank */
   *, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-    user-select: none;
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: "Poppins", sans-serif; user-select: none;
   }
-  /* Sirf jo chahiye unpe transition */
-  a, button, .btn, .card, .big-box, .small-box, .side-menu, .overlay,
-  .menu-btn, .suggestion-item, .nav-right img {
+  a, button, .btn, .card, .big-box, .small-box, .side-menu, .overlay, .menu-btn {
     transition: background 0.3s, color 0.3s, transform 0.25s, box-shadow 0.25s, opacity 0.25s;
   }
-
   html, body {
-    touch-action: manipulation;
-    width: 100%;
-    overflow-x: hidden;
-    /* ✅ FIX 2: smooth scroll — momentum scrolling for mobile */
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
+    touch-action: manipulation; width: 100%; overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
   }
-
   input, textarea { font-size: 16px; }
-
   body {
     padding-top: env(safe-area-inset-top);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
-    background: var(--bg);
-    color: var(--text);
+    background: var(--bg); color: var(--text);
   }
 
   :root {
-    --bg: #1e1e2f;
-    --text: #f0f0f0;
-    --accent: #ff6f91;
-    --accent2: #ff9671;
-    --box-bg: #2e2e3e;
-    --card: #3d3d55;
+    --bg: #1e1e2f; --text: #f0f0f0; --accent: #ff6f91;
+    --accent2: #ff9671; --box-bg: #2e2e3e; --card: #3d3d55;
   }
   .light-theme {
-    --bg: #fafafa;
-    --text: #222;
-    --accent: #ff4e88;
-    --accent2: #ffb26b;
-    --box-bg: #ffffff;
-    --card: #f4f4f8;
+    --bg: #fafafa; --text: #222; --accent: #ff4e88;
+    --accent2: #ffb26b; --box-bg: #ffffff; --card: #f4f4f8;
   }
 
   /* ── NAVBAR ── */
   .navbar {
     background: linear-gradient(90deg, var(--accent), var(--accent2));
-    color: white;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 15px;
-    margin: 15px;
-    gap: 10px;
-    z-index: 10;
-    position: relative;
+    color: white; padding: 10px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-radius: 15px; margin: 15px; gap: 10px; z-index: 10; position: relative;
   }
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .nav-right span { font-weight: 600; font-size: 18px; }
-  .nav-right img {
-    width: 35px; height: 35px;
-    border-radius: 50%; object-fit: cover;
-    border: 2px solid white;
-  }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-right img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
   .menu-btn { font-size: 26px; cursor: pointer; }
   .menu-btn:hover { transform: rotate(90deg); }
 
   /* ── SIDE MENU ── */
   .side-menu {
-    position: fixed;
-    top: 0; left: -260px;
+    position: fixed; top: 0; left: -260px;
     width: 250px; height: 100%;
-    background: var(--box-bg);
-    box-shadow: 3px 0 10px rgba(0,0,0,0.5);
-    border-radius: 0 10px 10px 0;
-    padding: 20px;
-    transition: left 0.4s ease;
-    z-index: 1001;
+    background: var(--box-bg); box-shadow: 3px 0 10px rgba(0,0,0,0.5);
+    border-radius: 0 10px 10px 0; padding: 20px;
+    transition: left 0.4s ease; z-index: 1001;
   }
   .side-menu.active { left: 0; }
   .side-menu h2 { color: var(--accent); margin-bottom: 20px; }
@@ -108,50 +66,29 @@
   .close-btn { font-size: 22px; cursor: pointer; color: var(--accent); float: right; margin-top: -10px; }
 
   .overlay {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.3);
-    backdrop-filter: blur(8px);
-    z-index: 1000;
-    opacity: 0; visibility: hidden;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
+    z-index: 1000; opacity: 0; visibility: hidden;
     transition: opacity 0.4s ease, visibility 0.4s ease;
   }
   .overlay.active { opacity: 1; visibility: visible; }
 
   /* ── SLIDER ── */
   .slider {
-    width: 100%;
-    margin: 15px 0;
-    border-radius: 20px;
-    overflow: hidden;
-    position: relative;
-    /* ✅ FIX 3: aspect-ratio se height reserve — images load hone se pehle bhi space hai */
+    width: 100%; margin: 15px 0; border-radius: 20px;
+    overflow: hidden; position: relative;
+    /* ✅ Height reserved — images load hone se pehle bhi space */
     aspect-ratio: 16 / 6;
-    background: linear-gradient(135deg, #ffd6e7, #ffe8d0); /* placeholder color */
+    background: linear-gradient(135deg, #ffd6e7, #ffe8d0);
   }
   .slides {
-    display: flex;
-    width: 100%;
-    height: 100%;
+    display: flex; width: 100%; height: 100%;
     animation: slide 12s infinite;
-    /* ✅ GPU pe daalo — CPU scroll ke saath compete nahi karega */
     will-change: transform;
   }
   .slides img {
-    min-width: 90%;
-    /* ✅ FIX 4: height: 100% — aspect-ratio se parent ki height milegi instantly */
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    border-radius: 30px;
-    margin-left: 5%;
-    margin-right: 5%;
-    /* ✅ FIX 5: fade in smoothly */
-    opacity: 0;
-    animation: slideImgFade 0.5s ease forwards;
-  }
-  @keyframes slideImgFade {
-    to { opacity: 1; }
+    min-width: 90%; height: 100%; object-fit: cover; display: block;
+    border-radius: 30px; margin-left: 5%; margin-right: 5%;
   }
   @keyframes slide {
     0%   { transform: translateX(0); }
@@ -160,98 +97,62 @@
     75%  { transform: translateX(-300%); }
     100% { transform: translateX(0); }
   }
-
   @media (max-width: 768px)  { .slider { aspect-ratio: 16/7; } }
   @media (max-width: 480px)  { .slider { aspect-ratio: 16/8; } }
   @media (min-width: 1024px) { .slider { max-width: 1200px; margin: 30px auto; } }
   @media (min-width: 1400px) { .slider { max-width: 1400px; } }
 
-  /* ── PRODUCT SECTION (banners) ── */
+  /* ── BANNER SECTION ── */
   .product-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    margin: 20px;
-    background: var(--box-bg);
-    border-radius: 20px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; padding: 20px; margin: 20px;
+    background: var(--box-bg); border-radius: 20px;
   }
   .product-box {
-    background: var(--card);
-    border-radius: 15px;
-    padding: 15px;
-    display: grid;
-    gap: 10px;
+    background: var(--card); border-radius: 15px; padding: 15px; display: grid; gap: 10px;
   }
   .product-box:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-
   .big-box, .small-box {
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    background: white; border-radius: 10px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
   }
-  .big-box:hover, .small-box:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-  }
-  /* ✅ FIX 6: Fixed aspect-ratio on banner images so no height jump */
-  .big-box {
-    aspect-ratio: 4 / 2;
-    height: unset; /* remove fixed px height */
-  }
-  .small-box {
-    aspect-ratio: 4 / 2.5;
-    height: unset;
-  }
-  .big-box img, .small-box img {
-    width: 100%; height: 100%;
-    object-fit: cover; display: block;
-  }
+  .big-box:hover, .small-box:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+  /* ✅ Aspect-ratio based — no fixed px height */
+  .big-box  { aspect-ratio: 4 / 2; }
+  .small-box{ aspect-ratio: 4 / 2.5; }
+  .big-box img, .small-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  /* ── PRODUCT CARDS ── */
+  /* ── PRODUCT CARDS GRID ── */
   #productContainer {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
-    padding: 16px;
-    margin: 0 8px;
-    /* ✅ FIX 7: min-height se neeche ka section jump nahi karega */
-    min-height: 600px;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 16px; padding: 16px; margin: 0 8px;
+    min-height: 600px; /* space reserved */
   }
-
   .card {
-    background: var(--card);
-    border-radius: 15px;
-    overflow: hidden;
-    text-align: center;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    background: var(--card); border-radius: 15px; overflow: hidden;
+    text-align: center; padding: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+    cursor: pointer;
   }
   .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
 
+  /* ✅ 4:3 aspect ratio — user ke photos isi ratio mein hain */
   .card img {
     width: 100%;
-    /* ✅ FIX 8: aspect-ratio — skeleton se real image tak same height */
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
     border-radius: 10px;
-    /* placeholder color jab tak image load na ho */
-    background: var(--box-bg);
+    background: var(--box-bg); /* placeholder jab tak image load na ho */
+    display: block;
   }
-  .card h3 { font-size: 14px; color: var(--accent); }
-  .card p  { font-size: 13px; color: var(--text); }
+  .card h3 { font-size: 13px; color: var(--accent); }
+  .card p  { font-size: 12px; color: var(--text); }
   .btn {
     background: linear-gradient(90deg, var(--accent), var(--accent2));
-    color: white; border: none;
-    padding: 9px 16px; border-radius: 25px;
-    cursor: pointer; font-weight: bold;
-    font-size: 13px; margin-top: auto;
+    color: white; border: none; padding: 9px 16px;
+    border-radius: 25px; cursor: pointer; font-weight: bold;
+    font-size: 12px; margin-top: auto;
   }
   .btn:hover { opacity: 0.85; }
 
@@ -259,9 +160,8 @@
   .search-container { position: relative; flex: 1; margin-right: 10px; max-width: 250px; }
   .search-box {
     display: flex; align-items: center;
-    background: rgba(255,255,255,0.2);
-    border-radius: 20px; padding: 5px 15px;
-    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2); border-radius: 20px;
+    padding: 5px 15px; border: 1px solid rgba(255,255,255,0.3);
   }
   .search-box input {
     background: transparent; border: none; color: white;
@@ -270,55 +170,67 @@
   .search-box input::placeholder { color: rgba(255,255,255,0.8); }
   .search-icon { font-size: 16px; margin-left: 5px; }
 
+  /* ── SEARCH DROPDOWN ── */
   .suggestions-box {
-    position: absolute; top: 110%; left: 0; width: 100%;
-    background: white; border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    max-height: 300px; overflow-y: auto;
-    z-index: 2000; display: none;
+    position: absolute; top: 110%; left: 0; width: 260px;
+    background: white; border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-height: 420px; overflow-y: auto; z-index: 2000; display: none;
   }
+  /* Section header inside dropdown */
+  .sugg-section-label {
+    font-size: 11px; font-weight: 700; color: #aaa;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 10px 12px 4px;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+    position: sticky; top: 0;
+  }
+  .sugg-section-label.others { border-top: 2px solid #ffe0ed; color: #bbb; }
+
   .suggestion-item {
-    display: flex; align-items: center; padding: 10px; gap: 10px;
-    cursor: pointer; border-bottom: 1px solid #eee; color: #333;
+    display: flex; align-items: center; padding: 9px 12px; gap: 10px;
+    cursor: pointer; border-bottom: 1px solid #f5f5f5; color: #333;
   }
-  .suggestion-item:hover { background: #f9f9f9; }
-  .suggestion-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 5px; }
-  .suggestion-item span {
-    font-size: 14px; font-weight: 500;
+  .suggestion-item:hover { background: #fff5f8; }
+  .suggestion-item:last-child { border-bottom: none; }
+
+  /* ✅ 4:3 in search dropdown too */
+  .suggestion-item img {
+    width: 48px; height: 36px;
+    aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; flex-shrink: 0;
+  }
+  .sugg-info { display: flex; flex-direction: column; overflow: hidden; }
+  .sugg-name {
+    font-size: 13px; font-weight: 600;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .sugg-price { font-size: 11px; color: #ff4e88; font-weight: 600; }
+  .sugg-match { font-size: 10px; color: #aaa; margin-top: 1px; }
 
-  /* ── SKELETON SHIMMER ── */
-  @keyframes shimmer {
-    0%   { background-position: -500px 0; }
-    100% { background-position: 500px 0; }
-  }
+  /* ── SKELETON ── */
+  @keyframes shimmer { 0%{background-position:-500px 0} 100%{background-position:500px 0} }
   .skeleton {
     background: var(--card);
-    background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
-    background-size: 500px 100%;
-    background-repeat: no-repeat;
-    animation: shimmer 1.5s infinite linear;
-    border-radius: 10px;
+    background-image: linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0) 100%);
+    background-size: 500px 100%; background-repeat: no-repeat;
+    animation: shimmer 1.5s infinite linear; border-radius: 10px;
   }
   .light-theme .skeleton {
     background: #e0e0e0;
-    background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
-    background-size: 500px 100%;
-    background-repeat: no-repeat;
+    background-image: linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,0.5) 50%,rgba(255,255,255,0) 100%);
+    background-size: 500px 100%; background-repeat: no-repeat;
   }
-  /* ✅ FIX 9: aspect-ratio on skeleton-img — same height as real card image */
-  .skeleton-img   { width: 100%; aspect-ratio: 1/1; border-radius: 10px; }
-  .skeleton-title { width: 80%; height: 16px; margin: 0 auto 6px; }
-  .skeleton-price { width: 50%; height: 14px; margin: 0 auto 10px; }
+  /* ✅ skeleton-img bhi 4:3 */
+  .skeleton-img   { width: 100%; aspect-ratio: 4/3; border-radius: 10px; }
+  .skeleton-title { width: 80%; height: 14px; margin: 0 auto 6px; }
+  .skeleton-price { width: 50%; height: 12px; margin: 0 auto 10px; }
   .skeleton-btn   { width: 100px; height: 32px; margin: 0 auto; border-radius: 25px; }
-
   </style>
 </head>
 <body class="light-theme">
 
   <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-
   <div class="side-menu" id="sideMenu">
     <span class="close-btn" onclick="toggleMenu()">✖</span>
     <h2>Menu</h2>
@@ -331,8 +243,8 @@
     <div class="nav-right">
       <div class="search-container">
         <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Search Anntya products..."
-                 oninput="handleSearch(this.value)">
+          <input type="text" id="searchInput" placeholder="Search products..."
+                 oninput="handleSearch(this.value)" autocomplete="off">
           <span class="search-icon">🔍</span>
         </div>
         <div id="searchSuggestions" class="suggestions-box"></div>
@@ -341,7 +253,6 @@
     </div>
   </div>
 
-  <!-- ✅ Slider — aspect-ratio se space reserved hai before images load -->
   <div class="slider">
     <div class="slides">
       <img src="https://ik.imagekit.io/Cosmetic/realistic-beauty-sale-banner-design_52683-92665.jpg?updatedAt=1758188018085" alt="Cosmetics 1">
@@ -356,7 +267,7 @@
       <div class="big-box">
         <img src="https://ik.imagekit.io/Cosmetic/cosmetics.jpg?updatedAt=1758188381052" alt="Lipstick">
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/IMG_20250918_121718.jpg?updatedAt=1758188021999" alt="Product"></div>
         <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/il_fullxfull.2019112368_o3pd.jpg?updatedAt=1758188025726" alt="Perfume"></div>
       </div>
@@ -365,7 +276,7 @@
       <div class="big-box">
         <img src="https://ik.imagekit.io/Cosmetic/bottle-red-perfume-with-red-top-red-top_808092-1411.jpg?updatedAt=1758188376418" alt="Face Cream">
       </div>
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
         <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/il_fullxfull.1999705084_lwio.jpg?updatedAt=1758188026293" alt="Brush"></div>
         <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/makeup-logo-design-template-6d1bb2503084b513c60fd7fd43f15adb_screen.jpg?updatedAt=1758188016251" alt="Foundation"></div>
         <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/sale-this-weekend-special-offer-label-up-70-off_132477-34.jpg?updatedAt=1758188377711" alt="Mascara"></div>
@@ -373,48 +284,140 @@
     </div>
   </div>
 
-  <!-- ✅ productContainer — already reserved via min-height + skeleton cards -->
   <div id="productContainer"></div>
 
   <script src="addProduct.js"></script>
   <script>
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  FUZZY SEARCH ENGINE
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // Levenshtein edit distance
+    function editDistance(a, b) {
+      if (a === b) return 0;
+      if (a.length === 0) return b.length;
+      if (b.length === 0) return a.length;
+      const dp = [];
+      for (let i = 0; i <= a.length; i++) {
+        dp[i] = [i];
+        for (let j = 1; j <= b.length; j++) {
+          dp[i][j] = i === 0 ? j :
+            a[i-1] === b[j-1] ? dp[i-1][j-1] :
+            1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+        }
+      }
+      return dp[a.length][b.length];
+    }
+
+    // One token ko text ke words ke against check karo
+    function tokenMatches(token, wordList) {
+      // Direct substring match in any word
+      if (wordList.some(w => w.includes(token) || token.includes(w))) return true;
+      // Fuzzy: allow 1 typo for 4-6 char words, 2 typos for 7+ char words
+      const maxErr = token.length <= 3 ? 0 : token.length <= 6 ? 1 : 2;
+      return wordList.some(w => editDistance(token, w) <= maxErr);
+    }
+
+    // Main match function — name AND desc dono check karta hai
+    function fuzzyMatch(product, query) {
+      query = query.toLowerCase().trim();
+      if (!query) return { match: false };
+
+      const tokens = query.split(/\s+/).filter(t => t.length > 0);
+      const nameWords = product.title.toLowerCase().split(/\s+/);
+      const descWords = (product.desc || '').toLowerCase().split(/\s+/);
+      const allWords  = [...nameWords, ...descWords];
+
+      const nameMatch = tokens.every(t => tokenMatches(t, nameWords));
+      const descMatch = !nameMatch && tokens.every(t => tokenMatches(t, allWords));
+
+      return {
+        match: nameMatch || descMatch,
+        inName: nameMatch,
+        inDesc: descMatch && !nameMatch,
+      };
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  SEARCH HANDLER
+    // ─────────────────────────────────────────────────────────────────────────
+    function handleSearch(query) {
+      const box = document.getElementById("searchSuggestions");
+      query = query.trim();
+
+      if (query.length === 0) {
+        box.style.display = "none";
+        return;
+      }
+
+      // Split results into matched and not-matched
+      const matched = [];
+      const others  = [];
+
+      products.forEach(p => {
+        const r = fuzzyMatch(p, query);
+        if (r.match) matched.push({ p, inName: r.inName, inDesc: r.inDesc });
+        else others.push(p);
+      });
+
+      box.innerHTML = '';
+
+      if (matched.length === 0 && others.length === 0) {
+        box.innerHTML = `<div style="padding:14px;color:#999;font-size:13px;text-align:center;">No products found</div>`;
+        box.style.display = "block";
+        return;
+      }
+
+      // ── Matched products ──
+      if (matched.length > 0) {
+        const lbl = document.createElement('div');
+        lbl.className = 'sugg-section-label';
+        lbl.textContent = `${matched.length} result${matched.length > 1 ? 's' : ''} for "${query}"`;
+        box.appendChild(lbl);
+
+        matched.forEach(({ p, inName, inDesc }) => {
+          box.appendChild(makeSuggItem(p, inName ? 'Matches name' : 'Matches description'));
+        });
+      }
+
+      // ── Other products (shown when all matching are displayed) ──
+      if (others.length > 0) {
+        const lbl2 = document.createElement('div');
+        lbl2.className = 'sugg-section-label others';
+        lbl2.textContent = 'Other Products';
+        box.appendChild(lbl2);
+        others.forEach(p => box.appendChild(makeSuggItem(p, '')));
+      }
+
+      box.style.display = "block";
+    }
+
+    function makeSuggItem(p, matchLabel) {
+      const div = document.createElement('div');
+      div.className = 'suggestion-item';
+      div.innerHTML = `
+        <img src="${p.image}" alt="${p.title}">
+        <div class="sugg-info">
+          <span class="sugg-name">${p.title}</span>
+          <span class="sugg-price">₹${Number(p.price).toLocaleString('en-IN')}</span>
+          ${matchLabel ? `<span class="sugg-match">${matchLabel}</span>` : ''}
+        </div>`;
+      div.onclick = () => location.href = `productPage.html?id=${p._id}`;
+      return div;
+    }
+
+    // Close on outside click
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-container"))
+        document.getElementById("searchSuggestions").style.display = "none";
+    });
+
     function toggleMenu() {
       document.getElementById("sideMenu").classList.toggle("active");
       document.getElementById("overlay").classList.toggle("active");
     }
 
-    function handleSearch(query) {
-      const suggestionsBox = document.getElementById("searchSuggestions");
-      query = query.toLowerCase().trim();
-
-      if (query.length === 0) {
-        suggestionsBox.style.display = "none";
-        return;
-      }
-
-      const filtered = products.filter(p => p.title.toLowerCase().includes(query));
-
-      if (filtered.length > 0) {
-        suggestionsBox.innerHTML = "";
-        filtered.forEach(p => {
-          const div = document.createElement("div");
-          div.className = "suggestion-item";
-          div.innerHTML = `<img src="${p.image}" alt="${p.title}"><span>${p.title}</span>`;
-          div.onclick = () => { window.location.href = `productPage.html?id=${p._id}`; };
-          suggestionsBox.appendChild(div);
-        });
-        suggestionsBox.style.display = "block";
-      } else {
-        suggestionsBox.innerHTML = `<div style="padding:10px;color:#999;font-size:14px;">No products found</div>`;
-        suggestionsBox.style.display = "block";
-      }
-    }
-
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".search-container")) {
-        document.getElementById("searchSuggestions").style.display = "none";
-      }
-    });
   </script>
 </body>
 </html>
