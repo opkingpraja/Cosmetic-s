@@ -9,53 +9,159 @@
 <style>
 html, body { touch-action: manipulation; overscroll-behavior: none; }
 input, textarea { font-size: 16px; }
-body{
-  padding-top: env(safe-area-inset-top); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
   font-family: "Poppins", sans-serif;
+  background: #f0f4f5;
 }
 
 :root {
-  --bg: #1e1e2f; --text: #f0f0f0; --accent: #ff6f91; --accent2: #ff9671; --box-bg: #2e2e3e; --card: #f4f4f8;
+  --bg: #1e1e2f; --text: #f0f0f0; --accent: #ff6f91; --accent2: #ff9671;
+  --box-bg: #2e2e3e; --card: #f4f4f8;
 }
 .light-theme {
-  --bg: #fafafa; --text: #222; --accent: #ff4e88; --accent2: #ffb26b; --box-bg: #ffffff; --card: #f4f4f8;
+  --bg: #fafafa; --text: #222; --accent: #ff4e88; --accent2: #ffb26b;
+  --box-bg: #ffffff; --card: #f4f4f8;
 }
 
-.product-page{ max-width:900px; margin:auto; padding:20px; background-color:#e9f0f1; border-radius: 10px;}
-.product-img{ width:100%; border-radius:20px; overflow:hidden; }
-.product-img img{ width:100%; height:auto; object-fit:cover; display: none; /* Initially hidden */ }
-
-.product-details{ margin-top:20px; background:white; padding:20px; border-radius:15px; }
-.product-details h1{ font-size:26px; }
-.price{ font-size:22px; color:#ff4e88; margin:10px 0; font-weight: bold;}
-.desc{ color:#444; line-height:1.5; }
+/* ── MAIN PRODUCT PAGE ── */
+.product-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  background-color: #e9f0f1;
+  border-radius: 10px;
+}
+.product-img { width: 100%; border-radius: 20px; overflow: hidden; }
+.product-img img {
+  width: 100%;
+  /* ✅ Aspect ratio reserve — image load hone tak height hold karta hai */
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: none;
+  border-radius: 20px;
+}
+.product-details { margin-top: 20px; background: white; padding: 20px; border-radius: 15px; }
+.product-details h1 { font-size: 26px; }
+.price { font-size: 22px; color: #ff4e88; margin: 10px 0; font-weight: bold; }
+.desc { color: #444; line-height: 1.5; }
 
 .buy-btn, .share-btn {
-  margin-top:20px; padding:12px 25px; border:none; border-radius:25px; font-size:16px; cursor:pointer; display: none; /* Initially hidden */
+  margin-top: 20px; padding: 12px 25px; border: none; border-radius: 25px;
+  font-size: 16px; cursor: pointer; display: none;
 }
-.buy-btn { background:linear-gradient(90deg,#f77ca4,#feddbf); color:white; }
-.share-btn { background:linear-gradient(90deg,#7c68eaef,#b2f0ffd4); color:white; margin-left: 10px;}
-.buy-btn:hover, .share-btn:hover { opacity:0.85; }
+.buy-btn { background: linear-gradient(90deg, #f77ca4, #feddbf); color: white; }
+.share-btn { background: linear-gradient(90deg, #7c68eaef, #b2f0ffd4); color: white; margin-left: 10px; }
+.buy-btn:hover, .share-btn:hover { opacity: 0.85; }
 
-/* 🪄 SKELETON CSS FOR PRODUCT PAGE */
-@keyframes shimmer { 0% { background-position: -500px 0; } 100% { background-position: 500px 0; } }
+/* ── SKELETON ── */
+@keyframes shimmer {
+  0% { background-position: -500px 0; }
+  100% { background-position: 500px 0; }
+}
 .skeleton {
   background: #e0e0e0;
   background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
-  background-size: 500px 100%; animation: shimmer 1.5s infinite linear; border-radius: 10px;
+  background-size: 500px 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 10px;
 }
-.skel-img { height: 350px; width: 100%; }
+.skel-img  { height: 350px; width: 100%; aspect-ratio: 4/3; }
 .skel-title { height: 30px; width: 70%; margin-bottom: 15px; }
 .skel-price { height: 25px; width: 40%; margin-bottom: 20px; }
-.skel-desc { height: 15px; width: 100%; margin-bottom: 8px; }
-.skel-btn { height: 45px; width: 130px; display: inline-block; margin-top: 20px; border-radius: 25px; }
+.skel-desc  { height: 15px; width: 100%; margin-bottom: 8px; }
+.skel-btn   { height: 45px; width: 130px; display: inline-block; margin-top: 20px; border-radius: 25px; }
+
+/* ── RELATED PRODUCTS SECTION ── */
+.related-section {
+  max-width: 900px;
+  margin: 30px auto 40px;
+  padding: 0 20px;
+}
+.related-section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ff4e88;
+  margin-bottom: 18px;
+  padding-left: 4px;
+  border-left: 4px solid #ff4e88;
+  padding-left: 10px;
+}
+
+/* ✅ Fixed grid — space reserved so no CLS */
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (min-width: 600px) {
+  .related-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 900px) {
+  .related-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ── PRODUCT CARD ── */
+.rel-card {
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.rel-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+.rel-card:active { transform: scale(0.97); }
+
+/* ✅ img height reserved — no CLS when image loads */
+.rel-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: #eee;
+}
+.rel-card-body { padding: 10px; }
+.rel-card-body h4 {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rel-card-body .rel-price {
+  font-size: 14px;
+  color: #ff4e88;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.rel-card-body .rel-btn {
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #f77ca4, #feddbf);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Skeleton for related cards */
+.rel-skel-img   { width: 100%; aspect-ratio: 1/1; border-radius: 0; }
+.rel-skel-title { width: 80%; height: 14px; margin: 10px 10px 6px; }
+.rel-skel-price { width: 50%; height: 14px; margin: 0 10px 10px; }
 </style>
 </head>
 <body class="light-theme">
 
+<!-- ── MAIN PRODUCT ── -->
 <div class="product-page">
   <div class="product-img skeleton skel-img" id="img-skeleton"></div>
-  <div class="product-img"><img id="image"></div>
+  <div class="product-img"><img id="image" alt="Product"></div>
 
   <div class="product-details">
     <div class="skeleton skel-title" id="title-skeleton"></div>
@@ -66,79 +172,135 @@ body{
 
     <div id="desc-skeleton">
       <div class="skeleton skel-desc"></div>
-      <div class="skeleton skel-desc" style="width: 80%"></div>
-      <div class="skeleton skel-desc" style="width: 60%"></div>
+      <div class="skeleton skel-desc" style="width:80%"></div>
+      <div class="skeleton skel-desc" style="width:60%"></div>
     </div>
     <p class="desc" id="desc"></p>
 
     <div class="skeleton skel-btn" id="btn1-skeleton"></div>
-    <div class="skeleton skel-btn" id="btn2-skeleton" style="margin-left: 10px;"></div>
+    <div class="skeleton skel-btn" id="btn2-skeleton" style="margin-left:10px;"></div>
 
-    <button class="buy-btn" id="buyBtn" onclick="addToCart()">Add to Cart 🛒</button>
+    <button class="buy-btn"   id="buyBtn"   onclick="addToCart()">Add to Cart 🛒</button>
     <button class="share-btn" id="shareBtn" onclick="shareProduct()">Share 📤</button>
+  </div>
+</div>
+
+<!-- ── RELATED PRODUCTS ── -->
+<div class="related-section">
+  <h2>Related Products</h2>
+  <!-- ✅ Skeleton placeholders — grid space reserved hoti hai immediately -->
+  <div class="related-grid" id="relatedGrid">
+    <!-- 4 skeleton cards -->
+    <div class="rel-card">
+      <div class="skeleton rel-skel-img"></div>
+      <div class="skeleton rel-skel-title"></div>
+      <div class="skeleton rel-skel-price"></div>
+    </div>
+    <div class="rel-card">
+      <div class="skeleton rel-skel-img"></div>
+      <div class="skeleton rel-skel-title"></div>
+      <div class="skeleton rel-skel-price"></div>
+    </div>
+    <div class="rel-card">
+      <div class="skeleton rel-skel-img"></div>
+      <div class="skeleton rel-skel-title"></div>
+      <div class="skeleton rel-skel-price"></div>
+    </div>
+    <div class="rel-card">
+      <div class="skeleton rel-skel-img"></div>
+      <div class="skeleton rel-skel-title"></div>
+      <div class="skeleton rel-skel-price"></div>
+    </div>
   </div>
 </div>
 
 <script src="addProduct.js"></script>
 <script>
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-  let product = null;
+  const params  = new URLSearchParams(window.location.search);
+  const id      = params.get("id");
+  let product   = null;
 
-  window.productsReady.then(function() {
+  // Fisher-Yates shuffle (same as addProduct.js)
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  window.productsReady.then(function () {
+
+    // ── 1. MAIN PRODUCT ──────────────────────────────────────────
     product = products.find(p => p._id === id);
 
     if (!product) {
       document.getElementById("title").innerText = "Product not found";
+      // Related skeletons bhi hata do
+      document.getElementById("relatedGrid").innerHTML =
+        '<p style="color:#999;padding:10px;">No products available.</p>';
       return;
     }
 
-    // Hide Skeletons
-    document.getElementById("img-skeleton").style.display = "none";
-    document.getElementById("title-skeleton").style.display = "none";
-    document.getElementById("price-skeleton").style.display = "none";
-    document.getElementById("desc-skeleton").style.display = "none";
-    document.getElementById("btn1-skeleton").style.display = "none";
-    document.getElementById("btn2-skeleton").style.display = "none";
+    // Hide skeletons
+    ["img-skeleton","title-skeleton","price-skeleton","desc-skeleton","btn1-skeleton","btn2-skeleton"]
+      .forEach(sid => document.getElementById(sid).style.display = "none");
 
-    // Show Real Data
-    document.getElementById("image").src = product.image;
-    document.getElementById("image").style.display = "block";
+    // Show real data
+    const img = document.getElementById("image");
+    img.src = product.image;
+    img.style.display = "block";
     document.getElementById("title").innerText = product.title;
     document.getElementById("price").innerText = "₹" + Number(product.price).toLocaleString('en-IN');
-    document.getElementById("desc").innerText = product.desc;
-    
-    document.getElementById("buyBtn").style.display = "inline-block";
+    document.getElementById("desc").innerText   = product.desc;
+    document.getElementById("buyBtn").style.display   = "inline-block";
     document.getElementById("shareBtn").style.display = "inline-block";
+
+    // ── 2. RELATED PRODUCTS ──────────────────────────────────────
+    // Current product hataao, shuffle karo, 8 lo (grid ke hisaab se)
+    const related = shuffle(products.filter(p => p._id !== id)).slice(0, 8);
+
+    if (related.length === 0) {
+      document.getElementById("relatedGrid").innerHTML =
+        '<p style="color:#999;padding:10px;">No related products found.</p>';
+      return;
+    }
+
+    document.getElementById("relatedGrid").innerHTML = related.map(p => `
+      <div class="rel-card" onclick="location.href='productPage.html?id=${p._id}'">
+        <img src="${p.image}" loading="lazy" alt="${p.title}">
+        <div class="rel-card-body">
+          <h4>${p.title}</h4>
+          <div class="rel-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
+          <button class="rel-btn">View Details</button>
+        </div>
+      </div>
+    `).join('');
   });
 
-
-window.productsReady.then(() => {
-  const current = products.find(p => p._id === id);
-  // ... (Current product render logic) ...
-
-  // Neeche baaki products dikhao
-  const otherContainer = document.getElementById('productContainer');
-  const others = products.filter(p => p._id !== id).slice(0, 6); // 6 random products
-  others.forEach(p => {
-    // Card banane ka wahi purana logic yahan dalo
-  });
-});
-
-  function shareProduct(){
-    const shareData = { url: window.location.href };
-    if(navigator.share){ navigator.share(shareData); }
-    else{ window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(product.title + " - ₹" + product.price + " " + window.location.href), "_blank"); }
-  }
-
-  function addToCart(){
+  // ── CART ──────────────────────────────────────────────────────
+  function addToCart() {
     if (!product) return;
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let existingProduct = cart.find(item => item.title === product.title);
-    if (existingProduct) { existingProduct.qty = (existingProduct.qty || 1) + 1; } 
+    let existing = cart.find(item => item._id === product._id);
+    if (existing) { existing.qty = (existing.qty || 1) + 1; }
     else { cart.push({ ...product, qty: 1 }); }
     localStorage.setItem("cart", JSON.stringify(cart));
     window.location.href = "cart.html";
+  }
+
+  // ── SHARE ──────────────────────────────────────────────────────
+  function shareProduct() {
+    const shareData = { url: window.location.href };
+    if (navigator.share) { navigator.share(shareData); }
+    else {
+      window.open(
+        "https://api.whatsapp.com/send?text=" +
+        encodeURIComponent(product.title + " - ₹" + product.price + " " + window.location.href),
+        "_blank"
+      );
+    }
   }
 </script>
 
