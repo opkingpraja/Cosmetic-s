@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="transparent">
 <title>Product Details</title>
-
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins",sans-serif; user-select:none; }
 html, body { touch-action:manipulation; overscroll-behavior:none; -webkit-overflow-scrolling:touch; }
@@ -16,57 +15,71 @@ body {
   padding-right:env(safe-area-inset-right);
   background:#f0f4f5;
 }
-.light-theme { --bg:#fafafa; --text:#222; --accent:#ff4e88; --accent2:#ffb26b; --box-bg:#fff; --card:#f4f4f8; }
+.light-theme { --accent:#ff4e88; --accent2:#ffb26b; }
 
-/* MAIN PRODUCT */
+/* ── MAIN PRODUCT ── */
 .product-page { max-width:900px; margin:auto; padding:20px; background:#e9f0f1; border-radius:10px; }
 .product-img { width:100%; border-radius:20px; overflow:hidden; }
-.product-img img { width:100%; aspect-ratio:4/3; object-fit:cover; display:none; border-radius:20px; }
+.product-img img {
+  width:100%;
+  /* ✅ 4:3 reserved space */
+  aspect-ratio: 4 / 3;
+  object-fit:cover; display:none; border-radius:20px;
+  background:#e0e0e0;
+}
 .product-details { margin-top:20px; background:white; padding:20px; border-radius:15px; }
-.product-details h1 { font-size:26px; }
+.product-details h1 { font-size:24px; }
 .price { font-size:22px; color:#ff4e88; margin:10px 0; font-weight:bold; }
-.desc { color:#444; line-height:1.5; }
-
+.desc { color:#444; line-height:1.6; font-size:14px; }
 .buy-btn, .share-btn {
   margin-top:20px; padding:12px 25px; border:none; border-radius:25px;
-  font-size:16px; cursor:pointer; display:none; transition:opacity 0.2s;
+  font-size:15px; cursor:pointer; display:none; transition:opacity 0.2s;
 }
 .buy-btn  { background:linear-gradient(90deg,#f77ca4,#feddbf); color:white; }
 .share-btn{ background:linear-gradient(90deg,#7c68eaef,#b2f0ffd4); color:white; margin-left:10px; }
 .buy-btn:hover,.share-btn:hover { opacity:0.85; }
 
-/* SKELETON */
+/* ── SKELETON ── */
 @keyframes shimmer { 0%{background-position:-500px 0} 100%{background-position:500px 0} }
 .skeleton {
   background:#e0e0e0;
   background-image:linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,0.6) 50%,rgba(255,255,255,0) 100%);
   background-size:500px 100%; animation:shimmer 1.5s infinite linear; border-radius:10px;
 }
+/* ✅ 4:3 skeleton */
 .skel-img   { aspect-ratio:4/3; width:100%; }
-.skel-title { height:30px; width:70%; margin-bottom:15px; }
-.skel-price { height:25px; width:40%; margin-bottom:20px; }
-.skel-desc  { height:15px; width:100%; margin-bottom:8px; }
-.skel-btn   { height:45px; width:130px; display:inline-block; margin-top:20px; border-radius:25px; }
+.skel-title { height:28px; width:70%; margin-bottom:14px; }
+.skel-price { height:24px; width:40%; margin-bottom:18px; }
+.skel-desc  { height:14px; width:100%; margin-bottom:8px; }
+.skel-btn   { height:44px; width:130px; display:inline-block; margin-top:20px; border-radius:25px; }
 
-/* RELATED SECTION */
-.related-section { max-width:900px; margin:30px auto 50px; padding:0 16px; }
-.related-header { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+/* ── RELATED SECTION ── */
+.related-section { max-width:900px; margin:28px auto 50px; padding:0 16px; }
+.related-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
 .related-header h2 { font-size:20px; font-weight:700; color:#ff4e88; }
 .rel-tag {
-  background:#fff0f5; color:#ff4e88; font-size:12px; font-weight:600;
+  background:#fff0f5; color:#ff4e88; font-size:11px; font-weight:700;
   padding:3px 10px; border-radius:20px; border:1px solid #ffc0d3;
 }
+
+/* Category label inside grid */
 .rel-category-label {
-  grid-column:1/-1; font-size:12px; font-weight:700;
-  color:#999; text-transform:uppercase; letter-spacing:0.5px;
-  margin-top:10px; padding-bottom:6px; border-bottom:2px solid #ffe0ed;
+  grid-column:1/-1;
+  font-size:11px; font-weight:700; color:#aaa;
+  text-transform:uppercase; letter-spacing:0.5px;
+  padding-bottom:6px; margin-top:10px;
+  border-bottom:2px solid #ffe0ed;
 }
+
 .related-grid {
-  display:grid; grid-template-columns:repeat(2,1fr); gap:14px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
 }
-@media(min-width:540px){ .related-grid{ grid-template-columns:repeat(3,1fr); } }
+@media(min-width:480px){ .related-grid{ grid-template-columns:repeat(3,1fr); } }
 @media(min-width:768px){ .related-grid{ grid-template-columns:repeat(4,1fr); } }
 
+/* ── Related Card ── */
 .rel-card {
   background:white; border-radius:14px; overflow:hidden;
   cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.07);
@@ -75,18 +88,29 @@ body {
 }
 .rel-card:hover  { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.12); }
 .rel-card:active { transform:scale(0.97); }
-.rel-card img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#f0f0f0; }
-.rel-card-body { padding:10px; flex:1; display:flex; flex-direction:column; gap:5px; }
-.rel-card-body h4 { font-size:12px; color:#333; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ✅ 4:3 on related card images */
+.rel-card img {
+  width:100%;
+  aspect-ratio: 4 / 3;
+  object-fit:cover; display:block; background:#f0f0f0;
+}
+.rel-card-body { padding:10px; flex:1; display:flex; flex-direction:column; gap:4px; }
+.rel-card-body h4 {
+  font-size:12px; color:#333; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
 .rel-price { font-size:13px; color:#ff4e88; font-weight:700; }
 .rel-btn {
   margin-top:auto; width:100%; padding:7px 0; border:none; border-radius:20px;
   background:linear-gradient(90deg,#f77ca4,#feddbf);
   color:white; font-size:11px; font-weight:600; cursor:pointer;
 }
-.rel-skel-img   { aspect-ratio:1/1; width:100%; border-radius:0; }
-.rel-skel-title { height:13px; width:80%; margin:10px 10px 6px; }
-.rel-skel-price { height:13px; width:50%; margin:0 10px 10px; }
+
+/* Skeleton cards in related grid */
+.rel-skel-img   { aspect-ratio:4/3; width:100%; border-radius:0; }
+.rel-skel-title { height:12px; width:80%; margin:10px 10px 6px; border-radius:6px; }
+.rel-skel-price { height:12px; width:50%; margin:0 10px 10px; border-radius:6px; }
 </style>
 </head>
 <body class="light-theme">
@@ -117,6 +141,7 @@ body {
     <h2>Related Products</h2>
     <span class="rel-tag" id="relTag">Loading...</span>
   </div>
+  <!-- Skeleton grid — space reserved immediately -->
   <div class="related-grid" id="relatedGrid">
     <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
     <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
@@ -142,17 +167,17 @@ body {
     return a;
   }
 
-  // Category keywords — longest first taaki "lip gloss" "lip" se pehle match ho
+  // Category keywords — longest first for correct matching
   const CATEGORIES = [
-    'face wash','bb cream','cc cream','lip gloss','lip liner','lip balm','nail polish','nail paint',
-    'setting spray','sheet mask','eye liner',
+    'face wash','bb cream','cc cream','lip gloss','lip liner','lip balm',
+    'nail polish','nail paint','setting spray','sheet mask',
     'perfume','attar','fragrance','deodorant','deo',
     'lipstick','lip','foundation','concealer','primer',
     'mascara','eyeliner','eyeshadow','kajal','eye',
     'blush','bronzer','highlighter','contour',
-    'powder','compact',
-    'serum','moisturizer','toner','cleanser','sunscreen','spf',
-    'nail','brush','sponge','cream','lotion','gel','oil',
+    'powder','compact','serum','moisturizer','toner',
+    'cleanser','sunscreen','spf','nail',
+    'brush','sponge','cream','lotion','gel','oil',
     'hair','shampoo','conditioner','scrub','mask'
   ];
 
@@ -168,7 +193,7 @@ body {
       <img src="${p.image}" loading="lazy" alt="${p.title}">
       <div class="rel-card-body">
         <h4>${p.title}</h4>
-        <div class="rel-price">Rs.${Number(p.price).toLocaleString('en-IN')}</div>
+        <div class="rel-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
         <button class="rel-btn">View Details</button>
       </div>`;
     div.onclick = () => location.href = 'productPage.html?id=' + p._id;
@@ -183,12 +208,12 @@ body {
   }
 
   window.productsReady.then(function () {
-
     // ── Main product ──
     product = products.find(p => p._id === id);
     if (!product) {
       document.getElementById("title").innerText = "Product not found";
-      document.getElementById("relatedGrid").innerHTML = '<p style="color:#999;padding:10px;grid-column:1/-1">No products found.</p>';
+      document.getElementById("relatedGrid").innerHTML =
+        '<p style="color:#999;padding:10px;grid-column:1/-1">No products found.</p>';
       document.getElementById("relTag").textContent = '0 products';
       return;
     }
@@ -200,41 +225,33 @@ body {
     img.src = product.image;
     img.style.display = "block";
     document.getElementById("title").innerText = product.title;
-    document.getElementById("price").innerText = "Rs." + Number(product.price).toLocaleString('en-IN');
+    document.getElementById("price").innerText = "₹" + Number(product.price).toLocaleString('en-IN');
     document.getElementById("desc").innerText  = product.desc;
     document.getElementById("buyBtn").style.display   = "inline-block";
     document.getElementById("shareBtn").style.display = "inline-block";
 
-    // ── Related products with category grouping ──
+    // ── Related: same category first, then others ──
     const currentCat = getCategory(product.title);
     const others = products.filter(p => p._id !== id);
-
-    // Same category products
-    const sameCategory = others.filter(p => currentCat && getCategory(p.title) === currentCat);
-    // Remaining products (different category)
-    const remaining    = others.filter(p => !currentCat || getCategory(p.title) !== currentCat);
+    const sameCat  = others.filter(p => currentCat && getCategory(p.title) === currentCat);
+    const diffCat  = others.filter(p => !currentCat || getCategory(p.title) !== currentCat);
 
     const grid = document.getElementById("relatedGrid");
     grid.innerHTML = '';
+    let total = 0;
 
-    let totalShown = 0;
-
-    // ── Section 1: same category products (pehle) ──
-    if (sameCategory.length > 0) {
-      const catName = currentCat.charAt(0).toUpperCase() + currentCat.slice(1);
-      grid.appendChild(makeSectionLabel('More ' + catName + 's'));
-      shuffle(sameCategory).forEach(p => { grid.appendChild(makeCard(p)); totalShown++; });
+    if (sameCat.length > 0) {
+      const name = currentCat.charAt(0).toUpperCase() + currentCat.slice(1);
+      grid.appendChild(makeSectionLabel('More ' + name + 's'));
+      shuffle(sameCat).forEach(p => { grid.appendChild(makeCard(p)); total++; });
     }
-
-    // ── Section 2: remaining products randomly ──
-    if (remaining.length > 0) {
+    if (diffCat.length > 0) {
       grid.appendChild(makeSectionLabel('You May Also Like'));
-      shuffle(remaining).forEach(p => { grid.appendChild(makeCard(p)); totalShown++; });
+      shuffle(diffCat).forEach(p => { grid.appendChild(makeCard(p)); total++; });
     }
 
-    document.getElementById("relTag").textContent = totalShown + ' product' + (totalShown !== 1 ? 's' : '');
-
-    if (totalShown === 0) {
+    document.getElementById("relTag").textContent = total + ' product' + (total !== 1 ? 's' : '');
+    if (total === 0) {
       grid.innerHTML = '<p style="color:#999;padding:10px;grid-column:1/-1">No related products.</p>';
     }
   });
@@ -253,10 +270,9 @@ body {
     if (navigator.share) { navigator.share({ url: window.location.href }); }
     else {
       window.open("https://api.whatsapp.com/send?text=" +
-        encodeURIComponent(product.title + " - Rs." + product.price + " " + window.location.href), "_blank");
+        encodeURIComponent(product.title + " - ₹" + product.price + " " + window.location.href), "_blank");
     }
   }
 </script>
 </body>
 </html>
-
