@@ -176,6 +176,16 @@
       100% { transform: translateX(0); }
     }
 
+
+/* index.html ke style mein ye add karein */
+.card img, .skeleton-img {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Square shape hold karke rakhega */
+  object-fit: cover;
+  background: #2e2e3e; /* Image aane tak ye color dikhega */
+  border-radius: 12px;
+}
+
     .product-section {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
