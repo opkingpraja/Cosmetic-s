@@ -4,31 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cosmetic Store UI</title>
+  <link rel="manifest" href="manifest.json">
 
-<title>Cosmetic Store UI</title>
-
-<link rel="manifest" href="manifest.json">
   <style>
-  * {
+  /* ✅ FIX 1: * pe transition nahi — load pe sab elements animate hote the → jank */
+  *, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
-    transition: background 0.3s, color 0.3s;
     user-select: none;
+  }
+  /* Sirf jo chahiye unpe transition */
+  a, button, .btn, .card, .big-box, .small-box, .side-menu, .overlay,
+  .menu-btn, .suggestion-item, .nav-right img {
+    transition: background 0.3s, color 0.3s, transform 0.25s, box-shadow 0.25s, opacity 0.25s;
   }
 
   html, body {
     touch-action: manipulation;
     width: 100%;
     overflow-x: hidden;
+    /* ✅ FIX 2: smooth scroll — momentum scrolling for mobile */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 
-  input, textarea {
-    font-size: 16px;
-  }
+  input, textarea { font-size: 16px; }
 
-  body{
+  body {
     padding-top: env(safe-area-inset-top);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
@@ -36,407 +41,278 @@
     color: var(--text);
   }
 
-    :root {
-      --bg: #1e1e2f;
-      --text: #f0f0f0;
-      --accent: #ff6f91;
-      --accent2: #ff9671;
-      --box-bg: #2e2e3e;
-      --card: #3d3d55;
-    }
+  :root {
+    --bg: #1e1e2f;
+    --text: #f0f0f0;
+    --accent: #ff6f91;
+    --accent2: #ff9671;
+    --box-bg: #2e2e3e;
+    --card: #3d3d55;
+  }
+  .light-theme {
+    --bg: #fafafa;
+    --text: #222;
+    --accent: #ff4e88;
+    --accent2: #ffb26b;
+    --box-bg: #ffffff;
+    --card: #f4f4f8;
+  }
 
-    .light-theme {
-      --bg: #fafafa;
-      --text: #222;
-      --accent: #ff4e88;
-      --accent2: #ffb26b;
-      --box-bg: #ffffff;
-      --card: #f4f4f8;
-    }
+  /* ── NAVBAR ── */
+  .navbar {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 15px;
+    margin: 15px;
+    gap: 10px;
+    z-index: 10;
+    position: relative;
+  }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-right span { font-weight: 600; font-size: 18px; }
+  .nav-right img {
+    width: 35px; height: 35px;
+    border-radius: 50%; object-fit: cover;
+    border: 2px solid white;
+  }
+  .menu-btn { font-size: 26px; cursor: pointer; }
+  .menu-btn:hover { transform: rotate(90deg); }
 
-    .navbar {
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: 15px;
-      margin: 15px;
-      z-index: 10;
-      position: relative;
-    }
+  /* ── SIDE MENU ── */
+  .side-menu {
+    position: fixed;
+    top: 0; left: -260px;
+    width: 250px; height: 100%;
+    background: var(--box-bg);
+    box-shadow: 3px 0 10px rgba(0,0,0,0.5);
+    border-radius: 0 10px 10px 0;
+    padding: 20px;
+    transition: left 0.4s ease;
+    z-index: 1001;
+  }
+  .side-menu.active { left: 0; }
+  .side-menu h2 { color: var(--accent); margin-bottom: 20px; }
+  .side-menu a {
+    display: block; text-decoration: none; color: var(--text);
+    padding: 12px 10px; margin: 8px 0; border-radius: 8px;
+  }
+  .side-menu a:hover { background: var(--accent); color: white; }
+  .close-btn { font-size: 22px; cursor: pointer; color: var(--accent); float: right; margin-top: -10px; }
 
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .nav-right span {
-      font-weight: 600;
-      font-size: 18px;
-    }
-    .nav-right img {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid white;
-    }
+  .overlay {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  .overlay.active { opacity: 1; visibility: visible; }
 
-    .menu-btn {
-      font-size: 26px;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    .menu-btn:hover { transform: rotate(90deg); }
+  /* ── SLIDER ── */
+  .slider {
+    width: 100%;
+    margin: 15px 0;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    /* ✅ FIX 3: aspect-ratio se height reserve — images load hone se pehle bhi space hai */
+    aspect-ratio: 16 / 6;
+    background: linear-gradient(135deg, #ffd6e7, #ffe8d0); /* placeholder color */
+  }
+  .slides {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    animation: slide 12s infinite;
+    /* ✅ GPU pe daalo — CPU scroll ke saath compete nahi karega */
+    will-change: transform;
+  }
+  .slides img {
+    min-width: 90%;
+    /* ✅ FIX 4: height: 100% — aspect-ratio se parent ki height milegi instantly */
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 30px;
+    margin-left: 5%;
+    margin-right: 5%;
+    /* ✅ FIX 5: fade in smoothly */
+    opacity: 0;
+    animation: slideImgFade 0.5s ease forwards;
+  }
+  @keyframes slideImgFade {
+    to { opacity: 1; }
+  }
+  @keyframes slide {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-100%); }
+    50%  { transform: translateX(-200%); }
+    75%  { transform: translateX(-300%); }
+    100% { transform: translateX(0); }
+  }
 
-    .side-menu {
-      position: fixed;
-      top: 0;
-      left: -260px;
-      width: 250px;
-      height: 100%;
-      background: var(--box-bg);
-      box-shadow: 3px 0 10px rgba(0,0,0,0.5);
-      border-radius: 0 10px 10px 0;
-      padding: 20px;
-      transition: left 0.4s ease;
-      z-index: 1001;
-    }
-    .side-menu.active { left: 0; }
+  @media (max-width: 768px)  { .slider { aspect-ratio: 16/7; } }
+  @media (max-width: 480px)  { .slider { aspect-ratio: 16/8; } }
+  @media (min-width: 1024px) { .slider { max-width: 1200px; margin: 30px auto; } }
+  @media (min-width: 1400px) { .slider { max-width: 1400px; } }
 
-    .side-menu h2 { color: var(--accent); margin-bottom: 20px; }
-    .side-menu a {
-      display: block;
-      text-decoration: none;
-      color: var(--text);
-      padding: 12px 10px;
-      margin: 8px 0;
-      border-radius: 8px;
-      transition: background 0.3s;
-    }
-    .side-menu a:hover {
-      background: var(--accent);
-      color: white;
-    }
-    .close-btn {
-      font-size: 22px;
-      cursor: pointer;
-      color: var(--accent);
-      float: right;
-      margin-top: -10px;
-    }
+  /* ── PRODUCT SECTION (banners) ── */
+  .product-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    margin: 20px;
+    background: var(--box-bg);
+    border-radius: 20px;
+  }
+  .product-box {
+    background: var(--card);
+    border-radius: 15px;
+    padding: 15px;
+    display: grid;
+    gap: 10px;
+  }
+  .product-box:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
 
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.3);
-      backdrop-filter: blur(8px);
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
-    }
-    .overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
+  .big-box, .small-box {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .big-box:hover, .small-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+  /* ✅ FIX 6: Fixed aspect-ratio on banner images so no height jump */
+  .big-box {
+    aspect-ratio: 4 / 2;
+    height: unset; /* remove fixed px height */
+  }
+  .small-box {
+    aspect-ratio: 4 / 2.5;
+    height: unset;
+  }
+  .big-box img, .small-box img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+  }
 
-    .slider {
-      width: 100%;
-      height: auto;
-      margin: 15px 0;
-      border-radius: 20px;
-      overflow: hidden;
-      position: relative;
-      background-color: transparent;
-    }
-    .slides {
-      display: flex;
-      width: 100%;
-      animation: slide 12s infinite;
-      background-color: transparent;
-    }
-    .slides img {
-      min-width: 90%;
-      height: auto;
-      object-fit: cover;
-      display: block;
-      border-radius: 30px;
-      margin-left: 5%;
-      margin-right: 5%;
-    }
-    @keyframes slide {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-100%); }
-      50% { transform: translateX(-200%); }
-      75% { transform: translateX(-300%); }
-      100% { transform: translateX(0); }
-    }
+  /* ── PRODUCT CARDS ── */
+  #productContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    padding: 16px;
+    margin: 0 8px;
+    /* ✅ FIX 7: min-height se neeche ka section jump nahi karega */
+    min-height: 600px;
+  }
 
+  .card {
+    background: var(--card);
+    border-radius: 15px;
+    overflow: hidden;
+    text-align: center;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
 
-/* index.html ke style mein ye add karein */
-.card img, .skeleton-img {
-  width: 100%;
-  aspect-ratio: 1 / 1; /* Square shape hold karke rakhega */
-  object-fit: cover;
-  background: #2e2e3e; /* Image aane tak ye color dikhega */
-  border-radius: 12px;
-}
+  .card img {
+    width: 100%;
+    /* ✅ FIX 8: aspect-ratio — skeleton se real image tak same height */
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 10px;
+    /* placeholder color jab tak image load na ho */
+    background: var(--box-bg);
+  }
+  .card h3 { font-size: 14px; color: var(--accent); }
+  .card p  { font-size: 13px; color: var(--text); }
+  .btn {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    color: white; border: none;
+    padding: 9px 16px; border-radius: 25px;
+    cursor: pointer; font-weight: bold;
+    font-size: 13px; margin-top: auto;
+  }
+  .btn:hover { opacity: 0.85; }
 
-    .product-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      margin: 20px;
-      background: var(--box-bg);
-      border-radius: 20px;
-    }
-    .product-box {
-      background: var(--card);
-      border-radius: 15px;
-      padding: 15px;
-      display: grid;
-      gap: 10px;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .product-box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }
-    .big-box, .small-box {
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .big-box img, .small-box img {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      display: block;
-    }
-    .big-box { height: 160px; }
-    .small-box { height: 100px; }
-    
-    .big-box, .small-box {
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-}
+  /* ── SEARCH ── */
+  .search-container { position: relative; flex: 1; margin-right: 10px; max-width: 250px; }
+  .search-box {
+    display: flex; align-items: center;
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px; padding: 5px 15px;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .search-box input {
+    background: transparent; border: none; color: white;
+    outline: none; width: 100%; padding: 5px 0; font-size: 14px;
+  }
+  .search-box input::placeholder { color: rgba(255,255,255,0.8); }
+  .search-icon { font-size: 16px; margin-left: 5px; }
 
-.big-box:hover, .small-box:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-}
+  .suggestions-box {
+    position: absolute; top: 110%; left: 0; width: 100%;
+    background: white; border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    max-height: 300px; overflow-y: auto;
+    z-index: 2000; display: none;
+  }
+  .suggestion-item {
+    display: flex; align-items: center; padding: 10px; gap: 10px;
+    cursor: pointer; border-bottom: 1px solid #eee; color: #333;
+  }
+  .suggestion-item:hover { background: #f9f9f9; }
+  .suggestion-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 5px; }
+  .suggestion-item span {
+    font-size: 14px; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
 
-    @media (max-width: 768px) {
-      .slides img { height: 200px; }
-      .big-box { height: 130px; }
-      .small-box { height: 80px; }
-    }
-    @media (max-width: 480px) {
-      .slides img { height: 160px; }
-      .big-box { height: 110px; }
-      .small-box { height: 70px; }
-    }
+  /* ── SKELETON SHIMMER ── */
+  @keyframes shimmer {
+    0%   { background-position: -500px 0; }
+    100% { background-position: 500px 0; }
+  }
+  .skeleton {
+    background: var(--card);
+    background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+    background-size: 500px 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 10px;
+  }
+  .light-theme .skeleton {
+    background: #e0e0e0;
+    background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
+    background-size: 500px 100%;
+    background-repeat: no-repeat;
+  }
+  /* ✅ FIX 9: aspect-ratio on skeleton-img — same height as real card image */
+  .skeleton-img   { width: 100%; aspect-ratio: 1/1; border-radius: 10px; }
+  .skeleton-title { width: 80%; height: 16px; margin: 0 auto 6px; }
+  .skeleton-price { width: 50%; height: 14px; margin: 0 auto 10px; }
+  .skeleton-btn   { width: 100px; height: 32px; margin: 0 auto; border-radius: 25px; }
 
-    @media (min-width:1024px){
-      .slider{
-        max-width:1200px;
-        margin:30px auto;
-      }
-      .slides img{
-        height:420px;
-      }
-    }
-
-    @media (min-width:1400px){
-      .slider{
-        max-width:1400px;
-      }
-      .slides img{
-        height:500px;
-      }
-    }
-    
-    #productContainer {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      margin: 20px;
-    }
-    
-    .card {
-      background: var(--card);
-      border-radius: 15px;
-      overflow: hidden;
-      text-align: center;
-      padding: 15px;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    }
-    
-    .card img {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    
-    .card h3 {
-      font-size: 18px;
-      color: var(--accent);
-      margin-bottom: 5px;
-    }
-    
-    .card p {
-      font-size: 14px;
-      color: var(--text);
-      margin-bottom: 12px;
-    }
-    
-    .btn {
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 25px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    
-    .btn:hover { opacity: 0.85; }
-    
-    
-    /* Search Bar Styling */
-.search-container {
-  position: relative;
-  flex: 1;
-  margin-right: 10px;
-  max-width: 250px; /* Aap ise adjust kar sakte hain */
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 5px 15px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.search-box input {
-  background: transparent;
-  border: none;
-  color: white;
-  outline: none;
-  width: 100%;
-  padding: 5px 0;
-  font-size: 14px;
-}
-
-.search-box input::placeholder {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.search-icon {
-  font-size: 16px;
-  margin-left: 5px;
-}
-
-/* Recommendations Dropdown */
-.suggestions-box {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  width: 100%;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 2000;
-  display: none; /* Default hidden */
-}
-
-.suggestion-item {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  gap: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-  color: #333;
-  transition: background 0.2s;
-}
-
-.suggestion-item:hover {
-  background: #f9f9f9;
-}
-
-.suggestion-item img {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 5px;
-}
-
-.suggestion-item span {
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Navbar adjust for search */
-.navbar {
-  gap: 10px;
-}
-
-        /* --- SKELETON LOADING UI (Shimmer Effect) --- */
-    @keyframes shimmer {
-      0% { background-position: -500px 0; }
-      100% { background-position: 500px 0; }
-    }
-    .skeleton {
-      background: var(--card);
-      background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
-      background-size: 500px 100%;
-      background-repeat: no-repeat;
-      animation: shimmer 1.5s infinite linear;
-      border-radius: 10px;
-    }
-    .light-theme .skeleton {
-      background: #e0e0e0;
-      background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
-    }
-    
-    /* Card ke andar ke items ka size */
-    .skeleton-img { width: 100%; height: 180px; margin-bottom: 10px; }
-    .skeleton-title { width: 80%; height: 20px; margin: 0 auto 10px; }
-    .skeleton-price { width: 50%; height: 16px; margin: 0 auto 15px; }
-    .skeleton-btn { width: 120px; height: 35px; margin: 0 auto; border-radius: 25px; }
-    
-    
   </style>
 </head>
 <body class="light-theme">
@@ -446,25 +322,26 @@
   <div class="side-menu" id="sideMenu">
     <span class="close-btn" onclick="toggleMenu()">✖</span>
     <h2>Menu</h2>
-   <a href="cart.html">Cart</a>
+    <a href="cart.html">Cart</a>
     <a href="#">Contact Us</a>
   </div>
 
   <div class="navbar">
     <div class="menu-btn" onclick="toggleMenu()">☰</div>
     <div class="nav-right">
-  <div class="search-container">
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search Anntya products..." oninput="handleSearch(this.value)">
-      <span class="search-icon">🔍</span>
+      <div class="search-container">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Search Anntya products..."
+                 oninput="handleSearch(this.value)">
+          <span class="search-icon">🔍</span>
+        </div>
+        <div id="searchSuggestions" class="suggestions-box"></div>
+      </div>
+      <img src="https://ik.imagekit.io/Prajapati/1774872935411~3.png" alt="Anntya Logo">
     </div>
-    <div id="searchSuggestions" class="suggestions-box"></div>
-  </div>
-  <img src="https://ik.imagekit.io/Prajapati/1774872935411~3.png" alt="Anntya Logo">
-</div>
-
   </div>
 
+  <!-- ✅ Slider — aspect-ratio se space reserved hai before images load -->
   <div class="slider">
     <div class="slides">
       <img src="https://ik.imagekit.io/Cosmetic/realistic-beauty-sale-banner-design_52683-92665.jpg?updatedAt=1758188018085" alt="Cosmetics 1">
@@ -480,7 +357,7 @@
         <img src="https://ik.imagekit.io/Cosmetic/cosmetics.jpg?updatedAt=1758188381052" alt="Lipstick">
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/IMG_20250918_121718.jpg?updatedAt=1758188021999"></div>
+        <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/IMG_20250918_121718.jpg?updatedAt=1758188021999" alt="Product"></div>
         <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/il_fullxfull.2019112368_o3pd.jpg?updatedAt=1758188025726" alt="Perfume"></div>
       </div>
     </div>
@@ -496,63 +373,48 @@
     </div>
   </div>
 
+  <!-- ✅ productContainer — already reserved via min-height + skeleton cards -->
   <div id="productContainer"></div>
 
   <script src="addProduct.js"></script>
-
   <script>
     function toggleMenu() {
       document.getElementById("sideMenu").classList.toggle("active");
       document.getElementById("overlay").classList.toggle("active");
-    };
+    }
 
+    function handleSearch(query) {
+      const suggestionsBox = document.getElementById("searchSuggestions");
+      query = query.toLowerCase().trim();
 
+      if (query.length === 0) {
+        suggestionsBox.style.display = "none";
+        return;
+      }
 
+      const filtered = products.filter(p => p.title.toLowerCase().includes(query));
 
-//srching logics
-function handleSearch(query) {
-  const suggestionsBox = document.getElementById("searchSuggestions");
-  query = query.toLowerCase().trim();
+      if (filtered.length > 0) {
+        suggestionsBox.innerHTML = "";
+        filtered.forEach(p => {
+          const div = document.createElement("div");
+          div.className = "suggestion-item";
+          div.innerHTML = `<img src="${p.image}" alt="${p.title}"><span>${p.title}</span>`;
+          div.onclick = () => { window.location.href = `productPage.html?id=${p._id}`; };
+          suggestionsBox.appendChild(div);
+        });
+        suggestionsBox.style.display = "block";
+      } else {
+        suggestionsBox.innerHTML = `<div style="padding:10px;color:#999;font-size:14px;">No products found</div>`;
+        suggestionsBox.style.display = "block";
+      }
+    }
 
-  if (query.length === 0) {
-    suggestionsBox.style.display = "none";
-    return;
-  }
-
-  // Products filter karna title ke basis pe
-  const filtered = products.filter(p => p.title.toLowerCase().includes(query));
-
-  if (filtered.length > 0) {
-    suggestionsBox.innerHTML = "";
-    filtered.forEach(p => {
-      const div = document.createElement("div");
-      div.className = "suggestion-item";
-      div.innerHTML = `
-        <img src="${p.image}">
-        <span>${p.title}</span>
-      `;
-      
-      div.onclick = () => {
-        window.location.href = `productPage.html?id=${p._id}`;
-      };
-      
-      suggestionsBox.appendChild(div);
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-container")) {
+        document.getElementById("searchSuggestions").style.display = "none";
+      }
     });
-    suggestionsBox.style.display = "block";
-  } else {
-    suggestionsBox.innerHTML = `<div style="padding:10px; color:#999; font-size:14px;">No products found</div>`;
-    suggestionsBox.style.display = "block";
-  }
-}
-
-// Click outside se dropdown band karna
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".search-container")) {
-    document.getElementById("searchSuggestions").style.display = "none";
-  }
-});
-
   </script>
-
 </body>
 </html>
