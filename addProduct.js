@@ -1,103 +1,53 @@
-// ─── addProduct.js ────────────────────────────────────────────────────────────
 const API_BASE = '';
-
 let products = [];
 let _resolveReady;
 window.productsReady = new Promise(res => { _resolveReady = res; });
 
-function mapProduct(p) {
-  return {
-    _id:   p._id,
-    title: p.name,
-    image: p.imageUrl,
-    price: p.price,
-    desc:  p.description,
-  };
+// 🔀 Shuffle Function
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
 }
 
-// 🪄 NAYA FUNCTION: Loading Skeleton Dikhane Ke Liye
-function renderSkeletons(container, count = 4) {
-  container.innerHTML = '';
-  for(let i=0; i<count; i++) {
-    container.innerHTML += `
-      <div class="card">
-        <div class="skeleton skeleton-img"></div>
-        <div class="skeleton skeleton-title"></div>
-        <div class="skeleton skeleton-price"></div>
-        <div class="skeleton skeleton-btn"></div>
-      </div>
-    `;
-  }
-}
-
-// ── Products fetch karo ───────────────────────────────────────────────────────
 async function fetchAndRender() {
   const container = document.getElementById('productContainer');
   
-  // ⏳ Data aane se pehle Skeleton dikhao (Suspense!)
-  if (container) renderSkeletons(container, 4);
-
-  try {
-    const res  = await fetch(`${API_BASE}/public/products`);
-    const data = await res.json();
-
-    if (!data.success) return;
-
-    products = data.products.map(mapProduct);
-
-    // 🌟 Data aate hi asli products dikhao
-    if (container) renderCards(container);
-
+  // 1. Cache se turant uthao
+  const cache = sessionStorage.getItem('store_cache');
+  if (cache) {
+    products = shuffle(JSON.parse(cache));
+    renderCards(container);
     _resolveReady(products);
-
-  } catch (err) {
-    console.error('Products load error:', err);
-    if (container) container.innerHTML = `<p style="text-align:center;color:#aaa;padding:20px;">Products load nahi ho paye.</p>`;
-    _resolveReady([]); 
-  }
-}
-
-// ── Card render (index.html ke liye) ─────────────────────────────────────────
-function renderCards(container) {
-  container.innerHTML = '';
-
-  if (products.length === 0) {
-    container.innerHTML = `<p style="text-align:center;color:#aaa;padding:20px;">Koi product nahi mila.</p>`;
-    return;
   }
 
-  products.forEach((p, index) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <img src="${p.image}" alt="${p.title}" loading="lazy">
-      <h3>${p.title}</h3>
-      <p>₹${Number(p.price).toLocaleString('en-IN')}</p>
-      <button class="btn" onclick="window.location.href='productPage.html?id=${p._id}'">
-        View Details
-      </button>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// ── Real-time polling ──────────────────────────────
-async function pollProducts() {
+  // 2. Background mein server se fresh data lao
   try {
-    const res  = await fetch(`${API_BASE}/public/products`);
+    const res = await fetch(`${API_BASE}/public/products`);
     const data = await res.json();
-    if (!data.success) return;
-
-    const newProducts = data.products.map(mapProduct);
-    const changed = JSON.stringify(newProducts) !== JSON.stringify(products);
-    
-    if (changed) {
-      products = newProducts;
-      const container = document.getElementById('productContainer');
-      if (container) renderCards(container);
+    if (data.success) {
+      const freshData = data.products.map(p => ({
+        _id: p._id, title: p.name, image: p.imageUrl, price: p.price, desc: p.description
+      }));
+      sessionStorage.setItem('store_cache', JSON.stringify(freshData));
+      
+      // Agar cache nahi tha, tabhi refresh karo taaki user ka scroll na bigde
+      if (!cache) {
+        products = shuffle(freshData);
+        renderCards(container);
+        _resolveReady(products);
+      }
     }
-  } catch (e) {}
+  } catch (e) { console.error(e); }
 }
 
+function renderCards(con) {
+  if (!con) return;
+  con.innerHTML = products.map(p => `
+    <div class="card">
+      <img src="${p.image}" loading="lazy">
+      <h3>${p.title}</h3>
+      <p>₹${p.price}</p>
+      <button class="btn" onclick="location.href='productPage.html?id=${p._id}'">View Details</button>
+    </div>
+  `).join('');
+}
 fetchAndRender();
-setInterval(pollProducts, 30000);
