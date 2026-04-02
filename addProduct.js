@@ -3,7 +3,7 @@ let products = [];
 let _resolveReady;
 window.productsReady = new Promise(res => { _resolveReady = res; });
 
-// ✅ Fisher-Yates shuffle (proper random, sort() wala biased hota hai)
+// ✅ Proper Fisher-Yates shuffle
 function shuffle(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -13,7 +13,7 @@ function shuffle(array) {
   return arr;
 }
 
-// ✅ Skeleton cards — space reserve karte hain taaki CLS na ho
+// ✅ Skeleton cards — same structure as real cards so no layout shift
 function renderSkeletons(con, count = 8) {
   if (!con) return;
   con.innerHTML = Array(count).fill(`
@@ -29,10 +29,9 @@ function renderSkeletons(con, count = 8) {
 async function fetchAndRender() {
   const container = document.getElementById('productContainer');
 
-  // 🔑 PEHLE skeleton dikhao — height reserve ho jaayegi, scroll nahi kudega
+  // Pehle skeleton dikhao — space reserved, scroll jump nahi hoga
   renderSkeletons(container);
 
-  // Cache se data hai toh turant cards dikhao
   const cache = sessionStorage.getItem('store_cache');
   if (cache) {
     products = shuffle(JSON.parse(cache));
@@ -40,20 +39,24 @@ async function fetchAndRender() {
     _resolveReady(products);
   }
 
-  // Background mein fresh data lao
   try {
     const res = await fetch(`${API_BASE}/public/products`);
     const data = await res.json();
     if (data.success) {
       const freshData = data.products.map(p => ({
-        _id: p._id, title: p.name, image: p.imageUrl, price: p.price, desc: p.description
+        _id: p._id,
+        title: p.name,
+        image: p.imageUrl,
+        price: p.price,
+        desc: p.description   // ✅ description bhi store karo — search ke liye
       }));
       sessionStorage.setItem('store_cache', JSON.stringify(freshData));
-
-      // Sirf tab refresh karo jab cache nahi tha
       if (!cache) {
         products = shuffle(freshData);
         renderCards(container);
+        _resolveReady(products);
+      } else {
+        // Cache tha — sirf products array update karo (UI nahi touch karo)
         _resolveReady(products);
       }
     }
@@ -63,11 +66,11 @@ async function fetchAndRender() {
 function renderCards(con) {
   if (!con) return;
   con.innerHTML = products.map(p => `
-    <div class="card">
+    <div class="card" onclick="location.href='productPage.html?id=${p._id}'">
       <img src="${p.image}" loading="lazy" alt="${p.title}">
       <h3>${p.title}</h3>
       <p>₹${Number(p.price).toLocaleString('en-IN')}</p>
-      <button class="btn" onclick="location.href='productPage.html?id=${p._id}'">View Details</button>
+      <button class="btn">View Details</button>
     </div>
   `).join('');
 }
