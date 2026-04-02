@@ -112,6 +112,19 @@ body{
     document.getElementById("shareBtn").style.display = "inline-block";
   });
 
+
+window.productsReady.then(() => {
+  const current = products.find(p => p._id === id);
+  // ... (Current product render logic) ...
+
+  // Neeche baaki products dikhao
+  const otherContainer = document.getElementById('productContainer');
+  const others = products.filter(p => p._id !== id).slice(0, 6); // 6 random products
+  others.forEach(p => {
+    // Card banane ka wahi purana logic yahan dalo
+  });
+});
+
   function shareProduct(){
     const shareData = { url: window.location.href };
     if(navigator.share){ navigator.share(shareData); }
