@@ -1,4 +1,4 @@
-const API_BASE = '';
+const API_BASE = 'https://anntya-products.onrender.com';
 let products = [];
 let _resolveReady;
 window.productsReady = new Promise(res => { _resolveReady = res; });
