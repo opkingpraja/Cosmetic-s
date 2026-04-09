@@ -4,116 +4,165 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="transparent">
-<title>Product Details</title>
+<title>Product Details — Anntya</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins",sans-serif; user-select:none; }
-html, body { touch-action:manipulation; overscroll-behavior:none; -webkit-overflow-scrolling:touch; }
-input, textarea { font-size:16px; }
-body {
-  padding-top:env(safe-area-inset-top);
-  padding-left:env(safe-area-inset-left);
-  padding-right:env(safe-area-inset-right);
-  background:#f0f4f5;
-}
-.light-theme { --accent:#ff4e88; --accent2:#ffb26b; }
-
-/* ── MAIN PRODUCT ── */
-.product-page { max-width:900px; margin:auto; padding:20px; background:#e9f0f1; border-radius:10px; }
-.product-img { width:100%; border-radius:20px; overflow:hidden; }
-.product-img img {
-  width:100%;
-  /* ✅ 4:3 reserved space */
-  aspect-ratio: 4 / 3;
-  object-fit:cover; display:none; border-radius:20px;
-  background:#e0e0e0;
-}
-.product-details { margin-top:20px; background:white; padding:20px; border-radius:15px; }
-.product-details h1 { font-size:24px; }
-.price { font-size:22px; color:#ff4e88; margin:10px 0; font-weight:bold; }
-.desc { color:#444; line-height:1.6; font-size:14px; }
-.buy-btn, .share-btn {
-  margin-top:20px; padding:12px 25px; border:none; border-radius:25px;
-  font-size:15px; cursor:pointer; display:none; transition:opacity 0.2s;
-}
-.buy-btn  { background:linear-gradient(90deg,#f77ca4,#feddbf); color:white; }
-.share-btn{ background:linear-gradient(90deg,#7c68eaef,#b2f0ffd4); color:white; margin-left:10px; }
-.buy-btn:hover,.share-btn:hover { opacity:0.85; }
-
-/* ── SKELETON ── */
-@keyframes shimmer { 0%{background-position:-500px 0} 100%{background-position:500px 0} }
-.skeleton {
-  background:#e0e0e0;
-  background-image:linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,0.6) 50%,rgba(255,255,255,0) 100%);
-  background-size:500px 100%; animation:shimmer 1.5s infinite linear; border-radius:10px;
-}
-/* ✅ 4:3 skeleton */
-.skel-img   { aspect-ratio:4/3; width:100%; }
-.skel-title { height:28px; width:70%; margin-bottom:14px; }
-.skel-price { height:24px; width:40%; margin-bottom:18px; }
-.skel-desc  { height:14px; width:100%; margin-bottom:8px; }
-.skel-btn   { height:44px; width:130px; display:inline-block; margin-top:20px; border-radius:25px; }
-
-/* ── RELATED SECTION ── */
-.related-section { max-width:900px; margin:28px auto 50px; padding:0 16px; }
-.related-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
-.related-header h2 { font-size:20px; font-weight:700; color:#ff4e88; }
-.rel-tag {
-  background:#fff0f5; color:#ff4e88; font-size:11px; font-weight:700;
-  padding:3px 10px; border-radius:20px; border:1px solid #ffc0d3;
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;user-select:none;}
+html, body {
+  width: 100%;
+  height: 100%; /* Height fix */
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: visible; /* Scroll allow karne ke liye */
+  touch-action: auto; 
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Category label inside grid */
-.rel-category-label {
-  grid-column:1/-1;
-  font-size:11px; font-weight:700; color:#aaa;
-  text-transform:uppercase; letter-spacing:0.5px;
-  padding-bottom:6px; margin-top:10px;
-  border-bottom:2px solid #ffe0ed;
+input,textarea{font-size:16px;}
+:root{
+  --r:#e6196a;--r2:#ff5f98;--p:#ff8c52;--gold:#f5c340;
+  --cream:#fff8fb;--white:#fff;--text:#180810;--text2:#7a5065;--text3:#c8a8b5;
+  --border:#f5dce6;--sh:rgba(230,25,106,.16);--soft:rgba(0,0,0,.055);
 }
+body{background:var(--cream);color:var(--text);
+  padding-top:env(safe-area-inset-top);padding-bottom:100px;}
 
-.related-grid {
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
-}
-@media(min-width:480px){ .related-grid{ grid-template-columns:repeat(3,1fr); } }
-@media(min-width:768px){ .related-grid{ grid-template-columns:repeat(4,1fr); } }
+/* Ambient */
+.bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);animation:blobDrift 12s ease-in-out infinite;}
+.b1{width:480px;height:480px;background:radial-gradient(circle,rgba(255,155,195,.26),transparent 68%);top:-160px;left:-120px;}
+.b2{width:380px;height:380px;background:radial-gradient(circle,rgba(255,175,130,.2),transparent 68%);top:40%;right:-120px;animation-delay:-4s;}
+@keyframes blobDrift{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(22px,-22px) scale(1.06);}}
 
-/* ── Related Card ── */
-.rel-card {
-  background:white; border-radius:14px; overflow:hidden;
-  cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.07);
-  display:flex; flex-direction:column;
-  transition:transform 0.2s,box-shadow 0.2s;
-}
-.rel-card:hover  { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.12); }
-.rel-card:active { transform:scale(0.97); }
+/* Page header */
+.page-header{position:sticky;top:0;z-index:100;
+  background:rgba(255,248,251,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:13px 16px;
+  display:flex;align-items:center;gap:12px;
+  animation:slideDown .5s ease both;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+.back-btn{width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;text-decoration:none;font-size:18px;
+  box-shadow:0 4px 12px var(--sh);transition:all .22s;flex-shrink:0;}
+.back-btn:hover{transform:scale(1.08);}
+.hd-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.light-theme{--accent:var(--r);--accent2:var(--p);}
 
-/* ✅ 4:3 on related card images */
-.rel-card img {
-  width:100%;
-  aspect-ratio: 4 / 3;
-  object-fit:cover; display:block; background:#f0f0f0;
-}
-.rel-card-body { padding:10px; flex:1; display:flex; flex-direction:column; gap:4px; }
-.rel-card-body h4 {
-  font-size:12px; color:#333; font-weight:600;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.rel-price { font-size:13px; color:#ff4e88; font-weight:700; }
-.rel-btn {
-  margin-top:auto; width:100%; padding:7px 0; border:none; border-radius:20px;
-  background:linear-gradient(90deg,#f77ca4,#feddbf);
-  color:white; font-size:11px; font-weight:600; cursor:pointer;
-}
+/* ── Main Product ── */
+.product-page{max-width:860px;margin:0 auto;padding:16px 14px 0;position:relative;z-index:1;}
 
-/* Skeleton cards in related grid */
-.rel-skel-img   { aspect-ratio:4/3; width:100%; border-radius:0; }
-.rel-skel-title { height:12px; width:80%; margin:10px 10px 6px; border-radius:6px; }
-.rel-skel-price { height:12px; width:50%; margin:0 10px 10px; border-radius:6px; }
+.product-img{border-radius:24px;overflow:hidden;
+  box-shadow:0 16px 60px rgba(230,25,106,.15),0 4px 16px var(--soft);
+  position:relative;}
+.product-img img{
+  width:100%; height: 100%; ;object-fit:cover;display:none;border-radius:24px;
+  background:#f8eaf0;transition:transform .5s ease;}
+.product-img:hover img{transform:scale(1.02);}
+
+/* Gradient overlay on product image bottom */
+.product-img::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40%;
+  background:linear-gradient(transparent,rgba(24,8,16,.12));
+  border-radius:0 0 24px 24px;pointer-events:none;}
+
+.product-details{margin-top:18px;background:#fff;padding:22px;border-radius:22px;
+  box-shadow:0 6px 30px var(--soft);border:1px solid var(--border);}
+
+.product-details h1{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;
+  color:var(--text);letter-spacing:-.3px;line-height:1.25;}
+.price{font-size:24px;font-weight:800;margin:10px 0;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.desc{color:var(--text2);line-height:1.7;font-size:14px;font-weight:400;}
+
+/* Action buttons */
+.btn-row{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;}
+.buy-btn,.share-btn{
+  padding:13px 26px;border:none;border-radius:50px;
+  font-size:14px;font-weight:700;cursor:pointer;display:none;
+  font-family:'Poppins',sans-serif;transition:all .28s;position:relative;overflow:hidden;
+}
+.buy-btn::after,.share-btn::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+  transform:translateX(-100%);transition:transform .45s;}
+.buy-btn:hover::after,.share-btn:hover::after{transform:translateX(100%);}
+.buy-btn{background:linear-gradient(135deg,var(--r),var(--p));color:#fff;
+  box-shadow:0 6px 20px rgba(230,25,106,.32);flex:1;}
+.buy-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(230,25,106,.42);}
+.share-btn{background:linear-gradient(135deg,#7c68ea,#b2f0ff);color:#fff;
+  box-shadow:0 6px 20px rgba(124,104,234,.28);}
+.share-btn:hover{transform:translateY(-2px);}
+
+/* ── Skeleton ── */
+@keyframes shimmer{0%{background-position:-500px 0;}100%{background-position:500px 0;}}
+.skeleton{background:#e8d8e0;
+  background-image:linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,.6) 50%,rgba(255,255,255,0) 100%);
+  background-size:500px 100%;animation:shimmer 1.5s infinite linear;border-radius:10px;}
+.skel-img{aspect-ratio:4/3;width:100%;border-radius:24px;}
+.skel-title{height:28px;width:70%;margin-bottom:14px;}
+.skel-price{height:24px;width:40%;margin-bottom:18px;}
+.skel-desc{height:14px;width:100%;margin-bottom:8px;}
+.skel-btn{height:44px;width:130px;display:inline-block;margin-top:20px;border-radius:50px;}
+
+/* ── Related Section ── */
+.related-section{max-width:860px;margin:24px auto 50px;padding:0 14px;}
+
+.related-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;position:relative;z-index:1;}
+.related-header h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+.rel-category-label{grid-column:1/-1;font-size:11px;font-weight:700;color:#bbb;
+  text-transform:uppercase;letter-spacing:.5px;
+  padding-bottom:6px;margin-top:10px;border-bottom:2px solid #ffe0ed;}
+
+.related-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(min-width:480px){.related-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:768px){.related-grid{grid-template-columns:repeat(4,1fr);}}
+
+.rel-card{background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;
+  box-shadow:0 3px 16px var(--soft);border:1px solid var(--border);
+  display:flex;flex-direction:column;
+  transition:transform .28s,box-shadow .28s;position:relative;}
+.rel-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;
+  background:linear-gradient(90deg,var(--r),var(--p));opacity:0;transition:opacity .28s;}
+.rel-card:hover::after{opacity:1;}
+.rel-card:hover{transform:translateY(-5px);box-shadow:0 12px 40px rgba(230,25,106,.14);}
+.rel-card:active{transform:scale(.97);}
+.rel-card img{width:100%;height: 100%;;object-fit:cover;display:block;background:#f0e8ec;
+  transition:transform .4s ease;}
+.rel-card:hover img{transform:scale(1.06);}
+
+.rel-card-body{padding:10px;flex:1;display:flex;flex-direction:column;gap:4px;}
+.rel-card-body h4{font-size:12px;color:var(--text);font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rel-price{font-size:13px;font-weight:700;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.rel-btn{margin-top:auto;width:100%;padding:7px 0;border:none;border-radius:50px;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  color:#fff;font-size:11px;font-weight:700;cursor:pointer;
+  font-family:'Poppins',sans-serif;
+  box-shadow:0 3px 10px rgba(230,25,106,.24);transition:all .22s;}
+.rel-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(230,25,106,.34);}
+
+.rel-skel-img{aspect-ratio:4/3;width:100%;border-radius:0;}
+.rel-skel-title{height:12px;width:80%;margin:10px 10px 6px;border-radius:6px;}
+.rel-skel-price{height:12px;width:50%;margin:0 10px 10px;border-radius:6px;}
 </style>
 </head>
 <body class="light-theme">
+
+<div class="bg-wrap"><div class="blob b1"></div><div class="blob b2"></div></div>
+
+<div class="page-header">
+  <a class="back-btn" href="index.html">&#8592;</a>
+  <div class="hd-title">Product Details</div>
+</div>
 
 <div class="product-page">
   <div class="product-img skeleton skel-img" id="img-skeleton"></div>
@@ -129,19 +178,19 @@ body {
       <div class="skeleton skel-desc" style="width:60%"></div>
     </div>
     <p class="desc" id="desc"></p>
-    <div class="skeleton skel-btn" id="btn1-skeleton"></div>
-    <div class="skeleton skel-btn" id="btn2-skeleton" style="margin-left:10px;"></div>
-    <button class="buy-btn"   id="buyBtn"   onclick="addToCart()">Add to Cart 🛒</button>
-    <button class="share-btn" id="shareBtn" onclick="shareProduct()">Share 📤</button>
+    <div class="btn-row">
+      <div class="skeleton skel-btn" id="btn1-skeleton"></div>
+      <div class="skeleton skel-btn" id="btn2-skeleton"></div>
+      <button class="buy-btn"   id="buyBtn"   onclick="addToCart()">Add to Cart 🛒</button>
+      <button class="share-btn" id="shareBtn" onclick="shareProduct()">Share 📤</button>
+    </div>
   </div>
 </div>
 
 <div class="related-section">
   <div class="related-header">
     <h2>Related Products</h2>
-    <span class="rel-tag" id="relTag">Loading...</span>
   </div>
-  <!-- Skeleton grid — space reserved immediately -->
   <div class="related-grid" id="relatedGrid">
     <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
     <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
@@ -250,7 +299,6 @@ body {
       shuffle(diffCat).forEach(p => { grid.appendChild(makeCard(p)); total++; });
     }
 
-    document.getElementById("relTag").textContent = total + ' product' + (total !== 1 ? 's' : '');
     if (total === 0) {
       grid.innerHTML = '<p style="color:#999;padding:10px;grid-column:1/-1">No related products.</p>';
     }
