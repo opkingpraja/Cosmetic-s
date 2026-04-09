@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="transparent">
+<title>Product Details — Anntya</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;user-select:none;}
+html, body {
+  width: 100%;
+  height: 100%; /* Height fix */
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: visible; /* Scroll allow karne ke liye */
+  touch-action: auto; 
+  -webkit-overflow-scrolling: touch;
+}
+
+input,textarea{font-size:16px;}
+:root{
+  --r:#e6196a;--r2:#ff5f98;--p:#ff8c52;--gold:#f5c340;
+  --cream:#fff8fb;--white:#fff;--text:#180810;--text2:#7a5065;--text3:#c8a8b5;
+  --border:#f5dce6;--sh:rgba(230,25,106,.16);--soft:rgba(0,0,0,.055);
+}
+body{background:var(--cream);color:var(--text);
+  padding-top:env(safe-area-inset-top);padding-bottom:100px;}
+
+/* Ambient */
+.bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);animation:blobDrift 12s ease-in-out infinite;}
+.b1{width:480px;height:480px;background:radial-gradient(circle,rgba(255,155,195,.26),transparent 68%);top:-160px;left:-120px;}
+.b2{width:380px;height:380px;background:radial-gradient(circle,rgba(255,175,130,.2),transparent 68%);top:40%;right:-120px;animation-delay:-4s;}
+@keyframes blobDrift{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(22px,-22px) scale(1.06);}}
+
+/* Page header */
+.page-header{position:sticky;top:0;z-index:100;
+  background:rgba(255,248,251,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:13px 16px;
+  display:flex;align-items:center;gap:12px;
+  animation:slideDown .5s ease both;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+.back-btn{width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;text-decoration:none;font-size:18px;
+  box-shadow:0 4px 12px var(--sh);transition:all .22s;flex-shrink:0;}
+.back-btn:hover{transform:scale(1.08);}
+.hd-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.light-theme{--accent:var(--r);--accent2:var(--p);}
+
+/* ── Main Product ── */
+.product-page{max-width:860px;margin:0 auto;padding:16px 14px 0;position:relative;z-index:1;}
+
+.product-img{border-radius:24px;overflow:hidden;
+  box-shadow:0 16px 60px rgba(230,25,106,.15),0 4px 16px var(--soft);
+  position:relative;}
+.product-img img{
+  width:100%; height: 100%; ;object-fit:cover;display:none;border-radius:24px;
+  background:#f8eaf0;transition:transform .5s ease;}
+.product-img:hover img{transform:scale(1.02);}
+
+/* Gradient overlay on product image bottom */
+.product-img::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40%;
+  background:linear-gradient(transparent,rgba(24,8,16,.12));
+  border-radius:0 0 24px 24px;pointer-events:none;}
+
+.product-details{margin-top:18px;background:#fff;padding:22px;border-radius:22px;
+  box-shadow:0 6px 30px var(--soft);border:1px solid var(--border);}
+
+.product-details h1{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;
+  color:var(--text);letter-spacing:-.3px;line-height:1.25;}
+.price{font-size:24px;font-weight:800;margin:10px 0;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.desc{color:var(--text2);line-height:1.7;font-size:14px;font-weight:400;}
+
+/* Action buttons */
+.btn-row{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;}
+.buy-btn,.share-btn{
+  padding:13px 26px;border:none;border-radius:50px;
+  font-size:14px;font-weight:700;cursor:pointer;display:none;
+  font-family:'Poppins',sans-serif;transition:all .28s;position:relative;overflow:hidden;
+}
+.buy-btn::after,.share-btn::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+  transform:translateX(-100%);transition:transform .45s;}
+.buy-btn:hover::after,.share-btn:hover::after{transform:translateX(100%);}
+.buy-btn{background:linear-gradient(135deg,var(--r),var(--p));color:#fff;
+  box-shadow:0 6px 20px rgba(230,25,106,.32);flex:1;}
+.buy-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(230,25,106,.42);}
+.share-btn{background:linear-gradient(135deg,#7c68ea,#b2f0ff);color:#fff;
+  box-shadow:0 6px 20px rgba(124,104,234,.28);}
+.share-btn:hover{transform:translateY(-2px);}
+
+/* ── Skeleton ── */
+@keyframes shimmer{0%{background-position:-500px 0;}100%{background-position:500px 0;}}
+.skeleton{background:#e8d8e0;
+  background-image:linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,.6) 50%,rgba(255,255,255,0) 100%);
+  background-size:500px 100%;animation:shimmer 1.5s infinite linear;border-radius:10px;}
+.skel-img{aspect-ratio:4/3;width:100%;border-radius:24px;}
+.skel-title{height:28px;width:70%;margin-bottom:14px;}
+.skel-price{height:24px;width:40%;margin-bottom:18px;}
+.skel-desc{height:14px;width:100%;margin-bottom:8px;}
+.skel-btn{height:44px;width:130px;display:inline-block;margin-top:20px;border-radius:50px;}
+
+/* ── Related Section ── */
+.related-section{max-width:860px;margin:24px auto 50px;padding:0 14px;}
+
+.related-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;position:relative;z-index:1;}
+.related-header h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+.rel-category-label{grid-column:1/-1;font-size:11px;font-weight:700;color:#bbb;
+  text-transform:uppercase;letter-spacing:.5px;
+  padding-bottom:6px;margin-top:10px;border-bottom:2px solid #ffe0ed;}
+
+.related-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(min-width:480px){.related-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:768px){.related-grid{grid-template-columns:repeat(4,1fr);}}
+
+.rel-card{background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;
+  box-shadow:0 3px 16px var(--soft);border:1px solid var(--border);
+  display:flex;flex-direction:column;
+  transition:transform .28s,box-shadow .28s;position:relative;}
+.rel-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;
+  background:linear-gradient(90deg,var(--r),var(--p));opacity:0;transition:opacity .28s;}
+.rel-card:hover::after{opacity:1;}
+.rel-card:hover{transform:translateY(-5px);box-shadow:0 12px 40px rgba(230,25,106,.14);}
+.rel-card:active{transform:scale(.97);}
+.rel-card img{width:100%;height: 100%;;object-fit:cover;display:block;background:#f0e8ec;
+  transition:transform .4s ease;}
+.rel-card:hover img{transform:scale(1.06);}
+
+.rel-card-body{padding:10px;flex:1;display:flex;flex-direction:column;gap:4px;}
+.rel-card-body h4{font-size:12px;color:var(--text);font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rel-price{font-size:13px;font-weight:700;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.rel-btn{margin-top:auto;width:100%;padding:7px 0;border:none;border-radius:50px;
+  background:linear-gradient(135deg,var(--r),var(--p));
+  color:#fff;font-size:11px;font-weight:700;cursor:pointer;
+  font-family:'Poppins',sans-serif;
+  box-shadow:0 3px 10px rgba(230,25,106,.24);transition:all .22s;}
+.rel-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(230,25,106,.34);}
+
+.rel-skel-img{aspect-ratio:4/3;width:100%;border-radius:0;}
+.rel-skel-title{height:12px;width:80%;margin:10px 10px 6px;border-radius:6px;}
+.rel-skel-price{height:12px;width:50%;margin:0 10px 10px;border-radius:6px;}
+</style>
+</head>
+<body class="light-theme">
+
+<div class="bg-wrap"><div class="blob b1"></div><div class="blob b2"></div></div>
+
+<div class="page-header">
+  <a class="back-btn" href="index.html">&#8592;</a>
+  <div class="hd-title">Product Details</div>
+</div>
+
+<div class="product-page">
+  <div class="product-img skeleton skel-img" id="img-skeleton"></div>
+  <div class="product-img"><img id="image" alt="Product"></div>
+  <div class="product-details">
+    <div class="skeleton skel-title" id="title-skeleton"></div>
+    <h1 id="title"></h1>
+    <div class="skeleton skel-price" id="price-skeleton"></div>
+    <div class="price" id="price"></div>
+    <div id="desc-skeleton">
+      <div class="skeleton skel-desc"></div>
+      <div class="skeleton skel-desc" style="width:80%"></div>
+      <div class="skeleton skel-desc" style="width:60%"></div>
+    </div>
+    <p class="desc" id="desc"></p>
+    <div class="btn-row">
+      <div class="skeleton skel-btn" id="btn1-skeleton"></div>
+      <div class="skeleton skel-btn" id="btn2-skeleton"></div>
+      <button class="buy-btn"   id="buyBtn"   onclick="addToCart()">Add to Cart 🛒</button>
+      <button class="share-btn" id="shareBtn" onclick="shareProduct()">Share 📤</button>
+    </div>
+  </div>
+</div>
+
+<div class="related-section">
+  <div class="related-header">
+    <h2>Related Products</h2>
+  </div>
+  <div class="related-grid" id="relatedGrid">
+    <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
+    <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
+    <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
+    <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
+    <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
+    <div class="rel-card"><div class="skeleton rel-skel-img"></div><div class="skeleton rel-skel-title"></div><div class="skeleton rel-skel-price"></div></div>
+  </div>
+</div>
+
+<script src="addProduct.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  let product = null;
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Category keywords — longest first for correct matching
+  const CATEGORIES = [
+    'face wash','bb cream','cc cream','lip gloss','lip liner','lip balm',
+    'nail polish','nail paint','setting spray','sheet mask',
+    'perfume','attar','fragrance','deodorant','deo',
+    'lipstick','lip','foundation','concealer','primer',
+    'mascara','eyeliner','eyeshadow','kajal','eye',
+    'blush','bronzer','highlighter','contour',
+    'powder','compact','serum','moisturizer','toner',
+    'cleanser','sunscreen','spf','nail',
+    'brush','sponge','cream','lotion','gel','oil',
+    'hair','shampoo','conditioner','scrub','mask'
+  ];
+
+  function getCategory(title) {
+    const lower = title.toLowerCase();
+    return CATEGORIES.find(k => lower.includes(k)) || null;
+  }
+
+  function makeCard(p) {
+    const div = document.createElement('div');
+    div.className = 'rel-card';
+    div.innerHTML = `
+      <img src="${p.image}" loading="lazy" alt="${p.title}">
+      <div class="rel-card-body">
+        <h4>${p.title}</h4>
+        <div class="rel-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
+        <button class="rel-btn">View Details</button>
+      </div>`;
+    div.onclick = () => location.href = 'productPage.html?id=' + p._id;
+    return div;
+  }
+
+  function makeSectionLabel(text) {
+    const d = document.createElement('div');
+    d.className = 'rel-category-label';
+    d.textContent = text;
+    return d;
+  }
+
+  window.productsReady.then(function () {
+    // ── Main product ──
+    product = products.find(p => p._id === id);
+    if (!product) {
+      document.getElementById("title").innerText = "Product not found";
+      document.getElementById("relatedGrid").innerHTML =
+        '<p style="color:#999;padding:10px;grid-column:1/-1">No products found.</p>';
+      document.getElementById("relTag").textContent = '0 products';
+      return;
+    }
+
+    ["img-skeleton","title-skeleton","price-skeleton","desc-skeleton","btn1-skeleton","btn2-skeleton"]
+      .forEach(sid => document.getElementById(sid).style.display = "none");
+
+    const img = document.getElementById("image");
+    img.src = product.image;
+    img.style.display = "block";
+    document.getElementById("title").innerText = product.title;
+    document.getElementById("price").innerText = "₹" + Number(product.price).toLocaleString('en-IN');
+    document.getElementById("desc").innerText  = product.desc;
+    document.getElementById("buyBtn").style.display   = "inline-block";
+    document.getElementById("shareBtn").style.display = "inline-block";
+
+    // ── Related: same category first, then others ──
+    const currentCat = getCategory(product.title);
+    const others = products.filter(p => p._id !== id);
+    const sameCat  = others.filter(p => currentCat && getCategory(p.title) === currentCat);
+    const diffCat  = others.filter(p => !currentCat || getCategory(p.title) !== currentCat);
+
+    const grid = document.getElementById("relatedGrid");
+    grid.innerHTML = '';
+    let total = 0;
+
+    if (sameCat.length > 0) {
+      const name = currentCat.charAt(0).toUpperCase() + currentCat.slice(1);
+      grid.appendChild(makeSectionLabel('More ' + name + 's'));
+      shuffle(sameCat).forEach(p => { grid.appendChild(makeCard(p)); total++; });
+    }
+    if (diffCat.length > 0) {
+      grid.appendChild(makeSectionLabel('You May Also Like'));
+      shuffle(diffCat).forEach(p => { grid.appendChild(makeCard(p)); total++; });
+    }
+
+    if (total === 0) {
+      grid.innerHTML = '<p style="color:#999;padding:10px;grid-column:1/-1">No related products.</p>';
+    }
+  });
+
+  function addToCart() {
+    if (!product) return;
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let existing = cart.find(item => item._id === product._id);
+    if (existing) { existing.qty = (existing.qty || 1) + 1; }
+    else { cart.push({ ...product, qty: 1 }); }
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.location.href = "cart.html";
+  }
+
+  function shareProduct() {
+    if (navigator.share) { navigator.share({ url: window.location.href }); }
+    else {
+      window.open("https://api.whatsapp.com/send?text=" +
+        encodeURIComponent(product.title + " - ₹" + product.price + " " + window.location.href), "_blank");
+    }
+  }
+</script>
+</body>
+</html>
