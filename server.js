@@ -164,8 +164,8 @@ app.get('/public/products', async (req, res) => {
   }
 });
 
-// ── GET /admin/meta — categories, dates, quantities for admin panel cache ─────
-app.get('/admin/meta', requireAuth, async (req, res) => {
+// ── GET /products/meta (Path fixed for admin.html) ──────────────────────────
+app.get('/products/meta', requireAuth, async (req, res) => {
   try {
     const [categories, dates, quantities] = await Promise.all([
       Category.find().sort({ name: 1 }).lean(),
@@ -301,3 +301,4 @@ app.delete('/products/:id', requireAuth, async (req, res) => {
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => console.log(`🚀 Server: http://localhost:${PORT}`));
+                        
