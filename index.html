@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Anntya — Beauty &amp; Cosmetics</title>
+  <link rel="manifest" href="manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;user-select:none;}
+  html,body{touch-action:manipulation;width:100%;overflow-x:hidden;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;}
+  input,textarea{font-size:16px;}
+  :root{
+    --r:#e6196a;--r2:#ff5f98;--p:#ff8c52;--gold:#f5c340;
+    --cream:#fff8fb;--white:#fff;--text:#180810;--text2:#7a5065;--text3:#c8a8b5;
+    --border:#f5dce6;--sh:rgba(230,25,106,.16);--soft:rgba(0,0,0,.055);
+    --bg:var(--cream);--accent:var(--r);--accent2:var(--p);--box-bg:#fff;--card:#fff;
+  }
+  body{background:var(--bg);color:var(--text);
+    padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);}
+
+  /* ── Ambient Blobs ── */
+  .bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .blob{position:absolute;border-radius:50%;filter:blur(88px);animation:blobDrift 11s ease-in-out infinite;}
+  .b1{width:520px;height:520px;background:radial-gradient(circle,rgba(255,155,195,.28),transparent 68%);top:-170px;left:-130px;animation-delay:0s;}
+  .b2{width:420px;height:420px;background:radial-gradient(circle,rgba(255,175,130,.22),transparent 68%);top:55%;right:-140px;animation-delay:-3.5s;}
+  .b3{width:360px;height:360px;background:radial-gradient(circle,rgba(245,195,80,.18),transparent 68%);bottom:80px;left:28%;animation-delay:-7s;}
+  @keyframes blobDrift{0%,100%{transform:translate(0,0) scale(1);}35%{transform:translate(28px,-28px) scale(1.07);}70%{transform:translate(-18px,22px) scale(.93);}}
+
+  /* ── Sparkles ── */
+  .sp-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .sp{position:absolute;border-radius:50%;opacity:0;animation:spAnim 5s ease-in-out infinite;}
+  @keyframes spAnim{0%,100%{opacity:0;transform:scale(0) translateY(0);}35%,65%{opacity:.6;transform:scale(1) translateY(-26px);}}
+  .s1{width:5px;height:5px;background:var(--r);left:7%;top:20%;animation-delay:0s;}
+  .s2{width:4px;height:4px;background:var(--p);left:21%;top:58%;animation-delay:.9s;}
+  .s3{width:6px;height:6px;background:var(--gold);left:42%;top:14%;animation-delay:1.8s;}
+  .s4{width:4px;height:4px;background:var(--r2);left:63%;top:44%;animation-delay:2.7s;}
+  .s5{width:5px;height:5px;background:var(--p);left:79%;top:70%;animation-delay:3.6s;}
+  .s6{width:3px;height:3px;background:var(--gold);left:89%;top:28%;animation-delay:4.5s;}
+  .s7{width:4px;height:4px;background:var(--r);left:52%;top:82%;animation-delay:1.3s;}
+  .s8{width:5px;height:5px;background:var(--r2);left:34%;top:90%;animation-delay:2.2s;}
+
+  /* ── Side Menu ── */
+  .side-menu{position:fixed;top:0;left:-295px;width:274px;height:100%;
+    background:var(--white);box-shadow:6px 0 55px rgba(230,25,106,.18);
+    border-radius:0 30px 30px 0;
+    transition:left .46s cubic-bezier(.34,1.2,.64,1);z-index:1001;overflow:hidden;}
+  .side-menu.active{left:0;}
+  .sm-head{background:linear-gradient(148deg,var(--r) 0%,var(--p) 100%);
+    padding:52px 22px 26px;position:relative;overflow:hidden;}
+  .sm-head::before{content:'';position:absolute;width:210px;height:210px;border-radius:50%;
+    background:rgba(255,255,255,.09);top:-80px;right:-60px;}
+  .sm-head::after{content:'✦';position:absolute;right:20px;bottom:16px;font-size:30px;
+    color:rgba(255,255,255,.22);animation:starSpin 9s linear infinite;}
+  @keyframes starSpin{to{transform:rotate(360deg);}}
+  .sm-brand{color:#fff;font-size:22px;font-weight:800;letter-spacing:-.5px;position:relative;z-index:1;}
+  .sm-tag{color:rgba(255,255,255,.78);font-size:11px;margin-top:4px;position:relative;z-index:1;}
+  .close-btn{position:absolute;top:14px;right:14px;width:34px;height:34px;
+    background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;
+    justify-content:center;cursor:pointer;font-size:14px;color:#fff;font-weight:700;
+    transition:all .22s;z-index:2;}
+  .close-btn:hover{background:rgba(255,255,255,.38);transform:rotate(90deg);}
+  .sm-links{padding:18px 12px;}
+  .side-menu a{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--text);
+    padding:13px 16px;margin:3px 0;border-radius:15px;font-weight:500;font-size:15px;
+    transition:all .28s;position:relative;overflow:hidden;}
+  .side-menu a::before{content:'';position:absolute;inset:0;border-radius:15px;
+    background:linear-gradient(135deg,var(--r),var(--p));opacity:0;transition:opacity .28s;}
+  .side-menu a:hover::before{opacity:1;}
+  .side-menu a:hover{color:#fff;transform:translateX(5px);}
+  .side-menu a .mi,.side-menu a .mt{position:relative;z-index:1;}
+  .side-menu a .mi{font-size:20px;}
+  .sm-div{height:1px;background:var(--border);margin:8px 12px;}
+
+  /* ── Overlay ── */
+  .overlay{position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(18,4,12,.56);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    z-index:1000;opacity:0;visibility:hidden;
+    transition:opacity .4s ease,visibility .4s ease;}
+  .overlay.active{opacity:1;visibility:visible;}
+
+  /* ── Navbar ── */
+  .navbar{position:relative;z-index:100;margin:12px 12px 0;
+    background:rgba(255,255,255,.9);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
+    border:1px solid rgba(255,120,158,.2);border-radius:22px;padding:10px 14px;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    box-shadow:0 8px 36px rgba(230,25,106,.08),0 2px 10px rgba(0,0,0,.04);
+    animation:navSlide .7s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes navSlide{from{opacity:0;transform:translateY(-22px);}to{opacity:1;transform:translateY(0);}}
+  .menu-btn{width:42px;height:42px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--r),var(--p));border-radius:14px;cursor:pointer;
+    display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;
+    box-shadow:0 4px 14px var(--sh);transition:all .25s;}
+  .menu-btn span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;}
+  .menu-btn:hover{transform:scale(1.06);}
+  .menu-btn:active{transform:scale(.95);}
+  .nav-right{display:flex;align-items:center;gap:10px;}
+  .nav-logo-img{width:40px;height:40px;border-radius:50%;object-fit:cover;
+    border:2.5px solid transparent;
+    background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--r),var(--p)) border-box;
+    box-shadow:0 4px 14px var(--sh);transition:transform .3s,box-shadow .3s;}
+  .nav-logo-img:hover{transform:rotate(8deg) scale(1.08);box-shadow:0 6px 20px var(--sh);}
+
+  /* ── Search ── */
+  .search-container{position:relative;flex:1;max-width:240px;}
+  .search-box{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.95);
+    border:1.5px solid var(--border);border-radius:50px;padding:7px 14px;
+    transition:all .3s;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+  .search-box:focus-within{border-color:var(--r);box-shadow:0 0 0 3px rgba(230,25,106,.1);}
+  .search-box input{background:transparent;border:none;color:var(--text);outline:none;width:100%;font-size:13px;}
+  .search-box input::placeholder{color:var(--text3);}
+  .search-icon{font-size:14px;color:var(--r);flex-shrink:0;}
+  .suggestions-box{position:absolute;top:calc(100% + 8px);left:0;width:280px;
+    background:#fff;border-radius:18px;
+    box-shadow:0 24px 68px rgba(0,0,0,.13),0 4px 16px var(--sh);
+    border:1px solid var(--border);max-height:420px;overflow-y:auto;z-index:2000;display:none;
+    animation:ddDrop .22s ease;}
+  @keyframes ddDrop{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+  .sugg-section-label{font-size:10px;font-weight:700;color:#bbb;text-transform:uppercase;
+    letter-spacing:1px;padding:10px 14px 6px;background:#fafafa;
+    border-bottom:1px solid #f5f5f5;position:sticky;top:0;}
+  .sugg-section-label.others{border-top:2px solid #ffe0ed;}
+  .suggestion-item{display:flex;align-items:center;padding:10px 14px;gap:12px;
+    cursor:pointer;border-bottom:1px solid #fafafa;color:#333;transition:background .15s;}
+  .suggestion-item:hover{background:#fff4f8;}
+  .suggestion-item:last-child{border-bottom:none;}
+  .suggestion-item img{width:50px;height:38px;aspect-ratio:4/3;object-fit:cover;
+    border-radius:8px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  .sugg-info{display:flex;flex-direction:column;overflow:hidden;flex:1;}
+  .sugg-name{font-size:13px;font-weight:600;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sugg-price{font-size:12px;color:var(--r);font-weight:700;margin-top:2px;}
+  .sugg-match{font-size:10px;color:#bbb;margin-top:2px;}
+
+  /* ══════════════════════════════════════════════════
+     HERO SLIDER — Cinematic Wipe/Reveal
+  ══════════════════════════════════════════════════ */
+  .hero-slider{position:relative;z-index:1;margin:12px 12px 0;border-radius:26px;
+    overflow:hidden;aspect-ratio:16/6;
+    background:linear-gradient(135deg,#ffd0e6,#ffe2c0);
+    box-shadow:0 22px 68px rgba(230,25,106,.2),0 6px 20px rgba(0,0,0,.06);}
+  @media(max-width:480px){.hero-slider{aspect-ratio:16/8.5;margin:10px 10px 0;}}
+  @media(max-width:768px){.hero-slider{aspect-ratio:16/7.2;}}
+  @media(min-width:1024px){.hero-slider{max-width:1200px;margin:12px auto 0;}}
+
+  .slide-item{position:absolute;inset:0;opacity:0;z-index:0;
+    clip-path:polygon(0 0,0 0,0 100%,0 100%);}
+  .slide-item img{width:100%;height:100%;object-fit:cover;display:block;
+    transform:scale(1.08);transition:transform 7s ease;will-change:transform;}
+  .slide-glow{position:absolute;inset:0;
+    background:linear-gradient(100deg,rgba(230,25,106,.16) 0%,transparent 55%);}
+
+  .slide-item.slide-active{opacity:1;z-index:1;
+    animation:wipeIn .88s cubic-bezier(.22,1,.36,1) forwards;}
+  .slide-item.slide-active img{transform:scale(1);}
+  .slide-item.slide-leaving{opacity:1;z-index:0;animation:wipeOut .88s ease forwards;}
+
+  @keyframes wipeIn{
+    from{clip-path:polygon(0 0,0 0,0 100%,0 100%);}
+    to{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);}
+  }
+  @keyframes wipeOut{
+    from{opacity:1;transform:scale(1);}
+    to{opacity:0;transform:scale(1.05);}
+  }
+
+  .slide-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:4;
+    width:38px;height:38px;background:rgba(255,255,255,.24);backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.36);color:#fff;font-size:22px;font-weight:700;
+    border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:all .25s;line-height:1;}
+  .slide-arrow:hover{background:rgba(255,255,255,.42);transform:translateY(-50%) scale(1.1);}
+  .slide-prev{left:12px;}.slide-next{right:12px;}
+
+  .slide-dots{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+    z-index:4;display:flex;align-items:center;gap:7px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);
+    border:none;cursor:pointer;padding:0;
+    transition:all .38s cubic-bezier(.34,1.56,.64,1);}
+  .dot.dot-active{width:26px;border-radius:4px;background:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,.22);}
+
+  .s-prog-wrap{position:absolute;bottom:0;left:0;right:0;height:3px;
+    background:rgba(255,255,255,.18);z-index:4;}
+  .s-prog-bar{height:100%;width:0%;
+    background:linear-gradient(90deg,#fff,rgba(255,255,255,.6));
+    border-radius:0 3px 3px 0;box-shadow:0 0 10px rgba(255,255,255,.5);}
+
+  /* ── Section Title ── */
+  .sec-head{display:flex;align-items:center;gap:12px;padding:22px 14px 10px;position:relative;z-index:1;}
+  .sec-head h2{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;letter-spacing:-.3px;
+    background:linear-gradient(135deg,var(--r),var(--p));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;}
+  .sec-line{flex:1;height:1.5px;background:linear-gradient(90deg,var(--border),transparent);}
+
+  /* ── Banner Section ── */
+  .product-section{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:14px;padding:0 12px 12px;position:relative;z-index:1;}
+  .product-box{background:#fff;border-radius:22px;padding:12px;display:grid;gap:10px;
+    box-shadow:0 4px 28px var(--soft);border:1px solid var(--border);
+    transition:transform .3s,box-shadow .3s;}
+  .product-box:hover{transform:translateY(-5px);box-shadow:0 14px 50px rgba(230,25,106,.1);}
+  .big-box,.small-box{border-radius:14px;overflow:hidden;cursor:pointer;position:relative;}
+  .big-box::after,.small-box::after{content:'';position:absolute;inset:0;border-radius:14px;
+    background:linear-gradient(135deg,rgba(230,25,106,.13),transparent);opacity:0;transition:opacity .3s;}
+  .big-box:hover::after,.small-box:hover::after{opacity:1;}
+  .big-box:hover img,.small-box:hover img{transform:scale(1.06);}
+  .big-box{aspect-ratio:4/2;}.small-box{aspect-ratio:4/2.5;}
+  .big-box img,.small-box img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;}
+
+  /* ── Product Grid ── */
+  #productContainer{display:grid;grid-template-columns:repeat(auto-fill,minmax(162px,1fr));
+    gap:14px;padding:0 12px 32px;position:relative;z-index:1;min-height:600px;}
+
+  /* Card — used by addProduct.js */
+  .card{background:#fff;border-radius:20px;overflow:hidden;text-align:center;padding:12px;
+    display:flex;flex-direction:column;gap:8px;cursor:pointer;
+    box-shadow:0 4px 22px var(--soft);border:1px solid var(--border);
+    transition:transform .32s,box-shadow .32s;position:relative;}
+  .card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--r),var(--p));opacity:0;transition:opacity .3s;
+    border-radius:20px 20px 0 0;}
+  .card:hover::after{opacity:1;}
+  .card:hover{transform:translateY(-7px) scale(1.01);box-shadow:0 20px 55px rgba(230,25,106,.15);}
+  .card img{width:100%;height: 100%;;object-fit:cover;border-radius:12px;display:block;
+    background:#f8eaf0;transition:transform .4s ease;}
+  .card:hover img{transform:scale(1.04);}
+  .card h3{font-size:13px;font-weight:600;color:var(--r);}
+  .card p{font-size:12px;color:var(--text2);}
+  .btn{background:linear-gradient(135deg,var(--r),var(--p));color:#fff;border:none;
+    padding:9px 16px;border-radius:50px;cursor:pointer;font-weight:600;font-size:12px;
+    margin-top:auto;font-family:'Poppins',sans-serif;transition:all .28s;
+    box-shadow:0 4px 14px rgba(230,25,106,.28);position:relative;overflow:hidden;}
+  .btn::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+    transform:translateX(-100%);transition:transform .45s;}
+  .btn:hover::after{transform:translateX(100%);}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(230,25,106,.38);}
+  .btn:active{transform:translateY(0);}
+
+  /* ── Skeleton ── */
+  @keyframes shimmer{0%{background-position:-500px 0;}100%{background-position:500px 0;}}
+  .skeleton{background:linear-gradient(90deg,#f4e8ef 0%,rgba(255,255,255,.7) 50%,#f4e8ef 100%);
+    background-size:500px 100%;background-repeat:no-repeat;
+    animation:shimmer 1.5s infinite linear;border-radius:10px;}
+  .skeleton-img{width:100%;aspect-ratio:4/3;border-radius:12px;}
+  .skeleton-title{width:80%;height:14px;margin:0 auto 6px;}
+  .skeleton-price{width:50%;height:12px;margin:0 auto 10px;}
+  .skeleton-btn{width:100px;height:32px;margin:0 auto;border-radius:25px;}
+  </style>
+</head>
+<body>
+
+<!-- Ambient -->
+<div class="bg-wrap"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="sp-wrap">
+  <div class="sp s1"></div><div class="sp s2"></div><div class="sp s3"></div><div class="sp s4"></div>
+  <div class="sp s5"></div><div class="sp s6"></div><div class="sp s7"></div><div class="sp s8"></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="side-menu" id="sideMenu">
+  <div class="sm-head">
+    <span class="close-btn" onclick="toggleMenu()">✕</span>
+    <div class="sm-brand">✨ Anntya</div>
+    <div class="sm-tag">Beauty &amp; Cosmetics</div>
+  </div>
+  <div class="sm-links">
+    <a href="cart.html"><span class="mi">🛒</span><span class="mt">My Cart</span></a>
+    <div class="sm-div"></div>
+    <a href="#"><span class="mi">📞</span><span class="mt">Contact Us</span></a>
+  </div>
+</div>
+
+<div class="navbar">
+  <div class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+  <div class="nav-right">
+    <div class="search-container">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search products..."
+               oninput="handleSearch(this.value)" autocomplete="off">
+      </div>
+      <div id="searchSuggestions" class="suggestions-box"></div>
+    </div>
+    <img class="nav-logo-img" src="https://ik.imagekit.io/Prajapati/1774872935411~3.png" alt="Anntya Logo">
+  </div>
+</div>
+
+<!-- ══ NEW HERO SLIDER ══ -->
+<div class="hero-slider" id="heroSlider">
+  <div class="slide-item slide-active" data-idx="0">
+    <img src="https://ik.imagekit.io/Cosmetic/realistic-beauty-sale-banner-design_52683-92665.jpg?updatedAt=1758188018085" alt="Cosmetics 1">
+    <div class="slide-glow"></div>
+  </div>
+  <div class="slide-item" data-idx="1">
+    <img src="https://ik.imagekit.io/Cosmetic/hand-drawn-beauty-sale-banner-design_23-2149663570.jpg?updatedAt=1758188019214" alt="Cosmetics 2">
+    <div class="slide-glow"></div>
+  </div>
+  <div class="slide-item" data-idx="2">
+    <img src="https://ik.imagekit.io/Cosmetic/hand-drawn-beauty-sale-banner-design_23-2149667222.jpg?updatedAt=1758188019827" alt="Cosmetics 3">
+    <div class="slide-glow"></div>
+  </div>
+  <div class="slide-item" data-idx="3">
+    <img src="https://ik.imagekit.io/Cosmetic/beauty-skin-care-product-banner_33099-2057.jpg?updatedAt=1758188019826" alt="Cosmetics 4">
+    <div class="slide-glow"></div>
+  </div>
+  <button class="slide-arrow slide-prev" id="slidePrev">&#8249;</button>
+  <button class="slide-arrow slide-next" id="slideNext">&#8250;</button>
+  <div class="slide-dots" id="slideDots">
+    <button class="dot dot-active"></button>
+    <button class="dot"></button>
+    <button class="dot"></button>
+    <button class="dot"></button>
+  </div>
+  <div class="s-prog-wrap"><div class="s-prog-bar" id="sliderProg"></div></div>
+</div>
+
+<div class="sec-head"><h2>Featured Collection</h2><div class="sec-line"></div></div>
+
+<div class="product-section">
+  <div class="product-box">
+    <div class="big-box"><img src="https://ik.imagekit.io/Cosmetic/cosmetics.jpg?updatedAt=1758188381052" alt="Lipstick"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/IMG_20250918_121718.jpg?updatedAt=1758188021999" alt="Product"></div>
+      <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/il_fullxfull.2019112368_o3pd.jpg?updatedAt=1758188025726" alt="Perfume"></div>
+    </div>
+  </div>
+  <div class="product-box">
+    <div class="big-box"><img src="https://ik.imagekit.io/Cosmetic/bottle-red-perfume-with-red-top-red-top_808092-1411.jpg?updatedAt=1758188376418" alt="Face Cream"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+      <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/il_fullxfull.1999705084_lwio.jpg?updatedAt=1758188026293" alt="Brush"></div>
+      <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/makeup-logo-design-template-6d1bb2503084b513c60fd7fd43f15adb_screen.jpg?updatedAt=1758188016251" alt="Foundation"></div>
+      <div class="small-box"><img src="https://ik.imagekit.io/Cosmetic/sale-this-weekend-special-offer-label-up-70-off_132477-34.jpg?updatedAt=1758188377711" alt="Mascara"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec-head"><h2>Our Products</h2><div class="sec-line"></div></div>
+<div id="productContainer"></div>
+
+<script src="addProduct.js"></script>
+<script>
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  FUZZY SEARCH ENGINE
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // Levenshtein edit distance
+    function editDistance(a, b) {
+      if (a === b) return 0;
+      if (a.length === 0) return b.length;
+      if (b.length === 0) return a.length;
+      const dp = [];
+      for (let i = 0; i <= a.length; i++) {
+        dp[i] = [i];
+        for (let j = 1; j <= b.length; j++) {
+          dp[i][j] = i === 0 ? j :
+            a[i-1] === b[j-1] ? dp[i-1][j-1] :
+            1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+        }
+      }
+      return dp[a.length][b.length];
+    }
+
+    // One token ko text ke words ke against check karo
+    function tokenMatches(token, wordList) {
+      // Direct substring match in any word
+      if (wordList.some(w => w.includes(token) || token.includes(w))) return true;
+      // Fuzzy: allow 1 typo for 4-6 char words, 2 typos for 7+ char words
+      const maxErr = token.length <= 3 ? 0 : token.length <= 6 ? 1 : 2;
+      return wordList.some(w => editDistance(token, w) <= maxErr);
+    }
+
+    // Main match function — name AND desc dono check karta hai
+    function fuzzyMatch(product, query) {
+      query = query.toLowerCase().trim();
+      if (!query) return { match: false };
+
+      const tokens = query.split(/\s+/).filter(t => t.length > 0);
+      const nameWords = product.title.toLowerCase().split(/\s+/);
+      const descWords = (product.desc || '').toLowerCase().split(/\s+/);
+      const allWords  = [...nameWords, ...descWords];
+
+      const nameMatch = tokens.every(t => tokenMatches(t, nameWords));
+      const descMatch = !nameMatch && tokens.every(t => tokenMatches(t, allWords));
+
+      return {
+        match: nameMatch || descMatch,
+        inName: nameMatch,
+        inDesc: descMatch && !nameMatch,
+      };
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  SEARCH HANDLER
+    // ─────────────────────────────────────────────────────────────────────────
+    function handleSearch(query) {
+      const box = document.getElementById("searchSuggestions");
+      query = query.trim();
+
+      if (query.length === 0) {
+        box.style.display = "none";
+        return;
+      }
+
+      // Split results into matched and not-matched
+      const matched = [];
+      const others  = [];
+
+      products.forEach(p => {
+        const r = fuzzyMatch(p, query);
+        if (r.match) matched.push({ p, inName: r.inName, inDesc: r.inDesc });
+        else others.push(p);
+      });
+
+      box.innerHTML = '';
+
+      if (matched.length === 0 && others.length === 0) {
+        box.innerHTML = `<div style="padding:14px;color:#999;font-size:13px;text-align:center;">No products found</div>`;
+        box.style.display = "block";
+        return;
+      }
+
+      // ── Matched products ──
+      if (matched.length > 0) {
+        const lbl = document.createElement('div');
+        lbl.className = 'sugg-section-label';
+        lbl.textContent = `${matched.length} result${matched.length > 1 ? 's' : ''} for "${query}"`;
+        box.appendChild(lbl);
+
+        matched.forEach(({ p, inName, inDesc }) => {
+          box.appendChild(makeSuggItem(p, inName ? 'Matches name' : 'Matches description'));
+        });
+      }
+
+      // ── Other products (shown when all matching are displayed) ──
+      if (others.length > 0) {
+        const lbl2 = document.createElement('div');
+        lbl2.className = 'sugg-section-label others';
+        lbl2.textContent = 'Other Products';
+        box.appendChild(lbl2);
+        others.forEach(p => box.appendChild(makeSuggItem(p, '')));
+      }
+
+      box.style.display = "block";
+    }
+
+    function makeSuggItem(p, matchLabel) {
+      const div = document.createElement('div');
+      div.className = 'suggestion-item';
+      div.innerHTML = `
+        <img src="${p.image}" alt="${p.title}">
+        <div class="sugg-info">
+          <span class="sugg-name">${p.title}</span>
+          <span class="sugg-price">₹${Number(p.price).toLocaleString('en-IN')}</span>
+          ${matchLabel ? `<span class="sugg-match">${matchLabel}</span>` : ''}
+        </div>`;
+      div.onclick = () => location.href = `productPage.html?id=${p._id}`;
+      return div;
+    }
+
+    // Close on outside click
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-container"))
+        document.getElementById("searchSuggestions").style.display = "none";
+    });
+
+    function toggleMenu() {
+  const sideMenu = document.getElementById("sideMenu");
+  const overlay = document.getElementById("overlay");
+  
+  const isActive = sideMenu.classList.toggle("active");
+  overlay.classList.toggle("active");
+
+  if (isActive) {
+    // Page lock logic
+    document.body.style.overflow = "hidden";
+    document.body.style.height = "100vh"; 
+    document.documentElement.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+    document.body.style.height = "";
+    document.documentElement.style.overflow = "";
+  }
+}
+
+
+</script>
+
+<!-- ✅ NEW JS: Slider + Scroll Lock (existing JS untouched above) -->
+<script>
+(function(){
+  const el     = document.getElementById('heroSlider');
+  const slides = el.querySelectorAll('.slide-item');
+  const dots   = el.querySelectorAll('.dot');
+  const prog   = document.getElementById('sliderProg');
+  const DELAY  = 4200;
+  let cur = 0, timer = null;
+
+  function goTo(n){
+    const prev = cur;
+    cur = ((n % slides.length) + slides.length) % slides.length;
+    if(prev === cur) return;
+    slides[prev].classList.remove('slide-active');
+    slides[prev].classList.add('slide-leaving');
+    setTimeout(()=>slides[prev].classList.remove('slide-leaving'), 920);
+    slides[cur].classList.add('slide-active');
+    dots.forEach((d,i)=>d.classList.toggle('dot-active', i===cur));
+    resetProg();
+  }
+
+  function resetProg(){
+    prog.style.transition='none';prog.style.width='0%';
+    void prog.offsetWidth;
+    prog.style.transition=`width ${DELAY}ms linear`;prog.style.width='100%';
+  }
+  function startAuto(){clearInterval(timer);timer=setInterval(()=>goTo(cur+1),DELAY);resetProg();}
+  function stopAuto(){clearInterval(timer);timer=null;prog.style.transition='none';}
+
+  dots.forEach((d,i)=>d.addEventListener('click',()=>{stopAuto();goTo(i);startAuto();}));
+  document.getElementById('slidePrev').addEventListener('click',()=>{stopAuto();goTo(cur-1);startAuto();});
+  document.getElementById('slideNext').addEventListener('click',()=>{stopAuto();goTo(cur+1);startAuto();});
+
+  let tsx=0;
+  el.addEventListener('touchstart',e=>{tsx=e.touches[0].clientX;},{passive:true});
+  el.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tsx;
+    if(Math.abs(dx)>48){stopAuto();goTo(dx>0?cur-1:cur+1);startAuto();}
+  });
+  el.addEventListener('mouseenter',stopAuto);
+  el.addEventListener('mouseleave',startAuto);
+
+  /* Menu lock: scroll + slider pause */
+  const ov = document.getElementById('overlay');
+  new MutationObserver(()=>{
+    const open = ov.classList.contains('active');
+    document.body.style.overflow = open ? 'hidden' : '';
+    open ? stopAuto() : startAuto();
+  }).observe(ov,{attributes:true,attributeFilter:['class']});
+
+  startAuto();
+})();
+</script>
+</body>
+</html>

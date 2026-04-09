@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel – Anntya Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#030306;--surface:#09090f;--card:#0f0f17;--card2:#14141e;
+      --border:#1a1a26;--border2:#222232;
+      --accent:#6b4de6;--accent2:#a855f7;--accent-glow:rgba(107,77,230,0.22);
+      --text:#e8e8f2;--text2:#9898b8;--muted:#55556e;
+      --success:#00c07f;--price:#00d97e;--price-glow:rgba(0,217,126,0.18);
+      --error:#f05050;--warn:#f5a623;
+    }
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);color:var(--text);
+      min-height:100vh;display:flex;flex-direction:column;align-items:center;
+      padding:48px 20px 100px;
+    }
+    body.modal-open{overflow:hidden}
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 55% 40% at 10% 0%,rgba(107,77,230,0.11) 0%,transparent 65%),
+        radial-gradient(ellipse 40% 35% at 90% 90%,rgba(168,85,247,0.07) 0%,transparent 65%);
+      pointer-events:none;z-index:0;
+    }
+
+    /* Grid BG */
+    body::after{
+      content:'';position:fixed;inset:0;z-index:0;
+      background-image:
+        linear-gradient(rgba(107,77,230,0.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(107,77,230,0.025) 1px,transparent 1px);
+      background-size:52px 52px;pointer-events:none;
+    }
+
+    .wrapper{position:relative;z-index:1;width:100%;max-width:980px}
+
+    /* ── Header ── */
+    header{text-align:center;margin-bottom:44px}
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;
+      color:var(--accent2);border:1px solid rgba(168,85,247,0.22);
+      background:rgba(168,85,247,0.06);padding:5px 16px;border-radius:100px;margin-bottom:18px;
+    }
+    .badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:blink 2s ease infinite;flex-shrink:0}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    h1{
+      font-family:'Syne',sans-serif;font-size:clamp(26px,5vw,46px);font-weight:800;
+      background:linear-gradient(140deg,#fff 0%,var(--accent2) 60%,var(--accent) 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      line-height:1.08;letter-spacing:-1px;
+    }
+    .subtitle{color:var(--muted);margin-top:10px;font-size:13px;font-weight:400}
+    .subtitle span{color:var(--accent2);font-weight:500}
+
+    /* ── Divider ── */
+    .divider{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .divider-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text2);letter-spacing:0.5px;white-space:nowrap}
+    .divider-line{flex:1;height:1px;background:var(--border)}
+
+    /* ── Form Card ── */
+    .form-card{
+      background:var(--surface);border:1px solid var(--border);border-radius:22px;
+      padding:32px;box-shadow:0 20px 70px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.02) inset;
+      margin-bottom:14px;
+    }
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:580px){.form-row{grid-template-columns:1fr}}
+    .field{margin-bottom:18px}
+    .field:last-of-type{margin-bottom:0}
+    label{display:flex;align-items:center;font-size:11px;font-weight:600;letter-spacing:1px;color:var(--muted);margin-bottom:8px;text-transform:uppercase}
+    label .req{color:var(--accent2);margin-left:3px;font-size:13px;line-height:1}
+
+    input[type="text"],input[type="number"],textarea{
+      width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:11px;
+      padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;
+      color:var(--text);outline:none;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;line-height:1.5;
+    }
+    input::placeholder,textarea::placeholder{color:var(--muted);font-weight:400}
+    input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);background:var(--card)}
+    textarea{resize:vertical;min-height:88px;line-height:1.6}
+
+    /* ── Category Autocomplete ── */
+    .cat-wrap{position:relative}
+    .cat-suggestions{
+      position:absolute;top:calc(100% + 4px);left:0;right:0;
+      background:#111120;border:1px solid var(--border2);border-radius:11px;
+      max-height:200px;overflow-y:auto;z-index:500;display:none;
+      box-shadow:0 12px 36px rgba(0,0,0,0.6);
+    }
+    .cat-suggestions.show{display:block}
+    .cat-item{padding:10px 14px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.15s,color 0.15s}
+    .cat-item:last-child{border-bottom:none}
+    .cat-item:hover,.cat-item.active{background:rgba(107,77,230,0.18);color:var(--accent2)}
+    .cat-add-btn{padding:10px 14px;font-size:12px;color:var(--success);cursor:pointer;border-top:1px solid var(--border2);display:flex;align-items:center;gap:6px}
+    .cat-add-btn:hover{background:rgba(0,192,127,0.08)}
+
+    /* ── Date Picker ── */
+    .date-input-wrap{position:relative}
+    .date-display{
+      width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:11px;
+      padding:13px 16px;font-size:14px;color:var(--text);cursor:pointer;
+      display:flex;align-items:center;justify-content:space-between;
+      transition:border-color 0.2s,box-shadow 0.2s;
+    }
+    .date-display:hover,.date-display.open{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+    .date-display .placeholder{color:var(--muted)}
+    .date-picker-popup{
+      position:absolute;top:calc(100% + 6px);left:0;
+      background:#111120;border:1px solid var(--border2);border-radius:14px;
+      padding:18px;z-index:600;display:none;
+      box-shadow:0 18px 50px rgba(0,0,0,0.7);min-width:280px;
+    }
+    .date-picker-popup.show{display:block}
+    .dp-step-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+    .dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+    .dp-grid-month{grid-template-columns:repeat(3,1fr)}
+    .dp-grid-year{grid-template-columns:repeat(4,1fr)}
+    .dp-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:12px;cursor:pointer;color:var(--text2);transition:background 0.15s,color 0.15s;border:1px solid transparent}
+    .dp-cell:hover{background:rgba(107,77,230,0.2);color:var(--accent2)}
+    .dp-cell.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .dp-cell.today{border-color:var(--accent2);color:var(--accent2)}
+    .dp-cell.day-label{font-size:10px;font-weight:700;color:var(--muted);cursor:default;aspect-ratio:auto;padding:2px 0}
+    .dp-cell.day-label:hover{background:none;color:var(--muted)}
+    .dp-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .dp-nav-btn{background:var(--card2);border:1px solid var(--border2);color:var(--text2);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+    .dp-nav-btn:hover{background:rgba(107,77,230,0.2);color:var(--accent2);border-color:var(--accent)}
+    .dp-nav-title{font-size:13px;font-weight:600;color:var(--text)}
+    .dp-actions{display:flex;justify-content:flex-end;margin-top:14px;gap:8px}
+    .dp-clear{font-size:12px;color:var(--muted);cursor:pointer;padding:6px 10px;border-radius:7px;transition:all 0.15s}
+    .dp-clear:hover{color:var(--error);background:rgba(240,80,80,0.08)}
+
+    /* ── File Drop ── */
+    .file-drop{border:1.5px dashed var(--border2);border-radius:13px;padding:22px 20px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;position:relative}
+    .file-drop:hover,.file-drop.dragover{border-color:var(--accent);background:rgba(107,77,230,0.06)}
+    .file-drop input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .drop-icon{font-size:26px;margin-bottom:6px}
+    .drop-text{font-size:13px;color:var(--muted);font-weight:400;line-height:1.5}
+    .drop-text strong{color:var(--accent2);font-weight:600}
+    .file-preview{margin-top:10px;display:none;align-items:center;gap:12px;background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:10px 14px}
+    .file-preview img{width:42px;height:42px;object-fit:cover;border-radius:8px}
+    .file-preview .fname{font-size:12px;color:var(--text2);font-weight:500;word-break:break-all}
+
+    /* ── Buttons ── */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;border:none;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.2px}
+    .btn:disabled{opacity:0.4;cursor:not-allowed;transform:none !important}
+    .btn-primary{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:#fff;width:100%;padding:15px;font-size:14px;font-weight:700;letter-spacing:0.3px;border-radius:13px;margin-top:8px;box-shadow:0 8px 24px rgba(107,77,230,0.35)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(107,77,230,0.45)}
+    .btn-primary:active{transform:translateY(0)}
+    .btn-cancel{background:var(--card2);color:var(--text2);border:1px solid var(--border2);font-size:13px;padding:11px 22px;border-radius:10px}
+    .btn-cancel:hover{background:var(--card);color:var(--text)}
+    .btn-update{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:700;padding:11px 24px;border-radius:10px;box-shadow:0 6px 18px rgba(107,77,230,0.3)}
+    .btn-update:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(107,77,230,0.4)}
+    .btn-confirm-del{background:linear-gradient(135deg,#f05050,#d03030);color:#fff;font-size:13px;font-weight:700;padding:11px 24px;border-radius:10px;box-shadow:0 6px 18px rgba(240,80,80,0.3)}
+    .btn-confirm-del:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(240,80,80,0.4)}
+
+    /* ── Spinner ── */
+    .spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin 0.65s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ── Toast ── */
+    #toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(14px);padding:12px 22px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;opacity:0;transition:all 0.3s cubic-bezier(.34,1.56,.64,1);z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    #toast.success{background:linear-gradient(135deg,#00c07f,#009966)}
+    #toast.error{background:linear-gradient(135deg,#f05050,#d03030)}
+    #toast.warn{background:linear-gradient(135deg,#f5a623,#e08e10)}
+
+    /* ── Products Section ── */
+    #products-section{margin-top:52px}
+
+    /* ══════════════════════════════════════════════
+       5-COLUMN TABLE
+       Col 1: Image  |  Col 2: Exp+Qty  |  Col 3: Price  |  Col 4: Edit  |  Col 5: Delete
+    ══════════════════════════════════════════════ */
+    .table-header{
+      display:grid;
+      grid-template-columns:80px 1fr 130px 80px 80px;
+      gap:0;
+      background:var(--card2);border:1px solid var(--border);
+      border-radius:14px 14px 0 0;
+      padding:12px 18px;margin-bottom:2px;
+    }
+    .th{
+      font-size:10px;font-weight:700;letter-spacing:1.4px;
+      text-transform:uppercase;color:var(--muted);
+      display:flex;align-items:center;
+    }
+    .th.center{justify-content:center}
+
+    .product-row{
+      display:grid;
+      grid-template-columns:80px 1fr 130px 80px 80px;
+      gap:0;
+      background:var(--surface);border:1px solid var(--border);
+      border-top:none;padding:14px 18px;
+      transition:background 0.18s,border-color 0.18s;
+      align-items:center;
+      animation:fadeUp 0.35s ease both;
+    }
+    .product-row:nth-child(even){background:var(--card)}
+    .product-row:hover{background:rgba(107,77,230,0.06);border-color:var(--border2)}
+    .product-row:last-child{border-radius:0 0 14px 14px}
+    .product-row:only-child{border-radius:14px;border-top:1px solid var(--border)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── Col 1: Image ── */
+    .col-img{display:flex;align-items:center;justify-content:flex-start}
+    .row-img{
+      /* Natural aspect ratio preserved */
+      width:60px;
+      height:auto;
+      max-height:76px;
+      object-fit:contain;
+      border-radius:10px;
+      cursor:pointer;
+      transition:transform 0.22s,box-shadow 0.22s,opacity 0.2s;
+      display:block;
+      border:1.5px solid var(--border2);
+      background:var(--card2);
+    }
+    .row-img:hover{transform:scale(1.06);box-shadow:0 8px 24px rgba(0,0,0,0.6);opacity:0.9}
+    .img-ph{
+      width:60px;height:60px;background:var(--card2);border-radius:10px;
+      display:flex;align-items:center;justify-content:center;font-size:22px;
+      border:1.5px solid var(--border2);
+    }
+
+    /* ── Col 2: Exp Date + Qty ── */
+    .col-expqty{padding:0 12px;min-width:0;display:flex;flex-direction:column;gap:6px}
+    .expqty-row{display:flex;align-items:center;gap:6px}
+    .expqty-label{
+      font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+      color:var(--muted);min-width:28px;
+    }
+    .expqty-val{
+      font-family:'JetBrains Mono',monospace;
+      font-size:12px;font-weight:500;color:var(--text2);
+      background:var(--card2);border:1px solid var(--border);
+      padding:3px 8px;border-radius:6px;letter-spacing:0.3px;
+    }
+    .expqty-val.qty{color:var(--accent2)}
+    .expqty-val.exp-soon{color:#f5a623;border-color:rgba(245,166,35,0.25);background:rgba(245,166,35,0.06)}
+    .expqty-val.expired{color:var(--error);border-color:rgba(240,80,80,0.25);background:rgba(240,80,80,0.06)}
+    .expqty-val.no-date{color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px}
+
+    /* ── Col 3: Price ── */
+    .col-price{display:flex;align-items:center;justify-content:center}
+    .row-price{
+      font-family:'JetBrains Mono',monospace;
+      font-size:16px;font-weight:700;
+      color:var(--price);
+      text-shadow:0 0 18px var(--price-glow);
+      letter-spacing:-0.5px;
+      display:inline-flex;align-items:baseline;gap:2px;
+    }
+    .price-symbol{font-size:11px;font-weight:500;opacity:0.75;margin-right:1px}
+
+    /* ── Col 4 & 5: Actions ── */
+    .col-action{display:flex;align-items:center;justify-content:center}
+    .btn-edit{
+      background:rgba(107,77,230,0.1);color:var(--accent2);
+      border:1px solid rgba(107,77,230,0.22);
+      font-size:11px;font-weight:600;padding:7px 12px;border-radius:9px;
+      letter-spacing:0.3px;cursor:pointer;transition:all 0.15s;
+      font-family:'DM Sans',sans-serif;
+      display:inline-flex;align-items:center;gap:4px;
+    }
+    .btn-edit:hover{background:rgba(107,77,230,0.22);transform:translateY(-1px);box-shadow:0 4px 12px rgba(107,77,230,0.2)}
+    .btn-delete{
+      background:rgba(240,80,80,0.08);color:var(--error);
+      border:1px solid rgba(240,80,80,0.2);
+      font-size:11px;font-weight:600;padding:7px 12px;border-radius:9px;
+      letter-spacing:0.3px;cursor:pointer;transition:all 0.15s;
+      font-family:'DM Sans',sans-serif;
+      display:inline-flex;align-items:center;gap:4px;
+    }
+    .btn-delete:hover{background:rgba(240,80,80,0.18);transform:translateY(-1px);box-shadow:0 4px 12px rgba(240,80,80,0.15)}
+
+    /* Uploading row */
+    .row-uploading{opacity:0.55;pointer-events:none}
+    .up-spinner-sm{width:18px;height:18px;border:2px solid rgba(107,77,230,0.2);border-top-color:var(--accent2);border-radius:50%;animation:spin 0.8s linear infinite}
+
+    #no-products{
+      color:var(--muted);font-size:13px;font-weight:500;text-align:center;
+      padding:52px 20px;border:1px dashed var(--border2);border-radius:18px;line-height:1.7;
+    }
+    #no-products .no-icon{font-size:32px;display:block;margin-bottom:10px}
+
+    /* ── Modals ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s}
+    .modal-overlay.open{opacity:1;pointer-events:all}
+    .modal{background:var(--surface);border:1px solid var(--border2);border-radius:22px;padding:30px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;transform:scale(0.93) translateY(10px);transition:transform 0.28s cubic-bezier(.34,1.4,.64,1);box-shadow:0 32px 80px rgba(0,0,0,0.75),0 0 0 1px rgba(255,255,255,0.03) inset}
+    .modal-overlay.open .modal{transform:scale(1) translateY(0)}
+    .modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:10px}
+    .modal-header h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text);letter-spacing:-0.3px;line-height:1.2}
+    .modal-header p{font-size:12px;color:var(--muted);margin-top:4px;font-weight:400}
+    .modal-close{background:var(--card2);border:1px solid var(--border2);color:var(--muted);font-size:16px;cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+    .modal-close:hover{background:var(--card);color:var(--text)}
+    .modal-footer{display:flex;gap:10px;margin-top:22px;justify-content:flex-end}
+
+    .img-section-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block}
+    .current-img-wrap{border-radius:12px;overflow:hidden;border:1px solid var(--border2);margin-bottom:14px;background:var(--card2)}
+    .current-img{width:100%;height:130px;object-fit:contain;display:block}
+    .edit-preview-img{width:100%;max-height:120px;object-fit:contain;border-radius:10px;margin-top:9px;border:1px solid var(--border2);display:none}
+    .edit-preview-img.show{display:block}
+
+    /* Delete modal */
+    #deleteModal .modal{max-width:380px;text-align:center}
+    .del-icon{font-size:44px;margin-bottom:14px;display:block;animation:shake 0.5s ease 0.2s both}
+    @keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(5deg)}}
+    #deleteModal h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-0.3px}
+    #deleteModal .del-desc{font-size:13px;color:var(--muted);font-weight:400;line-height:1.6}
+    #deleteModal .del-name{color:var(--error);font-weight:600}
+    #deleteModal .modal-footer{justify-content:center;gap:12px}
+
+    /* ── Image Lightbox ── */
+    #lightbox{
+      position:fixed;inset:0;background:rgba(0,0,0,0.94);backdrop-filter:blur(14px);
+      z-index:2000;display:none;align-items:center;justify-content:center;
+      flex-direction:column;gap:16px;padding:24px;
+    }
+    #lightbox.show{display:flex}
+    #lightbox-img{
+      max-width:88vw;max-height:72vh;
+      /* Natural ratio preserved */
+      object-fit:contain;
+      border-radius:16px;
+      box-shadow:0 24px 80px rgba(0,0,0,0.85),0 0 0 1px rgba(255,255,255,0.06);
+      display:block;
+    }
+    #lightbox-close{
+      position:fixed;top:20px;right:20px;background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:20px;
+      width:40px;height:40px;border-radius:10px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;transition:all 0.2s;z-index:2001;
+    }
+    #lightbox-close:hover{background:rgba(240,80,80,0.3)}
+    #lightbox-info{
+      background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+      border-radius:16px;padding:18px 22px;max-width:520px;width:100%;
+    }
+    #lightbox-info h4{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:12px}
+    .lb-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+    .lb-item{font-size:12px;color:rgba(255,255,255,0.5)}
+    .lb-item span{color:#fff;font-weight:600}
+    .lb-item.lb-price span{color:var(--price);font-family:'JetBrains Mono',monospace;font-size:14px}
+
+    /* ── Logout ── */
+    .logout-btn{
+      position:fixed;top:18px;right:18px;z-index:500;
+      display:flex;align-items:center;gap:7px;
+      background:rgba(240,80,80,0.08);color:var(--error);
+      border:1px solid rgba(240,80,80,0.18);
+      font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;
+      padding:8px 16px;border-radius:10px;cursor:pointer;transition:all 0.2s;backdrop-filter:blur(10px);
+    }
+    .logout-btn:hover{background:rgba(240,80,80,0.18);transform:translateY(-1px)}
+
+    /* Scrollbar */
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+  </style>
+</head>
+<body>
+<button class="logout-btn" onclick="doLogout()" title="Logout">🚪 Logout</button>
+<div class="wrapper">
+
+  <header>
+    <div class="badge">⚡ Admin Panel</div>
+    <h1>Anntya Store</h1>
+    <p class="subtitle">Manage products, inventory &amp; more</p>
+  </header>
+
+  <div class="divider">
+    <span class="divider-label">Add New Product</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="form-card">
+    <!-- Row 1: Name + Price -->
+    <div class="form-row">
+      <div class="field">
+        <label>Product Name <span class="req">*</span></label>
+        <input type="text" id="productName" placeholder="e.g. Matte Lipstick"/>
+      </div>
+      <div class="field">
+        <label>Price (₹) <span class="req">*</span></label>
+        <input type="number" id="price" placeholder="e.g. 299" min="0"/>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="field">
+      <label>Description <span class="req">*</span></label>
+      <textarea id="description" placeholder="Product ke baare mein likho..."></textarea>
+    </div>
+
+    <!-- Row 2: Category + Quantity -->
+    <div class="form-row">
+      <div class="field">
+        <label>Category <span class="req">*</span></label>
+        <div class="cat-wrap">
+          <input type="text" id="categoryInput" placeholder="e.g. Lipstick" autocomplete="off"
+            oninput="filterCatSugg(this.value,'catSugg')"
+            onkeydown="catKeyNav(event,'catSugg','categoryInput')"
+            onfocus="showAllCatSugg('catSugg','categoryInput')"/>
+          <div class="cat-suggestions" id="catSugg"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Quantity <span class="req">*</span></label>
+        <input type="number" id="quantityInput" placeholder="e.g. 50" min="0"/>
+      </div>
+    </div>
+
+    <!-- Row 3: Mfg Date + Exp Date -->
+    <div class="form-row">
+      <div class="field">
+        <label>Mfg Date</label>
+        <div class="date-input-wrap">
+          <div class="date-display" id="mfgDateDisplay" onclick="toggleDatePicker('mfgPicker','mfgDateDisplay','mfgDateVal')">
+            <span id="mfgDateText" class="placeholder">Select date</span>
+            <span>📅</span>
+          </div>
+          <input type="hidden" id="mfgDateVal"/>
+          <div class="date-picker-popup" id="mfgPicker"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Exp Date</label>
+        <div class="date-input-wrap">
+          <div class="date-display" id="expDateDisplay" onclick="toggleDatePicker('expPicker','expDateDisplay','expDateVal')">
+            <span id="expDateText" class="placeholder">Select date</span>
+            <span>📅</span>
+          </div>
+          <input type="hidden" id="expDateVal"/>
+          <div class="date-picker-popup" id="expPicker"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image -->
+    <div class="field">
+      <label>Product Image <span class="req">*</span></label>
+      <div class="file-drop" id="fileDrop">
+        <input type="file" id="productImage" accept="image/*"/>
+        <div class="drop-icon">🖼️</div>
+        <div class="drop-text">Drop karo ya <strong>click karke browse</strong> karo</div>
+      </div>
+      <div class="file-preview" id="filePreview">
+        <img id="previewImg" src="" alt="preview"/>
+        <span class="fname" id="previewName"></span>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="submitBtn" onclick="submitProduct()">
+      Upload &amp; Save Product
+    </button>
+  </div>
+
+  <!-- Products Table -->
+  <div id="products-section">
+    <div class="divider" style="margin-bottom:18px">
+      <span class="divider-label">Saved Products</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="table-header">
+      <div class="th">Image</div>
+      <div class="th">Exp Date / Qty</div>
+      <div class="th center">Price</div>
+      <div class="th center">Edit</div>
+      <div class="th center">Delete</div>
+    </div>
+    <div id="products-list">
+      <div id="no-products">
+        <span class="no-icon">📦</span>
+        Koi product nahi hai abhi.<br/>Upar form se pehla product add karo!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Edit Modal ── -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Product Edit Karo</h3>
+        <p>Changes sirf selected product par honge</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+    </div>
+    <input type="hidden" id="editId"/>
+    <input type="hidden" id="editOldFileId"/>
+    <div class="form-row">
+      <div class="field">
+        <label>Product Name</label>
+        <input type="text" id="editName" placeholder="Product Name"/>
+      </div>
+      <div class="field">
+        <label>Price (₹)</label>
+        <input type="number" id="editPrice" placeholder="Price" min="0"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="editDesc" placeholder="Description"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Category</label>
+        <div class="cat-wrap">
+          <input type="text" id="editCategoryInput" placeholder="Category" autocomplete="off"
+            oninput="filterCatSugg(this.value,'editCatSugg')"
+            onkeydown="catKeyNav(event,'editCatSugg','editCategoryInput')"
+            onfocus="showAllCatSugg('editCatSugg','editCategoryInput')"/>
+          <div class="cat-suggestions" id="editCatSugg"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Quantity</label>
+        <input type="number" id="editQuantityInput" placeholder="Quantity" min="0"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Mfg Date</label>
+        <div class="date-input-wrap">
+          <div class="date-display" id="editMfgDateDisplay" onclick="toggleDatePicker('editMfgPicker','editMfgDateDisplay','editMfgDateVal')">
+            <span id="editMfgDateText" class="placeholder">Select date</span>
+            <span>📅</span>
+          </div>
+          <input type="hidden" id="editMfgDateVal"/>
+          <div class="date-picker-popup" id="editMfgPicker"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Exp Date</label>
+        <div class="date-input-wrap">
+          <div class="date-display" id="editExpDateDisplay" onclick="toggleDatePicker('editExpPicker','editExpDateDisplay','editExpDateVal')">
+            <span id="editExpDateText" class="placeholder">Select date</span>
+            <span>📅</span>
+          </div>
+          <input type="hidden" id="editExpDateVal"/>
+          <div class="date-picker-popup" id="editExpPicker"></div>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <span class="img-section-label">Current Image</span>
+      <div class="current-img-wrap">
+        <img id="editCurrentImg" class="current-img" src="" alt="current image"/>
+      </div>
+      <span class="img-section-label">Change Image (optional)</span>
+      <div class="file-drop" id="editFileDrop" style="padding:18px">
+        <input type="file" id="editImage" accept="image/*"/>
+        <div class="drop-icon" style="font-size:22px">🔄</div>
+        <div class="drop-text" style="font-size:12px">Nai image select karo <strong>(optional)</strong></div>
+      </div>
+      <img id="editPreviewImg" class="edit-preview-img" src="" alt="new preview"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+      <button class="btn btn-update" id="updateBtn" onclick="updateProduct()">Update Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Delete Modal ── -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <span class="del-icon">🗑️</span>
+    <h3>Delete Karna Chahte Ho?</h3>
+    <p class="del-desc">
+      "<span id="delProductName" class="del-name"></span>" ko delete karne se<br/>
+      <strong>ImageKit + MongoDB</strong> dono se hamesha ke liye hata diya jayega.
+    </p>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal('deleteModal')">Nahi, Rakhna Hai</button>
+      <button class="btn btn-confirm-del" id="confirmDelBtn" onclick="confirmDelete()">Haan, Delete Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Image Lightbox ── -->
+<div id="lightbox" onclick="closeLightbox(event)">
+  <button id="lightbox-close" onclick="closeLightboxBtn()">✕</button>
+  <img id="lightbox-img" src="" alt=""/>
+  <div id="lightbox-info">
+    <h4 id="lb-name"></h4>
+    <div class="lb-grid" id="lb-grid"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const API = '';
+  let deleteTargetId = null;
+  let categoryCache = [];
+  let catSuggActive = -1;
+
+  const TOKEN = sessionStorage.getItem('admin_token');
+  if (!TOKEN) { window.location.href = '/'; }
+
+  async function authFetch(url, options = {}) {
+    options.headers = options.headers || {};
+    options.headers['x-admin-token'] = TOKEN;
+    const res = await fetch(url, options);
+    if (res.status === 401) { sessionStorage.removeItem('admin_token'); window.location.href = '/'; }
+    return res;
+  }
+
+  function lockScroll()   { document.body.classList.add('modal-open') }
+  function unlockScroll() { document.body.classList.remove('modal-open') }
+  function openModal(id)  { document.getElementById(id).classList.add('open'); lockScroll() }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    if (!document.querySelector('.modal-overlay.open')) unlockScroll();
+  }
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', function(e) { if (e.target === this) closeModal(this.id) });
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  DATE PICKER
+  // ══════════════════════════════════════════════════════════════════════════
+  const dpState = {};
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const DAYS   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+  function toggleDatePicker(pickerId, displayId, hiddenId) {
+    const popup = document.getElementById(pickerId);
+    const isOpen = popup.classList.contains('show');
+    document.querySelectorAll('.date-picker-popup.show').forEach(p => {
+      if (p.id !== pickerId) { p.classList.remove('show'); document.getElementById(p.id.replace('Picker','DateDisplay').replace('editMfg','editMfg').replace('editExp','editExp'))?.classList.remove('open') }
+    });
+    if (isOpen) { popup.classList.remove('show'); document.getElementById(displayId).classList.remove('open'); return; }
+    const now = new Date();
+    if (!dpState[pickerId]) dpState[pickerId] = { step:'day', year:now.getFullYear(), month:now.getMonth(), day:null };
+    dpState[pickerId].step = 'day';
+    renderDP(pickerId, displayId, hiddenId);
+    popup.classList.add('show');
+    document.getElementById(displayId).classList.add('open');
+  }
+
+  function renderDP(pickerId, displayId, hiddenId) {
+    const popup = document.getElementById(pickerId);
+    const s = dpState[pickerId];
+    if (s.step === 'day') renderDPDay(popup, pickerId, displayId, hiddenId);
+    else if (s.step === 'month') renderDPMonth(popup, pickerId, displayId, hiddenId);
+    else renderDPYear(popup, pickerId, displayId, hiddenId);
+  }
+
+  function renderDPDay(popup, pickerId, displayId, hiddenId) {
+    const s = dpState[pickerId];
+    const firstDay = new Date(s.year, s.month, 1).getDay();
+    const daysInMonth = new Date(s.year, s.month+1, 0).getDate();
+    const today = new Date();
+    let html = `<div class="dp-nav">
+      <button class="dp-nav-btn" onclick="dpChangeMonth(-1,'${pickerId}','${displayId}','${hiddenId}')">‹</button>
+      <span class="dp-nav-title" style="cursor:pointer" onclick="dpGoMonth('${pickerId}','${displayId}','${hiddenId}')">${MONTHS[s.month]} ${s.year}</span>
+      <button class="dp-nav-btn" onclick="dpChangeMonth(1,'${pickerId}','${displayId}','${hiddenId}')">›</button>
+    </div><div class="dp-grid">`;
+    DAYS.forEach(d => { html += `<div class="dp-cell day-label">${d}</div>`; });
+    for (let i=0; i<firstDay; i++) html += `<div class="dp-cell"></div>`;
+    for (let d=1; d<=daysInMonth; d++) {
+      const isToday = d===today.getDate()&&s.month===today.getMonth()&&s.year===today.getFullYear();
+      const isSel = d===s.day;
+      html += `<div class="dp-cell${isToday?' today':''}${isSel?' selected':''}" onclick="dpSelectDay(${d},'${pickerId}','${displayId}','${hiddenId}')">${d}</div>`;
+    }
+    html += `</div><div class="dp-actions"><span class="dp-clear" onclick="clearDate('${pickerId}','${displayId}','${hiddenId}')">Clear</span></div>`;
+    popup.innerHTML = html;
+  }
+
+  function renderDPMonth(popup, pickerId, displayId, hiddenId) {
+    const s = dpState[pickerId];
+    let html = `<div class="dp-nav">
+      <button class="dp-nav-btn" onclick="dpChangeYear(-1,'${pickerId}','${displayId}','${hiddenId}')">‹</button>
+      <span class="dp-nav-title" style="cursor:pointer" onclick="dpGoYear('${pickerId}','${displayId}','${hiddenId}')">${s.year}</span>
+      <button class="dp-nav-btn" onclick="dpChangeYear(1,'${pickerId}','${displayId}','${hiddenId}')">›</button>
+    </div><div class="dp-grid dp-grid-month">`;
+    MONTHS.forEach((m,i) => { html += `<div class="dp-cell${i===s.month?' selected':''}" onclick="dpSelectMonth(${i},'${pickerId}','${displayId}','${hiddenId}')">${m.slice(0,3)}</div>`; });
+    html += `</div>`;
+    popup.innerHTML = html;
+  }
+
+  function renderDPYear(popup, pickerId, displayId, hiddenId) {
+    const s = dpState[pickerId];
+    const base = Math.floor(s.year/12)*12;
+    let html = `<div class="dp-nav">
+      <button class="dp-nav-btn" onclick="dpChangeYearRange(-12,'${pickerId}','${displayId}','${hiddenId}')">‹</button>
+      <span class="dp-nav-title">${base}–${base+11}</span>
+      <button class="dp-nav-btn" onclick="dpChangeYearRange(12,'${pickerId}','${displayId}','${hiddenId}')">›</button>
+    </div><div class="dp-grid dp-grid-year">`;
+    for (let y=base; y<base+12; y++) { html += `<div class="dp-cell${y===s.year?' selected':''}" onclick="dpSelectYear(${y},'${pickerId}','${displayId}','${hiddenId}')">${y}</div>`; }
+    html += `</div>`;
+    popup.innerHTML = html;
+  }
+
+  function dpChangeMonth(d,p,di,h){ dpState[p].month+=d; if(dpState[p].month<0){dpState[p].month=11;dpState[p].year--;}else if(dpState[p].month>11){dpState[p].month=0;dpState[p].year++;} renderDP(p,di,h); }
+  function dpChangeYear(d,p,di,h){ dpState[p].year+=d; renderDP(p,di,h); }
+  function dpChangeYearRange(d,p,di,h){ dpState[p].year+=d; renderDP(p,di,h); }
+  function dpGoMonth(p,di,h){ dpState[p].step='month'; renderDP(p,di,h); }
+  function dpGoYear(p,di,h){ dpState[p].step='year'; renderDP(p,di,h); }
+  function dpSelectMonth(m,p,di,h){ dpState[p].month=m; dpState[p].step='day'; renderDP(p,di,h); }
+  function dpSelectYear(y,p,di,h){ dpState[p].year=y; dpState[p].step='month'; renderDP(p,di,h); }
+
+  function dpSelectDay(d, pickerId, displayId, hiddenId) {
+    const s = dpState[pickerId];
+    s.day = d;
+    const dd = String(d).padStart(2,'0');
+    const mm = String(s.month+1).padStart(2,'0');
+    const val = `${dd}/${mm}/${s.year}`;
+    document.getElementById(hiddenId).value = val;
+    const txt = displayId.replace('Display','Text');
+    const el = document.getElementById(txt);
+    if (el) { el.textContent = val; el.classList.remove('placeholder'); }
+    document.getElementById(pickerId).classList.remove('show');
+    document.getElementById(displayId).classList.remove('open');
+  }
+
+  function clearDate(pickerId, displayId, hiddenId) {
+    if (dpState[pickerId]) { dpState[pickerId].day = null; }
+    document.getElementById(hiddenId).value = '';
+    const txt = displayId.replace('Display','Text');
+    const el = document.getElementById(txt);
+    if (el) { el.textContent = 'Select date'; el.classList.add('placeholder'); }
+    document.getElementById(pickerId).classList.remove('show');
+    document.getElementById(displayId).classList.remove('open');
+  }
+
+  function setDateFromValue(pickerId, displayId, hiddenId, val) {
+    if (!val) return;
+    const parts = val.split('/');
+    if (parts.length < 3) return;
+    const d = parseInt(parts[0]), m = parseInt(parts[1])-1, y = parseInt(parts[2]);
+    if (!dpState[pickerId]) dpState[pickerId] = { step:'day', year:y, month:m, day:d };
+    else { dpState[pickerId].year=y; dpState[pickerId].month=m; dpState[pickerId].day=d; }
+    document.getElementById(hiddenId).value = val;
+    const txt = displayId.replace('Display','Text');
+    const el = document.getElementById(txt);
+    if (el) { el.textContent = val; el.classList.remove('placeholder'); }
+  }
+
+  // Close date picker on outside click
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.date-input-wrap')) {
+      document.querySelectorAll('.date-picker-popup.show').forEach(p => {
+        p.classList.remove('show');
+        const dispId = p.id.replace('Picker','DateDisplay');
+        document.getElementById(dispId)?.classList.remove('open');
+      });
+    }
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  CATEGORY AUTOCOMPLETE
+  // ══════════════════════════════════════════════════════════════════════════
+  async function loadMeta() {
+    try {
+      const res = await authFetch(`${API}/products/meta`);
+      const data = await res.json();
+      categoryCache = (data.categories || []).map(c => c.toLowerCase());
+    } catch(e) {}
+  }
+
+  function filterCatSugg(val, suggId) {
+    const sugg = document.getElementById(suggId);
+    const q = val.toLowerCase().trim();
+    const matches = q ? categoryCache.filter(c => c.includes(q)) : categoryCache;
+    renderCatSugg(sugg, matches, val, suggId);
+  }
+
+  function showAllCatSugg(suggId, inputId) {
+    const sugg = document.getElementById(suggId);
+    const val = document.getElementById(inputId).value;
+    filterCatSugg(val, suggId);
+  }
+
+  function renderCatSugg(sugg, matches, rawVal, suggId) {
+    if (!matches.length && !rawVal) { sugg.classList.remove('show'); return; }
+    let html = matches.map((c, i) => `<div class="cat-item" data-idx="${i}" onclick="selectCat('${c}','${suggId}')">${c}</div>`).join('');
+    const existing = categoryCache.includes(rawVal.toLowerCase().trim());
+    if (rawVal.trim() && !existing) html += `<div class="cat-add-btn" onclick="addNewCat('${rawVal.trim()}','${suggId}')">➕ Add "${rawVal.trim()}"</div>`;
+    sugg.innerHTML = html;
+    sugg.classList.toggle('show', !!(html));
+  }
+
+  function selectCat(val, suggId) {
+    const inputId = suggId === 'catSugg' ? 'categoryInput' : 'editCategoryInput';
+    document.getElementById(inputId).value = val;
+    document.getElementById(suggId).classList.remove('show');
+  }
+
+  function addNewCat(val, suggId) {
+    if (!categoryCache.includes(val.toLowerCase())) categoryCache.push(val.toLowerCase());
+    selectCat(val, suggId);
+  }
+
+  function catKeyNav(e, suggId, inputId) {
+    const items = document.getElementById(suggId).querySelectorAll('.cat-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') { catSuggActive = Math.min(catSuggActive+1, items.length-1); }
+    else if (e.key === 'ArrowUp') { catSuggActive = Math.max(catSuggActive-1, -1); }
+    else if (e.key === 'Enter' && catSuggActive >= 0) { items[catSuggActive].click(); catSuggActive = -1; return; }
+    else if (e.key === 'Escape') { document.getElementById(suggId).classList.remove('show'); return; }
+    items.forEach((el, i) => el.classList.toggle('active', i === catSuggActive));
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.cat-wrap')) {
+      document.querySelectorAll('.cat-suggestions').forEach(s => s.classList.remove('show'));
+    }
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  FILE DROP / PREVIEW
+  // ══════════════════════════════════════════════════════════════════════════
+  ['fileDrop','editFileDrop'].forEach(id => {
+    const drop = document.getElementById(id);
+    if (!drop) return;
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+    drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('dragover'); });
+  });
+
+  document.getElementById('productImage').addEventListener('change', function() {
+    const file = this.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      const prev = document.getElementById('filePreview');
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('previewName').textContent = file.name;
+      prev.style.display = 'flex';
+    };
+    r.readAsDataURL(file);
+  });
+
+  document.getElementById('editImage').addEventListener('change', function() {
+    const file = this.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = e => { const p = document.getElementById('editPreviewImg'); p.src=e.target.result; p.classList.add('show') };
+    r.readAsDataURL(file);
+  });
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  TOAST
+  // ══════════════════════════════════════════════════════════════════════════
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = `show ${type}`;
+    setTimeout(() => t.className = '', 3400);
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  RESET FORM
+  // ══════════════════════════════════════════════════════════════════════════
+  function resetForm() {
+    ['productName','description','price','categoryInput','quantityInput'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('productImage').value = '';
+    document.getElementById('filePreview').style.display = 'none';
+    document.getElementById('previewImg').src = '';
+    clearDate('mfgPicker','mfgDateDisplay','mfgDateVal');
+    clearDate('expPicker','expDateDisplay','expDateVal');
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  SUBMIT PRODUCT
+  // ══════════════════════════════════════════════════════════════════════════
+  async function submitProduct() {
+    const name     = document.getElementById('productName').value.trim();
+    const desc     = document.getElementById('description').value.trim();
+    const price    = document.getElementById('price').value.trim();
+    const category = document.getElementById('categoryInput').value.trim();
+    const quantity = document.getElementById('quantityInput').value.trim();
+    const mfgDate  = document.getElementById('mfgDateVal').value.trim();
+    const expDate  = document.getElementById('expDateVal').value.trim();
+    const file     = document.getElementById('productImage').files[0];
+    if (!name||!desc||!price||!file) { showToast('Name, description, price aur image required hai!','error'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Uploading...';
+
+    const tempId = 'temp_'+Date.now();
+    addTempRow(tempId, name, price);
+    resetForm();
+    btn.disabled=false; btn.innerHTML='Upload &amp; Save Product';
+
+    const fd = new FormData();
+    fd.append('name',name); fd.append('description',desc); fd.append('price',price);
+    fd.append('category',category); fd.append('quantity',quantity||0);
+    fd.append('mfgDate',mfgDate); fd.append('expDate',expDate);
+    fd.append('image',file);
+
+    try {
+      const res  = await authFetch(`${API}/upload`, { method:'POST', body:fd });
+      const data = await res.json();
+      if (data.success) {
+        replaceTempRow(tempId, data.product);
+        if (category && !categoryCache.includes(category.toLowerCase())) categoryCache.push(category.toLowerCase());
+        showToast('✅ Product save ho gaya!');
+      } else {
+        removeTempRow(tempId);
+        showToast(data.message||'Upload failed','error');
+      }
+    } catch(e) { removeTempRow(tempId); showToast('Server error: '+e.message,'error') }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  PRODUCT LIST (5-column rows)
+  // ══════════════════════════════════════════════════════════════════════════
+  function getExpClass(expDate) {
+    if (!expDate) return 'no-date';
+    const parts = expDate.split('/');
+    if (parts.length < 3) return '';
+    const exp = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+    const now = new Date();
+    const diff = (exp - now) / (1000*60*60*24);
+    if (diff < 0) return 'expired';
+    if (diff <= 30) return 'exp-soon';
+    return '';
+  }
+
+  function addTempRow(tempId, name, price) {
+    document.getElementById('no-products')?.remove();
+    const list = document.getElementById('products-list');
+    const div = document.createElement('div');
+    div.className = 'product-row row-uploading'; div.id = tempId;
+    div.innerHTML = `
+      <div class="col-img"><div class="img-ph">⏳</div></div>
+      <div class="col-expqty">
+        <div class="expqty-row"><span class="expqty-label">EXP</span><span class="expqty-val no-date">—</span></div>
+        <div class="expqty-row"><span class="expqty-label">QTY</span><span class="expqty-val qty">—</span></div>
+      </div>
+      <div class="col-price"><span class="row-price"><span class="price-symbol">₹</span>${Number(price).toLocaleString('en-IN')}</span></div>
+      <div class="col-action"><div class="up-spinner-sm"></div></div>
+      <div class="col-action"></div>`;
+    list.insertBefore(div, list.firstChild);
+  }
+
+  function replaceTempRow(tempId, product) {
+    const temp = document.getElementById(tempId);
+    if (temp) temp.replaceWith(createRow(product));
+  }
+
+  function removeTempRow(tempId) {
+    document.getElementById(tempId)?.remove(); checkEmpty();
+  }
+
+  function renderProducts(products) {
+    const list = document.getElementById('products-list');
+    if (!products.length) {
+      list.innerHTML = `<div id="no-products"><span class="no-icon">📦</span>Koi product nahi hai abhi.<br/>Upar form se pehla product add karo!</div>`;
+      return;
+    }
+    list.innerHTML = '';
+    products.forEach(p => list.appendChild(createRow(p)));
+  }
+
+  function createRow(p) {
+    const div = document.createElement('div');
+    div.className = 'product-row'; div.id = 'card_'+p._id;
+
+    const encodedInfo = encodeURIComponent(JSON.stringify({
+      name: p.name, price: p.price, category: p.category||'—',
+      quantity: p.quantity??'—', mfgDate: p.mfgDate||'—',
+      expDate: p.expDate||'—', description: p.description
+    }));
+
+    const imgHtml = p.imageUrl
+      ? `<img class="row-img" src="${p.imageUrl}" alt="${p.name}" onclick="openLightbox('${p.imageUrl}','${encodedInfo}')">`
+      : `<div class="img-ph">📦</div>`;
+
+    const expClass = getExpClass(p.expDate);
+    const expDisplay = p.expDate || '—';
+    const qtyDisplay = p.quantity !== undefined ? p.quantity : '—';
+
+    div.innerHTML = `
+      <div class="col-img">${imgHtml}</div>
+      <div class="col-expqty">
+        <div class="expqty-row">
+          <span class="expqty-label">EXP</span>
+          <span class="expqty-val ${expClass}">${expDisplay}</span>
+        </div>
+        <div class="expqty-row">
+          <span class="expqty-label">QTY</span>
+          <span class="expqty-val qty">${qtyDisplay}</span>
+        </div>
+      </div>
+      <div class="col-price">
+        <span class="row-price"><span class="price-symbol">₹</span>${Number(p.price).toLocaleString('en-IN')}</span>
+      </div>
+      <div class="col-action">
+        <button class="btn-edit" onclick="openEdit('${p._id}')">✏️ Edit</button>
+      </div>
+      <div class="col-action">
+        <button class="btn-delete" onclick="openDeleteConfirm('${p._id}','${encodeURIComponent(p.name)}')">🗑️ Del</button>
+      </div>`;
+    return div;
+  }
+
+  function checkEmpty() {
+    const list = document.getElementById('products-list');
+    if (!list.querySelector('.product-row'))
+      list.innerHTML = `<div id="no-products"><span class="no-icon">📦</span>Koi product nahi hai abhi.<br/>Upar form se pehla product add karo!</div>`;
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  LIGHTBOX
+  // ══════════════════════════════════════════════════════════════════════════
+  function openLightbox(imgUrl, encodedInfo) {
+    const info = JSON.parse(decodeURIComponent(encodedInfo));
+    document.getElementById('lightbox-img').src = imgUrl;
+    document.getElementById('lb-name').textContent = info.name;
+    const grid = document.getElementById('lb-grid');
+    grid.innerHTML = [
+      ['Price', '₹'+Number(info.price).toLocaleString('en-IN'), 'lb-price'],
+      ['Category', info.category, ''],
+      ['Quantity', info.quantity, ''],
+      ['Mfg Date', info.mfgDate, ''],
+      ['Exp Date', info.expDate, ''],
+      ['Description', info.description, ''],
+    ].map(([k,v,cls]) => `<div class="lb-item ${cls}">${k}: <span>${v}</span></div>`).join('');
+    document.getElementById('lightbox').classList.add('show');
+    document.body.classList.add('modal-open');
+  }
+
+  function closeLightboxBtn() {
+    document.getElementById('lightbox').classList.remove('show');
+    document.body.classList.remove('modal-open');
+  }
+
+  function closeLightbox(e) {
+    if (e.target === document.getElementById('lightbox')) closeLightboxBtn();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  DELETE
+  // ══════════════════════════════════════════════════════════════════════════
+  function openDeleteConfirm(id, name) {
+    deleteTargetId = id;
+    document.getElementById('delProductName').textContent = decodeURIComponent(name);
+    openModal('deleteModal');
+  }
+
+  async function confirmDelete() {
+    if (!deleteTargetId) return;
+    const id = deleteTargetId;
+    const btn = document.getElementById('confirmDelBtn');
+    btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Deleting...';
+    const card = document.getElementById('card_'+id);
+    try {
+      const res  = await authFetch(`${API}/products/${id}`, { method:'DELETE' });
+      const data = await res.json();
+      if (data.success) { closeModal('deleteModal'); card?.remove(); checkEmpty(); showToast('🗑️ Product delete ho gaya!') }
+      else showToast(data.message||'Delete failed','error');
+    } catch(e) { showToast('Server error: '+e.message,'error') }
+    btn.disabled=false; btn.innerHTML='Haan, Delete Karo';
+    deleteTargetId=null;
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  EDIT
+  // ══════════════════════════════════════════════════════════════════════════
+  let allProducts = [];
+
+  async function loadProducts() {
+    try {
+      const res  = await authFetch(`${API}/products`);
+      const data = await res.json();
+      allProducts = data.products || [];
+      renderProducts(allProducts);
+    } catch(e) { console.error('Load error', e) }
+  }
+
+  function openEdit(id) {
+    const p = allProducts.find(x => x._id === id);
+    if (!p) { showToast('Product data nahi mila. Reload karo.','warn'); return; }
+
+    document.getElementById('editId').value        = p._id;
+    document.getElementById('editOldFileId').value = p.imageFileId||'';
+    document.getElementById('editName').value      = p.name;
+    document.getElementById('editDesc').value      = p.description;
+    document.getElementById('editPrice').value     = p.price;
+    document.getElementById('editCategoryInput').value = p.category||'';
+    document.getElementById('editQuantityInput').value = p.quantity??'';
+    document.getElementById('editCurrentImg').src  = p.imageUrl||'';
+    document.getElementById('editImage').value     = '';
+    const prev = document.getElementById('editPreviewImg');
+    prev.src=''; prev.classList.remove('show');
+
+    setDateFromValue('editMfgPicker','editMfgDateDisplay','editMfgDateVal', p.mfgDate||'');
+    setDateFromValue('editExpPicker','editExpDateDisplay','editExpDateVal', p.expDate||'');
+    if (!p.mfgDate) clearDate('editMfgPicker','editMfgDateDisplay','editMfgDateVal');
+    if (!p.expDate) clearDate('editExpPicker','editExpDateDisplay','editExpDateVal');
+
+    openModal('editModal');
+  }
+
+  async function updateProduct() {
+    const id       = document.getElementById('editId').value;
+    const name     = document.getElementById('editName').value.trim();
+    const desc     = document.getElementById('editDesc').value.trim();
+    const price    = document.getElementById('editPrice').value.trim();
+    const category = document.getElementById('editCategoryInput').value.trim();
+    const quantity = document.getElementById('editQuantityInput').value.trim();
+    const mfgDate  = document.getElementById('editMfgDateVal').value.trim();
+    const expDate  = document.getElementById('editExpDateVal').value.trim();
+    const file     = document.getElementById('editImage').files[0];
+    if (!name||!desc||!price) { showToast('Sab required fields fill karo!','error'); return; }
+
+    const btn = document.getElementById('updateBtn');
+    btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Updating...';
+
+    const fd = new FormData();
+    fd.append('name',name); fd.append('description',desc); fd.append('price',price);
+    fd.append('category',category); fd.append('quantity',quantity||0);
+    fd.append('mfgDate',mfgDate); fd.append('expDate',expDate);
+    if (file) fd.append('image',file);
+
+    try {
+      const res  = await authFetch(`${API}/products/${id}`, { method:'PUT', body:fd });
+      const data = await res.json();
+      if (data.success) {
+        closeModal('editModal');
+        const idx = allProducts.findIndex(x => x._id === id);
+        if (idx >= 0) allProducts[idx] = data.product;
+        const old = document.getElementById('card_'+id);
+        if (old) old.replaceWith(createRow(data.product));
+        if (category && !categoryCache.includes(category.toLowerCase())) categoryCache.push(category.toLowerCase());
+        showToast('✅ Product update ho gaya!');
+      } else showToast(data.message||'Update failed','error');
+    } catch(e) { showToast('Server error: '+e.message,'error') }
+    btn.disabled=false; btn.innerHTML='Update Karo';
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  LOGOUT
+  // ══════════════════════════════════════════════════════════════════════════
+  async function doLogout() {
+    await authFetch('/auth/logout',{method:'POST',headers:{'Content-Type':'application/json','x-admin-token':TOKEN},body:JSON.stringify({token:TOKEN})}).catch(()=>{});
+    sessionStorage.removeItem('admin_token');
+    window.location.href='/';
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  INIT
+  // ══════════════════════════════════════════════════════════════════════════
+  loadMeta();
+  loadProducts();
+</script>
+</body>
+</html>
