@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Email Support — Anntya</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+  body{background:#fff8fb; color:#180810; padding:20px; padding-bottom: 50px; min-height: 100vh;}
+  .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px;}
+  .header h1 { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: #e6196a;}
+  .back-btn { width: 35px; height: 35px; background: linear-gradient(135deg, #e6196a, #ff8c52); color: white; display: flex; align-items: center; justify-content: center; border-radius: 10px; text-decoration: none; font-weight: bold;}
+  
+  .form-container { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f5dce6;}
+  .form-container p { font-size: 13px; color: #7a5065; margin-bottom: 20px;}
+  
+  .input-group { margin-bottom: 15px;}
+  .input-group label { display: block; font-size: 11px; font-weight: 700; color: #7a5065; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+  .input-group input, .input-group textarea { width: 100%; padding: 14px; border: 1.5px solid #f5dce6; border-radius: 12px; font-size: 14px; outline: none; background: #fafafa; transition: 0.3s;}
+  .input-group input:focus, .input-group textarea:focus { border-color: #e6196a; background: #fff;}
+  .input-group textarea { height: 150px; resize: none; }
+  
+  .submit-btn { width: 100%; background: linear-gradient(135deg, #e6196a, #ff8c52); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 8px 25px rgba(230, 25, 106, 0.3); transition: 0.2s;}
+  .submit-btn:active { transform: scale(0.98); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back-btn">&#8592;</a>
+  <h1>Email Support</h1>
+</div>
+
+<div class="form-container">
+  <p>Apni problem detail me likhein, humari team 24 hours ke andar aapse contact karegi.</p>
+  
+  <div class="input-group">
+    <label>Your Email Address</label>
+    <input type="email" id="supportEmail" placeholder="example@gmail.com" required>
+  </div>
+  
+  <div class="input-group">
+    <label>Describe your Issue</label>
+    <textarea id="supportMsg" placeholder="Apni problem yahan likhein..." required></textarea>
+  </div>
+  
+  <button class="submit-btn" id="sendBtn" onclick="sendSupportEmail()">Send Email ✉️</button>
+</div>
+
+<script>
+  async function sendSupportEmail() {
+    const email = document.getElementById('supportEmail').value.trim();
+    const msg = document.getElementById('supportMsg').value.trim();
+    const btn = document.getElementById('sendBtn');
+    
+    if (!email || !msg) { alert('Please fill all fields'); return; }
+
+    btn.innerText = "Sending... ⏳";
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/contact/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userEmail: email, message: msg })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        alert('Email bhej diya gaya hai! Humari team aapse jald hi contact karegi.');
+        window.location.href = 'index.html';
+      } else {
+        alert('Error: ' + data.message);
+        btn.innerText = "Send Email ✉️";
+        btn.disabled = false;
+      }
+    } catch (e) {
+      alert('Failed to send email. Check network connection.');
+      btn.innerText = "Send Email ✉️";
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>

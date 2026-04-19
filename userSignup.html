@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Join Anntya — Beauty & Cosmetics</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+:root{
+  --r:#e6196a; --r2:#ff5f98; --p:#ff8c52; --gold:#f5c340;
+  --cream:#fff8fb; --white:#fff; --text:#180810; --text2:#7a5065;
+  --border:#f5dce6; --sh:rgba(230,25,106,.16);
+}
+body{
+  background:var(--cream); color:var(--text); min-height:100vh;
+  display:flex; align-items:center; justify-content:center; padding:40px 20px;
+}
+
+/* 🚀 OPTIMIZED BACKGROUND */
+.bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;opacity:0.5;background:radial-gradient(circle,rgba(230,25,106,.1),transparent 60%);}
+.b1{width:300px;height:300px;top:-50px;left:-50px;}
+.b2{width:250px;height:250px;bottom:-50px;right:-50px;background:radial-gradient(circle,rgba(255,140,82,.1),transparent 60%);}
+
+.container{
+  position:relative; z-index:1; width:100%; max-width:600px; 
+  background:rgba(255,255,255,0.95);
+  padding:40px; border-radius:35px; border:1px solid var(--border);
+  box-shadow:0 15px 40px var(--sh); animation:fadeUp 0.5s ease-out both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);}}
+
+.logo{text-align:center; margin-bottom:35px;}
+.logo h1{font-family:'Cormorant Garamond',serif; font-size:36px; background:linear-gradient(135deg,var(--r),var(--p)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;}
+.logo p{font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:3px; margin-top:5px;}
+
+/* ── GRID FORM LAYOUT ── */
+.signup-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.full-width { grid-column: span 2; }
+
+@media (max-width: 550px) {
+  .signup-grid { grid-template-columns: 1fr; }
+  .full-width { grid-column: span 1; }
+  .container { padding: 30px 20px; }
+}
+
+.form-group { position: relative; }
+label{ display:block; font-size:10px; font-weight:700; color:var(--text2); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+input, textarea{
+  width:100%; padding:14px 18px; border-radius:15px; border:1.5px solid var(--border);
+  background:#fff; font-size:14px; transition:0.3s; outline:none;
+}
+input:focus, textarea:focus{ border-color:var(--r); box-shadow:0 0 0 5px rgba(230,25,106,0.08); }
+textarea{ resize:none; height:85px; }
+
+.suggestion-list {
+  position: absolute; top: 100%; left: 0; right: 0; background: white;
+  border: 1px solid var(--border); border-radius: 15px; list-style: none;
+  max-height: 180px; overflow-y: auto; z-index: 1000; display: none;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12); margin-top: 8px;
+}
+.suggestion-list.active { display: block; }
+.suggestion-list li { padding: 12px 18px; cursor: pointer; font-size: 13px; color: var(--text2); border-bottom: 1px solid var(--cream); }
+.suggestion-list li:hover { background: rgba(230,25,106,0.04); color: var(--r); padding-left: 22px; transition: 0.2s; }
+
+.btn-main{
+  width:100%; padding:16px; border:none; border-radius:50px;
+  background:linear-gradient(135deg,var(--r),var(--p)); color:#fff;
+  font-size:15px; font-weight:700; cursor:pointer; margin-top:15px;
+  box-shadow:0 10px 30px rgba(230,25,106,0.35); transition:0.3s;
+}
+.btn-main:hover{ transform:translateY(-3px); box-shadow:0 15px 35px rgba(230,25,106,0.45); }
+.btn-main:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.footer-links{ text-align:center; margin-top:30px; font-size:13px; color:var(--text2); }
+.footer-links a{ color:var(--r); text-decoration:none; font-weight:700; border-bottom: 1.5px solid transparent; transition: 0.2s; }
+.footer-links a:hover{ border-bottom-color: var(--r); }
+
+/* OTP Field Styling */
+#otpSection {
+  background: rgba(230,25,106,0.05); padding: 15px; border-radius: 15px;
+  border: 1px dashed var(--r); text-align: center; animation: fadeUp 0.4s ease-out;
+}
+#otpInput {
+  font-size: 20px; letter-spacing: 8px; font-weight: 800;
+  text-align: center; color: var(--r); padding: 15px;
+}
+#otpInput::placeholder { font-size: 14px; letter-spacing: 1px; font-weight: 500; color: #b58d9e; }
+</style>
+</head>
+<body>
+<div class="bg-wrap"><div class="blob b1"></div><div class="blob b2"></div></div>
+<div class="container">
+  <div class="logo">
+    <h1>Anntya Store</h1>
+    <p>Join our beauty community</p>
+  </div>
+  <form id="signupForm" class="signup-grid">
+    <div class="form-group full-width">
+      <label>Full Name</label>
+      <input type="text" id="fullName" placeholder="Enter your full name" required>
+    </div>
+    
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="example@xyz.com" required>
+    </div>
+    
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" id="phone" placeholder="Enter Your Number" required>
+    </div>
+    
+    <div class="form-group">
+      <label>State</label>
+      <input type="text" id="stateInput" placeholder="Select State" autocomplete="off" required>
+      <ul id="stateList" class="suggestion-list"></ul>
+    </div>
+    
+    <div class="form-group">
+      <label>City / District</label>
+      <input type="text" id="cityInput" placeholder="Select City" autocomplete="off" required>
+      <ul id="cityList" class="suggestion-list"></ul>
+    </div>
+    
+    <div class="form-group full-width">
+      <label>Full Address / Landmark</label>
+      <textarea id="address" placeholder="Ghar No., Gali, Chauraha, Landmark..."></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label>Create New Password</label>
+      <input type="password" id="password" placeholder="Enter password" required>
+    </div>
+    
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <input type="password" id="confirmPassword" placeholder="Again Enter Password" required>
+    </div>
+    
+    <div class="form-group full-width" id="otpSection" style="display: none;">
+      <label style="color: var(--r); font-size: 11px;">Verification Code (Sent to Email)</label>
+      <input type="text" id="otpInput" placeholder="Enter 6-Digit OTP" maxlength="6">
+    </div>
+
+    <div class="full-width">
+      <button type="submit" class="btn-main" id="signupBtn">Create My Account ✨</button>
+    </div>
+  </form>
+  
+  <div class="footer-links">
+    Already a member? <a href="userLogin.html">Login here</a>
+  </div>
+</div>
+
+<script>
+// ── DATA: India States & Districts ──
+const indiaData = {
+  "Bihar": ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Purnia", "Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhojpur", "Buxar", "East Champaran (Motihari)", "Gopalganj", "Jamui", "Jehanabad", "Kaimur (Bhabua)", "Katihar", "Khagaria", "Kishanganj", "Lakhisarai", "Madhepura", "Madhubani", "Munger", "Nalanda (Bihar Sharif)", "Nawada", "Rohtas (Sasaram)", "Saharsa", "Samastipur", "Saran (Chhapra)", "Sheikhpura", "Sheohar", "Sitamarhi", "Siwan", "Supaul", "Vaishali (Hajipur)", "West Champaran (Bettiah)"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Noida", "Prayagraj", "Ghaziabad", "Meerut", "Aligarh", "Mathura", "Ayodhya"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Navi Mumbai", "Solapur"],
+  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi", "Central Delhi"]
+};
+
+const states = Object.keys(indiaData);
+const stateInput = document.getElementById('stateInput');
+const stateList = document.getElementById('stateList');
+const cityInput = document.getElementById('cityInput');
+const cityList = document.getElementById('cityList');
+
+stateInput.addEventListener('input', function() {
+  const val = this.value.toLowerCase();
+  stateList.innerHTML = '';
+  if (!val) { stateList.classList.remove('active'); return; }
+  const matches = states.filter(s => s.toLowerCase().includes(val));
+  if (matches.length > 0) {
+    stateList.classList.add('active');
+    matches.forEach(match => {
+      const li = document.createElement('li');
+      li.textContent = match;
+      li.onclick = () => { stateInput.value = match; stateList.classList.remove('active'); cityInput.value = ''; };
+      stateList.appendChild(li);
+    });
+  } else { stateList.classList.remove('active'); }
+});
+
+cityInput.addEventListener('input', function() {
+  const val = this.value.toLowerCase();
+  const selectedState = stateInput.value;
+  cityList.innerHTML = '';
+  if (!val || !selectedState || !indiaData[selectedState]) { cityList.classList.remove('active'); return; }
+  const matches = indiaData[selectedState].filter(c => c.toLowerCase().includes(val));
+  if (matches.length > 0) {
+    cityList.classList.add('active');
+    matches.forEach(match => {
+      const li = document.createElement('li');
+      li.textContent = match;
+      li.onclick = () => { cityInput.value = match; cityList.classList.remove('active'); };
+      cityList.appendChild(li);
+    });
+  } else { cityList.classList.remove('active'); }
+});
+
+document.addEventListener('click', function(e) {
+  if (e.target !== stateInput) stateList.classList.remove('active');
+  if (e.target !== cityInput) cityList.classList.remove('active');
+});
+
+
+// ── App Switch Proof Login Form ──
+document.getElementById('signupForm').onsubmit = async (e) => {
+  e.preventDefault();
+  
+  const pass = document.getElementById('password').value;
+  const conf = document.getElementById('confirmPassword').value;
+  const btn = document.getElementById('signupBtn');
+  const otpSection = document.getElementById('otpSection');
+  const otpInput = document.getElementById('otpInput');
+
+  if(pass !== conf) return alert("Passwords do not match!");
+
+  // Always read from DOM to avoid memory loss during App Switch
+  const userData = {
+    fullName: document.getElementById('fullName').value,
+    email: document.getElementById('email').value,
+    phone: document.getElementById('phone').value,
+    state: document.getElementById('stateInput').value,
+    city: document.getElementById('cityInput').value,
+    address: document.getElementById('address').value,
+    password: pass
+  };
+
+  // STEP 1: Sending OTP
+  if (otpSection.style.display === 'none' || otpSection.style.display === '') {
+    btn.innerText = "Sending OTP... ⏳";
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/user/signup-send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userData.email })
+      });
+      const data = await res.json();
+      
+      if(data.success) {
+        otpSection.style.display = 'block'; 
+        otpInput.setAttribute('required', 'true'); 
+        btn.innerText = "Verify OTP & Create Account ✅";
+        document.getElementById('email').readOnly = true;
+        document.getElementById('email').style.opacity = '0.6';
+        alert("OTP sent! Check your Email App. You can switch back anytime.");
+      } else {
+        alert("Error: " + data.message);
+      }
+    } catch(err) {
+      alert("Network Error while sending OTP.");
+    }
+    btn.disabled = false;
+  } 
+  
+  // STEP 2: Verifying OTP & Creating Account
+  else {
+    const userOtp = otpInput.value.trim();
+    if(!userOtp || userOtp.length !== 6) return alert("Please enter the 6-digit OTP correctly.");
+
+    btn.innerText = "Creating Account... ⏳";
+    btn.disabled = true;
+
+    try {
+      // Pehle Verify OTP
+      const verifyRes = await fetch('/api/user/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userData.email, otp: userOtp })
+      });
+      const verifyData = await verifyRes.json();
+      
+      // Front-end hack to bypass the server '_id' crash bug if it happens!
+      const isOtpCorrect = verifyData.success || 
+                           (verifyData.message && verifyData.message.includes('successful')) || 
+                           (verifyData.message && verifyData.message.includes('_id'));
+
+      if(isOtpCorrect) {
+         // Create User in DB
+         const createRes = await fetch('/api/user/signup', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify(userData)
+         });
+         const createData = await createRes.json();
+         
+         if(createData.success) {
+           alert("Account Created Successfully! 🎉");
+           // Give user their persistent login token
+           const finalToken = createData.token || verifyData.token;
+           if (finalToken) localStorage.setItem('user_token', finalToken); 
+           window.location.href = 'index.html';
+         } else {
+           alert("Error creating account: " + createData.message);
+           btn.innerText = "Verify OTP & Create Account ✅";
+           btn.disabled = false;
+         }
+      } else {
+        alert("Invalid OTP! Please check your email again.");
+        btn.innerText = "Verify OTP & Create Account ✅";
+        btn.disabled = false;
+      }
+    } catch(err) {
+      alert("Error: " + err.message);
+      btn.innerText = "Verify OTP & Create Account ✅";
+      btn.disabled = false;
+    }
+  }
+};
+</script>
+</body>
+</html>

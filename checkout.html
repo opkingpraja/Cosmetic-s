@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Secure Checkout — Anntya Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+  body{background:#fff8fb; color:#180810; padding:20px; padding-bottom: 120px;}
+  .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px;}
+  .header h1 { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: #e6196a;}
+  .back-btn { width: 35px; height: 35px; background: linear-gradient(135deg, #e6196a, #ff8c52); color: white; display: flex; align-items: center; justify-content: center; border-radius: 10px; text-decoration: none; font-weight: bold;}
+  
+  .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #f5dce6;}
+  .card h3 { font-size: 14px; color: #7a5065; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid #f5dce6; padding-bottom: 10px; display: flex; justify-content: space-between;}
+  
+  /* Accordion Product List */
+  .chk-item { border: 1px solid #f5dce6; border-radius: 15px; margin-bottom: 10px; overflow: hidden; background: #fafafa;}
+  .chk-summary { display: flex; align-items: center; padding: 12px; cursor: pointer; gap: 15px; background: #fff;}
+  .chk-summary img { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; border: 1px solid #f5dce6;}
+  .chk-info { flex: 1; }
+  .chk-title { font-size: 14px; font-weight: 600; color: #180810;}
+  .chk-price { font-size: 15px; font-weight: 700; color: #e6196a; margin-top: 4px;}
+  .chk-arrow { color: #e6196a; font-size: 12px; transition: transform 0.3s; }
+  
+  .chk-details { padding: 15px; border-top: 1px dashed #f5dce6; display: none; animation: fadeIn 0.3s ease;}
+  @keyframes fadeIn { from{opacity:0; transform:translateY(-10px)} to{opacity:1; transform:translateY(0)} }
+  .full-name { font-weight: 700; font-size: 15px; margin-bottom: 5px; color: #e6196a;}
+  .desc-text { font-size: 12px; color: #7a5065; line-height: 1.5; margin-bottom: 15px;}
+  
+  /* Quantity */
+  .qty-selector { display: flex; align-items: center; gap: 15px;}
+  .qty-btn { width: 32px; height: 32px; border: none; background: #e6196a; color: white; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer;}
+  .qty-val { font-size: 16px; font-weight: 600; min-width: 20px; text-align: center;}
+  
+  /* User Input */
+  .input-group { margin-bottom: 15px;}
+  .input-group label { display: block; font-size: 11px; font-weight: 600; color: #7a5065; margin-bottom: 5px; text-transform: uppercase;}
+  .input-group input, .input-group textarea { width: 100%; padding: 14px; border: 1px solid #f5dce6; border-radius: 12px; font-size: 14px; outline: none; background: #fff;}
+  .input-group input:focus { border-color: #e6196a;}
+  
+  /* Big Green Buy Button */
+  .total-box { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 15px 20px; box-shadow: 0 -5px 30px rgba(0,0,0,0.08); z-index: 100;}
+  .buy-btn-green { width: 100%; background: linear-gradient(135deg, #00c07f, #008a5b); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 700; font-size: 18px; cursor: pointer; box-shadow: 0 8px 25px rgba(0, 192, 127, 0.35); display: flex; justify-content: space-between; align-items: center; transition: 0.3s;}
+  .buy-btn-green:active { transform: scale(0.98); }
+  .buy-btn-green:disabled { opacity: 0.6; cursor: not-allowed;}
+
+  /* Success Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px);}
+  .modal { background: white; padding: 35px 25px; border-radius: 30px; text-align: center; max-width: 320px; animation: popUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);}
+  @keyframes popUp { from { transform: scale(0.6); opacity: 0;} to { transform: scale(1); opacity: 1;} }
+  .modal h2 { color: #00c07f; margin: 15px 0 10px; font-family: 'Cormorant Garamond', serif; font-size: 30px;}
+  .modal p { color: #7a5065; font-size: 14px; margin-bottom: 25px; line-height: 1.6;}
+  .close-btn { background: #180810; color: white; padding: 14px 40px; border-radius: 25px; text-decoration: none; font-weight: 600; display: inline-block; font-size: 15px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="#" class="back-btn" onclick="history.back()">&#8592;</a>
+  <h1>Checkout</h1>
+</div>
+
+<div class="card">
+  <h3><span>Your Items</span> <span id="item-count">0</span></h3>
+  <div id="checkout-items-container">
+    </div>
+</div>
+
+<div class="card">
+  <h3>Delivery Details</h3>
+  <div class="input-group">
+    <label>Full Name</label>
+    <input type="text" id="u-name" required>
+  </div>
+  <div class="input-group">
+    <label>Email</label>
+    <input type="email" id="u-email" readonly style="color: #999; background: #f0f0f0;">
+  </div>
+  <div class="input-group">
+    <label>Phone Number</label>
+    <input type="tel" id="u-phone" required>
+  </div>
+  <div class="input-group">
+    <label>State & City</label>
+    <input type="text" id="u-city" required>
+  </div>
+  <div class="input-group">
+    <label>Full Address (House, Landmark)</label>
+    <textarea id="u-address" rows="3" required></textarea>
+  </div>
+</div>
+
+<div class="total-box">
+  <button class="buy-btn-green" id="confirmBuyBtn" onclick="placeOrder()">
+    <span>Pay & Buy Now ✨</span>
+    <span id="total-price-btn">₹0</span>
+  </button>
+</div>
+
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div style="font-size: 60px;">🎉</div>
+    <h2>Order Successful!</h2>
+    <p>We've received your order and details have been sent. You will receive it soon.</p>
+    <a href="#" class="close-btn" onclick="finishOrder()">Go to Home</a>
+  </div>
+</div>
+
+<script>
+  let checkoutItems = [];
+  let totalAmount = 0;
+  const token = localStorage.getItem('user_token');
+
+  if(!token) {
+    sessionStorage.setItem('redirect_after_login', window.location.href);
+    window.location.href = 'userLogin.html';
+  }
+
+  window.onload = async () => {
+    // Determine data source (Cart or Direct)
+    const mode = sessionStorage.getItem('checkout_mode');
+    
+    if (mode === 'cart') {
+      checkoutItems = JSON.parse(localStorage.getItem('cart')) || [];
+    } else {
+      checkoutItems = JSON.parse(sessionStorage.getItem('checkout_product')) || [];
+    }
+
+    if(checkoutItems.length === 0) { 
+      alert("No products found to checkout!"); 
+      window.location.href = 'index.html'; 
+      return; 
+    }
+
+    renderItems();
+    
+    // Fetch User Profile
+    try {
+      const res = await fetch('/api/user/profile', { headers: { 'Authorization': token } });
+      const data = await res.json();
+      if(data.success) {
+        document.getElementById('u-name').value = data.user.fullName;
+        document.getElementById('u-email').value = data.user.email;
+        document.getElementById('u-phone').value = data.user.phone;
+        document.getElementById('u-city').value = data.user.city + ", " + data.user.state;
+        document.getElementById('u-address').value = data.user.address;
+      }
+    } catch(e) { console.log("Profile error", e); }
+  };
+
+  // Render Accordion UI
+  function renderItems() {
+    const container = document.getElementById('checkout-items-container');
+    document.getElementById('item-count').innerText = `${checkoutItems.length} Items`;
+    container.innerHTML = '';
+    totalAmount = 0;
+
+    checkoutItems.forEach((p, index) => {
+      totalAmount += p.price * p.qty;
+      const shortName = p.title.length > 22 ? p.title.substring(0, 22) + '...' : p.title;
+
+      container.innerHTML += `
+        <div class="chk-item">
+          <div class="chk-summary" onclick="toggleDetails(${index})">
+            <img src="${p.image}">
+            <div class="chk-info">
+              <div class="chk-title">${shortName}</div>
+              <div class="chk-price">₹${p.price}</div>
+            </div>
+            <div class="chk-arrow" id="arrow-${index}">▼</div>
+          </div>
+          <div class="chk-details" id="details-${index}">
+            <div class="full-name">${p.title}</div>
+            <div class="desc-text">${p.desc || 'Best premium quality product.'}</div>
+            <div class="qty-selector">
+              <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+              <div class="qty-val">${p.qty}</div>
+              <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById('total-price-btn').innerText = "₹" + totalAmount.toLocaleString('en-IN');
+  }
+
+  function toggleDetails(index) {
+    const details = document.getElementById(`details-${index}`);
+    const arrow = document.getElementById(`arrow-${index}`);
+    if (details.style.display === 'block') {
+      details.style.display = 'none';
+      arrow.style.transform = 'rotate(0deg)';
+    } else {
+      details.style.display = 'block';
+      arrow.style.transform = 'rotate(180deg)';
+    }
+  }
+
+  function updateQty(index, change) {
+    let newQty = checkoutItems[index].qty + change;
+    if (newQty >= 1) { 
+      checkoutItems[index].qty = newQty;
+      // Agar cart mode hai toh localstorage me bhi update karo
+      if(sessionStorage.getItem('checkout_mode') === 'cart') {
+        localStorage.setItem('cart', JSON.stringify(checkoutItems));
+      }
+      renderItems();
+      // Keep details open after clicking
+      document.getElementById(`details-${index}`).style.display = 'block';
+      document.getElementById(`arrow-${index}`).style.transform = 'rotate(180deg)';
+    }
+  }
+
+  async function placeOrder() {
+    const btn = document.getElementById('confirmBuyBtn');
+    btn.disabled = true; btn.innerHTML = "<span>Processing... ⏳</span>";
+
+    const userDetails = {
+      fullName: document.getElementById('u-name').value,
+      email: document.getElementById('u-email').value,
+      phone: document.getElementById('u-phone').value,
+      city: document.getElementById('u-city').value,
+      address: document.getElementById('u-address').value,
+    };
+
+    try {
+      const res = await fetch('/api/order/place', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': token },
+        body: JSON.stringify({ items: checkoutItems, totalAmount, userDetails })
+      });
+      const data = await res.json();
+      
+      if(data.success) {
+        document.getElementById('successModal').style.display = "flex";
+      } else {
+        alert(data.message);
+        btn.disabled = false; btn.innerHTML = `<span>Pay & Buy Now ✨</span><span>₹${totalAmount.toLocaleString('en-IN')}</span>`;
+      }
+    } catch(e) {
+      alert("Server Error!");
+      btn.disabled = false; btn.innerHTML = `<span>Pay & Buy Now ✨</span><span>₹${totalAmount.toLocaleString('en-IN')}</span>`;
+    }
+  }
+
+  function finishOrder() {
+    // Agar order cart se tha toh cart khali kar do order hone ke baad
+    if(sessionStorage.getItem('checkout_mode') === 'cart') {
+      localStorage.removeItem('cart');
+    }
+    window.location.href = 'index.html';
+  }
+</script>
+</body>
+</html>

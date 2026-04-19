@@ -128,7 +128,7 @@ h1{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
 <div class="total-box">
   <div class="total-inner">
     <div class="total" id="totalPrice">Total: ₹0</div>
-    <button class="checkout">Proceed to Checkout ✨</button>
+    <button class="checkout" onclick="proceedToCheckout()">Proceed to Checkout ✨</button>
   </div>
 </div>
 
@@ -197,6 +197,22 @@ h1{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
 
   // Initial call
   renderCart();
+  
+    function proceedToCheckout() {
+    if (cart.length === 0) return alert("Your cart is empty!");
+    
+    const token = localStorage.getItem('user_token');
+    if (!token) {
+      // Agar login nahi hai, toh login pe bhejo, aur wapas Cart pe bulao
+      sessionStorage.setItem('redirect_after_login', 'cart.html');
+      window.location.href = 'userLogin.html';
+    } else {
+      // Login hai toh checkout pe bhejo aur batao ki cart se aaya hai
+      sessionStorage.setItem('checkout_mode', 'cart');
+      window.location.href = 'checkout.html';
+    }
+  }
+  
 </script>
 </body>
 </html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Chat with Anntya AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+  body { background:#fff8fb; display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+  
+  .header { display: flex; align-items: center; gap: 15px; padding: 15px 20px; background: white; border-bottom: 1px solid #f5dce6; flex-shrink: 0;}
+  .header h1 { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #e6196a;}
+  .back-btn { width: 35px; height: 35px; background: linear-gradient(135deg, #e6196a, #ff8c52); color: white; display: flex; align-items: center; justify-content: center; border-radius: 10px; text-decoration: none; font-weight: bold;}
+  
+  .chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fafafa; }
+  .msg { max-width: 85%; padding: 12px 18px; border-radius: 18px; font-size: 14px; line-height: 1.5; word-wrap: break-word;}
+  .msg.bot { background: #fff; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); color: #180810; border: 1px solid #f5dce6;}
+  .msg.user { background: linear-gradient(135deg, #e6196a, #ff8c52); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 10px rgba(230,25,106,0.2);}
+  
+  .chat-input-area { display: flex; padding: 15px; background: #fff; border-top: 1px solid #f5dce6; gap: 10px; align-items: center; padding-bottom: calc(15px + env(safe-area-inset-bottom)); flex-shrink: 0;}
+  .chat-input-area input[type="text"] { flex: 1; border: 1px solid #f5dce6; border-radius: 25px; padding: 12px 18px; outline: none; font-size: 14px; background: #fafafa;}
+  .chat-input-area input[type="text"]:focus { border-color: #e6196a; }
+  .icon-btn { background: #f5dce6; color: #e6196a; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; transition: 0.2s; flex-shrink: 0;}
+  .icon-btn.send { background: #e6196a; color: white; }
+  .icon-btn:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back-btn">&#8592;</a>
+  <h1>Anntya Bot ✨</h1>
+</div>
+
+<div class="chat-box" id="chatBox">
+  <div class="msg bot">Namaste! Main Anntya Bot hoon. Aapki beauty products ya orders se related main kaise madad kar sakta hoon? 😊</div>
+</div>
+
+<div class="chat-input-area">
+  <input type="file" id="chatImageInput" accept="image/*" style="display: none;">
+  <button class="icon-btn" onclick="document.getElementById('chatImageInput').click()">📎</button>
+  <input type="text" id="chatInput" placeholder="Message Anntya Bot..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+  <button class="icon-btn send" onclick="sendChatMessage()">➤</button>
+</div>
+
+<script>
+  let chatHistory = [];
+  const chatBox = document.getElementById('chatBox');
+
+  async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const fileInput = document.getElementById('chatImageInput');
+    const text = input.value.trim();
+    const file = fileInput.files[0];
+
+    if (!text && !file) return;
+
+    let userMsgHtml = `<div class="msg user">${text} ${file ? '<br><small><i>[Image Attached 🖼️]</i></small>' : ''}</div>`;
+    chatBox.innerHTML += userMsgHtml;
+    input.value = '';
+    
+    if (text) chatHistory.push({ role: 'user', text: text });
+
+    const loadingId = 'loading-' + Date.now();
+    chatBox.innerHTML += `<div class="msg bot" id="${loadingId}">Typing... ⏳</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    const fd = new FormData();
+    if (text) fd.append('message', text);
+    if (file) fd.append('image', file);
+    fd.append('history', JSON.stringify(chatHistory));
+
+    try {
+      const res = await fetch('/api/chat/bot', { method: 'POST', body: fd });
+      const data = await res.json();
+      
+      document.getElementById(loadingId).remove();
+      fileInput.value = '';
+
+      if (data.success) {
+        chatBox.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+        chatHistory.push({ role: 'model', text: data.reply });
+      } else {
+        chatBox.innerHTML += `<div class="msg bot" style="color:red;">Error: ${data.message}</div>`;
+      }
+    } catch (e) {
+      document.getElementById(loadingId).remove();
+      chatBox.innerHTML += `<div class="msg bot" style="color:red;">Network Error. Please try again later.</div>`;
+    }
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+</script>
+</body>
+</html>

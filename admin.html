@@ -6,6 +6,9 @@
   <title>Admin Panel – Anntya Store</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
   <style>
+  *{
+    color:#f9cea1;
+  }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
       --bg:#030306;--surface:#09090f;--card:#0f0f17;--card2:#14141e;
@@ -368,6 +371,16 @@
     ::-webkit-scrollbar{width:5px}
     ::-webkit-scrollbar-track{background:transparent}
     ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+    input.date-format::placeholder {
+  color: var(--muted);
+  opacity: 0.4; /* Placeholder ki opacity kam kar di */
+  letter-spacing: 2px;
+}
+input.date-format {
+  font-family: 'JetBrains Mono', monospace; /* Date likhne me achi dikhegi */
+  letter-spacing: 1px;
+}
+
   </style>
 </head>
 <body>
@@ -384,7 +397,30 @@
     <span class="divider-label">Add New Product</span>
     <div class="divider-line"></div>
   </div>
-
+  
+  <div class="form-card" style="background: rgba(107, 77, 230, 0.05); border-color: rgba(107, 77, 230, 0.3);">
+    <div class="divider" style="margin-bottom: 12px;">
+      <span class="divider-label" style="color: var(--accent2);">🤖 Smart Scan (Optional)</span>
+      <div class="divider-line" style="background: rgba(107, 77, 230, 0.2);"></div>
+    </div>
+    <p style="font-size: 11px; color: var(--text2); margin-bottom: 15px; line-height: 1.5;">
+      Camera open karke product ki aage-peeche se lagatar photos click karte jao. Saari photos niche add hoti jayengi. Phir AI se scan karwa lo.
+    </p>
+    
+    <div class="field">
+      <div class="file-drop" id="scanDrop" style="padding: 16px; border-color: var(--accent2);" onclick="document.getElementById('scanImages').click()">
+        <input type="file" id="scanImages" accept="image/*" capture="environment" style="display:none;"/>
+        <div class="drop-icon">📸</div>
+        <div class="drop-text">Yahan click karo aur <strong>1-1 karke Photos khincho</strong></div>
+      </div>
+      <div id="scanPreview" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
+    </div>
+    
+    <button class="btn btn-update" id="startScanBtn" onclick="startSmartScan()" style="width: 100%; display: none; margin-top: 14px;">
+      🔍 In <span id="scanCount">0</span> Photos se Details Nikalo
+    </button>
+  </div>
+  
   <div class="form-card">
     <!-- Row 1: Name + Price -->
     <div class="form-row">
@@ -426,28 +462,14 @@
     <div class="form-row">
       <div class="field">
         <label>Mfg Date</label>
-        <div class="date-input-wrap">
-          <div class="date-display" id="mfgDateDisplay" onclick="toggleDatePicker('mfgPicker','mfgDateDisplay','mfgDateVal')">
-            <span id="mfgDateText" class="placeholder">Select date</span>
-            <span>📅</span>
-          </div>
-          <input type="hidden" id="mfgDateVal"/>
-          <div class="date-picker-popup" id="mfgPicker"></div>
-        </div>
+        <input type="tel" id="mfgDateVal" class="date-format" placeholder="DD/MM/YYYY" maxlength="10" autocomplete="off"/>
       </div>
       <div class="field">
         <label>Exp Date</label>
-        <div class="date-input-wrap">
-          <div class="date-display" id="expDateDisplay" onclick="toggleDatePicker('expPicker','expDateDisplay','expDateVal')">
-            <span id="expDateText" class="placeholder">Select date</span>
-            <span>📅</span>
-          </div>
-          <input type="hidden" id="expDateVal"/>
-          <div class="date-picker-popup" id="expPicker"></div>
-        </div>
+        <input type="tel" id="expDateVal" class="date-format" placeholder="DD/MM/YYYY" maxlength="10" autocomplete="off"/>
       </div>
     </div>
-
+    
     <!-- Image -->
     <div class="field">
       <label>Product Image <span class="req">*</span></label>
@@ -535,27 +557,14 @@
     <div class="form-row">
       <div class="field">
         <label>Mfg Date</label>
-        <div class="date-input-wrap">
-          <div class="date-display" id="editMfgDateDisplay" onclick="toggleDatePicker('editMfgPicker','editMfgDateDisplay','editMfgDateVal')">
-            <span id="editMfgDateText" class="placeholder">Select date</span>
-            <span>📅</span>
-          </div>
-          <input type="hidden" id="editMfgDateVal"/>
-          <div class="date-picker-popup" id="editMfgPicker"></div>
-        </div>
+        <input type="tel" id="editMfgDateVal" class="date-format" placeholder="DD/MM/YYYY" maxlength="10" autocomplete="off"/>
       </div>
       <div class="field">
         <label>Exp Date</label>
-        <div class="date-input-wrap">
-          <div class="date-display" id="editExpDateDisplay" onclick="toggleDatePicker('editExpPicker','editExpDateDisplay','editExpDateVal')">
-            <span id="editExpDateText" class="placeholder">Select date</span>
-            <span>📅</span>
-          </div>
-          <input type="hidden" id="editExpDateVal"/>
-          <div class="date-picker-popup" id="editExpPicker"></div>
-        </div>
+        <input type="tel" id="editExpDateVal" class="date-format" placeholder="DD/MM/YYYY" maxlength="10" autocomplete="off"/>
       </div>
     </div>
+
     <div class="field">
       <span class="img-section-label">Current Image</span>
       <div class="current-img-wrap">
@@ -633,135 +642,40 @@
   });
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  DATE PICKER
+  //  DATE AUTO-FORMATTER (DD/MM/YYYY) - NEW
   // ══════════════════════════════════════════════════════════════════════════
-  const dpState = {};
-  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const DAYS   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  document.querySelectorAll('.date-format').forEach(input => {
+    input.addEventListener('input', function (e) {
+      let val = this.value.replace(/\D/g, ''); // Sirf numbers extract karo
+      let day = val.substring(0, 2);
+      let month = val.substring(2, 4);
+      let year = val.substring(4, 8);
 
-  function toggleDatePicker(pickerId, displayId, hiddenId) {
-    const popup = document.getElementById(pickerId);
-    const isOpen = popup.classList.contains('show');
-    document.querySelectorAll('.date-picker-popup.show').forEach(p => {
-      if (p.id !== pickerId) { p.classList.remove('show'); document.getElementById(p.id.replace('Picker','DateDisplay').replace('editMfg','editMfg').replace('editExp','editExp'))?.classList.remove('open') }
+      // Limits check
+      if (day && parseInt(day) > 31) day = '31';
+      if (day.length === 2 && day === '00') day = '01';
+      if (month && parseInt(month) > 12) month = '12';
+      if (month.length === 2 && month === '00') month = '01';
+
+      let formatted = day;
+      
+      // Auto add "/"
+      if (val.length >= 2 && e.inputType !== 'deleteContentBackward') {
+        formatted += '/';
+      } else if (val.length > 2) {
+        formatted += '/';
+      }
+
+      if (month) formatted += month;
+      if (val.length >= 4 && e.inputType !== 'deleteContentBackward') {
+        formatted += '/';
+      } else if (val.length > 4) {
+        formatted += '/';
+      }
+
+      if (year) formatted += year;
+      this.value = formatted;
     });
-    if (isOpen) { popup.classList.remove('show'); document.getElementById(displayId).classList.remove('open'); return; }
-    const now = new Date();
-    if (!dpState[pickerId]) dpState[pickerId] = { step:'day', year:now.getFullYear(), month:now.getMonth(), day:null };
-    dpState[pickerId].step = 'day';
-    renderDP(pickerId, displayId, hiddenId);
-    popup.classList.add('show');
-    document.getElementById(displayId).classList.add('open');
-  }
-
-  function renderDP(pickerId, displayId, hiddenId) {
-    const popup = document.getElementById(pickerId);
-    const s = dpState[pickerId];
-    if (s.step === 'day') renderDPDay(popup, pickerId, displayId, hiddenId);
-    else if (s.step === 'month') renderDPMonth(popup, pickerId, displayId, hiddenId);
-    else renderDPYear(popup, pickerId, displayId, hiddenId);
-  }
-
-  function renderDPDay(popup, pickerId, displayId, hiddenId) {
-    const s = dpState[pickerId];
-    const firstDay = new Date(s.year, s.month, 1).getDay();
-    const daysInMonth = new Date(s.year, s.month+1, 0).getDate();
-    const today = new Date();
-    let html = `<div class="dp-nav">
-      <button class="dp-nav-btn" onclick="dpChangeMonth(-1,'${pickerId}','${displayId}','${hiddenId}')">‹</button>
-      <span class="dp-nav-title" style="cursor:pointer" onclick="dpGoMonth('${pickerId}','${displayId}','${hiddenId}')">${MONTHS[s.month]} ${s.year}</span>
-      <button class="dp-nav-btn" onclick="dpChangeMonth(1,'${pickerId}','${displayId}','${hiddenId}')">›</button>
-    </div><div class="dp-grid">`;
-    DAYS.forEach(d => { html += `<div class="dp-cell day-label">${d}</div>`; });
-    for (let i=0; i<firstDay; i++) html += `<div class="dp-cell"></div>`;
-    for (let d=1; d<=daysInMonth; d++) {
-      const isToday = d===today.getDate()&&s.month===today.getMonth()&&s.year===today.getFullYear();
-      const isSel = d===s.day;
-      html += `<div class="dp-cell${isToday?' today':''}${isSel?' selected':''}" onclick="dpSelectDay(${d},'${pickerId}','${displayId}','${hiddenId}')">${d}</div>`;
-    }
-    html += `</div><div class="dp-actions"><span class="dp-clear" onclick="clearDate('${pickerId}','${displayId}','${hiddenId}')">Clear</span></div>`;
-    popup.innerHTML = html;
-  }
-
-  function renderDPMonth(popup, pickerId, displayId, hiddenId) {
-    const s = dpState[pickerId];
-    let html = `<div class="dp-nav">
-      <button class="dp-nav-btn" onclick="dpChangeYear(-1,'${pickerId}','${displayId}','${hiddenId}')">‹</button>
-      <span class="dp-nav-title" style="cursor:pointer" onclick="dpGoYear('${pickerId}','${displayId}','${hiddenId}')">${s.year}</span>
-      <button class="dp-nav-btn" onclick="dpChangeYear(1,'${pickerId}','${displayId}','${hiddenId}')">›</button>
-    </div><div class="dp-grid dp-grid-month">`;
-    MONTHS.forEach((m,i) => { html += `<div class="dp-cell${i===s.month?' selected':''}" onclick="dpSelectMonth(${i},'${pickerId}','${displayId}','${hiddenId}')">${m.slice(0,3)}</div>`; });
-    html += `</div>`;
-    popup.innerHTML = html;
-  }
-
-  function renderDPYear(popup, pickerId, displayId, hiddenId) {
-    const s = dpState[pickerId];
-    const base = Math.floor(s.year/12)*12;
-    let html = `<div class="dp-nav">
-      <button class="dp-nav-btn" onclick="dpChangeYearRange(-12,'${pickerId}','${displayId}','${hiddenId}')">‹</button>
-      <span class="dp-nav-title">${base}–${base+11}</span>
-      <button class="dp-nav-btn" onclick="dpChangeYearRange(12,'${pickerId}','${displayId}','${hiddenId}')">›</button>
-    </div><div class="dp-grid dp-grid-year">`;
-    for (let y=base; y<base+12; y++) { html += `<div class="dp-cell${y===s.year?' selected':''}" onclick="dpSelectYear(${y},'${pickerId}','${displayId}','${hiddenId}')">${y}</div>`; }
-    html += `</div>`;
-    popup.innerHTML = html;
-  }
-
-  function dpChangeMonth(d,p,di,h){ dpState[p].month+=d; if(dpState[p].month<0){dpState[p].month=11;dpState[p].year--;}else if(dpState[p].month>11){dpState[p].month=0;dpState[p].year++;} renderDP(p,di,h); }
-  function dpChangeYear(d,p,di,h){ dpState[p].year+=d; renderDP(p,di,h); }
-  function dpChangeYearRange(d,p,di,h){ dpState[p].year+=d; renderDP(p,di,h); }
-  function dpGoMonth(p,di,h){ dpState[p].step='month'; renderDP(p,di,h); }
-  function dpGoYear(p,di,h){ dpState[p].step='year'; renderDP(p,di,h); }
-  function dpSelectMonth(m,p,di,h){ dpState[p].month=m; dpState[p].step='day'; renderDP(p,di,h); }
-  function dpSelectYear(y,p,di,h){ dpState[p].year=y; dpState[p].step='month'; renderDP(p,di,h); }
-
-  function dpSelectDay(d, pickerId, displayId, hiddenId) {
-    const s = dpState[pickerId];
-    s.day = d;
-    const dd = String(d).padStart(2,'0');
-    const mm = String(s.month+1).padStart(2,'0');
-    const val = `${dd}/${mm}/${s.year}`;
-    document.getElementById(hiddenId).value = val;
-    const txt = displayId.replace('Display','Text');
-    const el = document.getElementById(txt);
-    if (el) { el.textContent = val; el.classList.remove('placeholder'); }
-    document.getElementById(pickerId).classList.remove('show');
-    document.getElementById(displayId).classList.remove('open');
-  }
-
-  function clearDate(pickerId, displayId, hiddenId) {
-    if (dpState[pickerId]) { dpState[pickerId].day = null; }
-    document.getElementById(hiddenId).value = '';
-    const txt = displayId.replace('Display','Text');
-    const el = document.getElementById(txt);
-    if (el) { el.textContent = 'Select date'; el.classList.add('placeholder'); }
-    document.getElementById(pickerId).classList.remove('show');
-    document.getElementById(displayId).classList.remove('open');
-  }
-
-  function setDateFromValue(pickerId, displayId, hiddenId, val) {
-    if (!val) return;
-    const parts = val.split('/');
-    if (parts.length < 3) return;
-    const d = parseInt(parts[0]), m = parseInt(parts[1])-1, y = parseInt(parts[2]);
-    if (!dpState[pickerId]) dpState[pickerId] = { step:'day', year:y, month:m, day:d };
-    else { dpState[pickerId].year=y; dpState[pickerId].month=m; dpState[pickerId].day=d; }
-    document.getElementById(hiddenId).value = val;
-    const txt = displayId.replace('Display','Text');
-    const el = document.getElementById(txt);
-    if (el) { el.textContent = val; el.classList.remove('placeholder'); }
-  }
-
-  // Close date picker on outside click
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.date-input-wrap')) {
-      document.querySelectorAll('.date-picker-popup.show').forEach(p => {
-        p.classList.remove('show');
-        const dispId = p.id.replace('Picker','DateDisplay');
-        document.getElementById(dispId)?.classList.remove('open');
-      });
-    }
   });
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -855,7 +769,7 @@
   });
 
   // ══════════════════════════════════════════════════════════════════════════
-  //  TOAST
+  //  TOAST & RESET FORM
   // ══════════════════════════════════════════════════════════════════════════
   function showToast(msg, type = 'success') {
     const t = document.getElementById('toast');
@@ -863,16 +777,11 @@
     setTimeout(() => t.className = '', 3400);
   }
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  RESET FORM
-  // ══════════════════════════════════════════════════════════════════════════
   function resetForm() {
-    ['productName','description','price','categoryInput','quantityInput'].forEach(id => document.getElementById(id).value = '');
+    ['productName','description','price','categoryInput','quantityInput','mfgDateVal','expDateVal'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('productImage').value = '';
     document.getElementById('filePreview').style.display = 'none';
     document.getElementById('previewImg').src = '';
-    clearDate('mfgPicker','mfgDateDisplay','mfgDateVal');
-    clearDate('expPicker','expDateDisplay','expDateVal');
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -1097,13 +1006,14 @@
     document.getElementById('editQuantityInput').value = p.quantity??'';
     document.getElementById('editCurrentImg').src  = p.imageUrl||'';
     document.getElementById('editImage').value     = '';
+    
+    // IMAGE PREVIEW CLEAR
     const prev = document.getElementById('editPreviewImg');
     prev.src=''; prev.classList.remove('show');
 
-    setDateFromValue('editMfgPicker','editMfgDateDisplay','editMfgDateVal', p.mfgDate||'');
-    setDateFromValue('editExpPicker','editExpDateDisplay','editExpDateVal', p.expDate||'');
-    if (!p.mfgDate) clearDate('editMfgPicker','editMfgDateDisplay','editMfgDateVal');
-    if (!p.expDate) clearDate('editExpPicker','editExpDateDisplay','editExpDateVal');
+    // NEW SIMPLE DATE LOGIC
+    document.getElementById('editMfgDateVal').value = p.mfgDate || '';
+    document.getElementById('editExpDateVal').value = p.expDate || '';
 
     openModal('editModal');
   }
@@ -1118,6 +1028,7 @@
     const mfgDate  = document.getElementById('editMfgDateVal').value.trim();
     const expDate  = document.getElementById('editExpDateVal').value.trim();
     const file     = document.getElementById('editImage').files[0];
+    
     if (!name||!desc||!price) { showToast('Sab required fields fill karo!','error'); return; }
 
     const btn = document.getElementById('updateBtn');
@@ -1153,6 +1064,83 @@
     sessionStorage.removeItem('admin_token');
     window.location.href='/';
   }
+  
+  // ══════════════════════════════════════════════════════════════════════════
+  //  SMART SCAN AI LOGIC (WITH MEMORY ARRAY)
+  // ══════════════════════════════════════════════════════════════════════════
+  
+  // Yeh array cache memory ki tarah kaam karega. 
+  // Jaise hi scan complete hoga, hum isko khali kar denge.
+  let scannedImagesMemory = []; 
+
+  document.getElementById('scanImages').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Photo khinchte hi memory mein add kar do
+    scannedImagesMemory.push(file);
+
+    // Mini preview dikhao
+    const preview = document.getElementById('scanPreview');
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.style.width = '48px';
+    img.style.height = '48px';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '8px';
+    img.style.border = '1px solid var(--border2)';
+    preview.appendChild(img);
+
+    // AI wala button dikhao aur count update karo
+    const btn = document.getElementById('startScanBtn');
+    document.getElementById('scanCount').innerText = scannedImagesMemory.length;
+    btn.style.display = 'block';
+
+    // Sabse zaroori step: Input ko clear kar do taaki dobara click karne par camera phir se open ho
+    this.value = ''; 
+  });
+
+  async function startSmartScan() {
+    if (scannedImagesMemory.length === 0) return;
+
+    const btn = document.getElementById('startScanBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> AI sab photos mila kar padh raha hai...';
+
+    const fd = new FormData();
+    // Memory mein jitni photos hain, sabko FormData mein daal do
+    scannedImagesMemory.forEach(file => fd.append('scanImages', file));
+
+    try {
+      const res = await authFetch(`${API}/api/smart-scan`, { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (data.success && data.data) {
+        const aiData = data.data;
+        
+        if (aiData.name) document.getElementById('productName').value = aiData.name;
+        if (aiData.price) document.getElementById('price').value = aiData.price;
+        if (aiData.mfgDate) document.getElementById('mfgDateVal').value = aiData.mfgDate;
+        if (aiData.expDate) document.getElementById('expDateVal').value = aiData.expDate;
+        
+        showToast('✨ AI ne form bhar diya!', 'success');
+        
+        // SCAN HOTE HI MEMORY AUR PREVIEW DELETE KAR DO
+        scannedImagesMemory = [];
+        document.getElementById('scanPreview').innerHTML = '';
+        btn.style.display = 'none';
+        
+      } else {
+        showToast(data.message || 'AI text padh nahi paya', 'error');
+      }
+    } catch(e) {
+      showToast('Scan error: ' + e.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = `🔍 In <span id="scanCount">${scannedImagesMemory.length}</span> Photos se Details Nikalo`;
+  }
+
 
   // ══════════════════════════════════════════════════════════════════════════
   //  INIT
@@ -1160,5 +1148,6 @@
   loadMeta();
   loadProducts();
 </script>
+
 </body>
 </html>

@@ -153,6 +153,17 @@ body{background:var(--cream);color:var(--text);
 .rel-skel-img{aspect-ratio:4/3;width:100%;border-radius:0;}
 .rel-skel-title{height:12px;width:80%;margin:10px 10px 6px;border-radius:6px;}
 .rel-skel-price{height:12px;width:50%;margin:0 10px 10px;border-radius:6px;}
+/* ── Buy Now Button (Premium Green Theme) ── */
+#buyNowBtn {
+  background: linear-gradient(135deg, #00c07f, #008a5b);
+  box-shadow: 0 6px 20px rgba(0, 192, 127, 0.3);
+}
+
+#buyNowBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 192, 127, 0.45);
+}
+
 </style>
 </head>
 <body class="light-theme">
@@ -181,7 +192,10 @@ body{background:var(--cream);color:var(--text);
     <div class="btn-row">
       <div class="skeleton skel-btn" id="btn1-skeleton"></div>
       <div class="skeleton skel-btn" id="btn2-skeleton"></div>
-      <button class="buy-btn"   id="buyBtn"   onclick="addToCart()">Add to Cart 🛒</button>
+     <button class="buy-btn" id="cartBtn" onclick="addToCart()">Add to Cart 🛒</button>
+    <button class="buy-btn" id="buyNowBtn" onclick="buyNowDirectly()">Buy Now 🛍️</button>
+    <button class="share-btn" id="shareBtn" onclick="shareProduct()">Share 📤</button>
+
       <button class="share-btn" id="shareBtn" onclick="shareProduct()">Share 📤</button>
     </div>
   </div>
@@ -202,6 +216,7 @@ body{background:var(--cream);color:var(--text);
 </div>
 
 <script src="addProduct.js"></script>
+<script src="addProduct.js"></script>
 <script>
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
@@ -216,7 +231,7 @@ body{background:var(--cream);color:var(--text);
     return a;
   }
 
-  // Category keywords — longest first for correct matching
+  // Category keywords
   const CATEGORIES = [
     'face wash','bb cream','cc cream','lip gloss','lip liner','lip balm',
     'nail polish','nail paint','setting spray','sheet mask',
@@ -256,30 +271,35 @@ body{background:var(--cream);color:var(--text);
     return d;
   }
 
+  // ── MAIN LOGIC JO MISS HO GAYA THA ──
   window.productsReady.then(function () {
-    // ── Main product ──
     product = products.find(p => p._id === id);
+    
     if (!product) {
       document.getElementById("title").innerText = "Product not found";
       document.getElementById("relatedGrid").innerHTML =
         '<p style="color:#999;padding:10px;grid-column:1/-1">No products found.</p>';
-      document.getElementById("relTag").textContent = '0 products';
       return;
     }
 
+    // Hide Skeletons
     ["img-skeleton","title-skeleton","price-skeleton","desc-skeleton","btn1-skeleton","btn2-skeleton"]
       .forEach(sid => document.getElementById(sid).style.display = "none");
 
+    // Dikhane ka Logic
     const img = document.getElementById("image");
     img.src = product.image;
     img.style.display = "block";
     document.getElementById("title").innerText = product.title;
     document.getElementById("price").innerText = "₹" + Number(product.price).toLocaleString('en-IN');
     document.getElementById("desc").innerText  = product.desc;
-    document.getElementById("buyBtn").style.display   = "inline-block";
-    document.getElementById("shareBtn").style.display = "inline-block";
+    
+    // Buttons Show Karo
+    document.getElementById("cartBtn").style.display   = "inline-block";
+    document.getElementById("buyNowBtn").style.display = "inline-block";
+    document.getElementById("shareBtn").style.display  = "inline-block";
 
-    // ── Related: same category first, then others ──
+    // Related Products System
     const currentCat = getCategory(product.title);
     const others = products.filter(p => p._id !== id);
     const sameCat  = others.filter(p => currentCat && getCategory(p.title) === currentCat);
@@ -304,6 +324,7 @@ body{background:var(--cream);color:var(--text);
     }
   });
 
+  // ── CART & BUY NOW LOGIC ──
   function addToCart() {
     if (!product) return;
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -314,6 +335,29 @@ body{background:var(--cream);color:var(--text);
     window.location.href = "cart.html";
   }
 
+  function buyNowDirectly() {
+    if (!product) return;
+    const token = localStorage.getItem('user_token');
+    
+    // Save for checkout
+    sessionStorage.setItem('checkout_product', JSON.stringify([{
+      _id: product._id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      desc: product.desc || 'Best beauty product for you.',
+      qty: 1
+    }]));
+    sessionStorage.setItem('checkout_mode', 'direct');
+
+    if (token) {
+      window.location.href = 'checkout.html';
+    } else {
+      sessionStorage.setItem('redirect_after_login', 'checkout.html');
+      window.location.href = 'userLogin.html';
+    }
+  }
+  
   function shareProduct() {
     if (navigator.share) { navigator.share({ url: window.location.href }); }
     else {
